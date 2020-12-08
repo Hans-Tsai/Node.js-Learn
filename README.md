@@ -70,9 +70,9 @@ Node.js Learn<br>
 `先備知識`
 > `One process`: 一個全域的Object,可以在任何地方被執行,並保有執行時的資料<br>
 > `One thread`: single-thread,在一個`process`中只能執行一件事<br>
-> `One event loop`: 一個事件迴圈,因為它使Node可以是非同步(asynchronous) & 非阻塞I/O(non-blocking I/O); 因為Node是single-thread的,透過callback.Promise.async/await能將工作分散給system kernel
-> `One JS Engine Instance`: 一個Javascript實例,用來執行Javascript的程式碼
-> `One Node.js Instance`: 一個Node實例,用來執行Node的程式碼
+> `One event loop`: 一個事件迴圈,因為它使Node可以是非同步(asynchronous) & 非阻塞I/O(non-blocking I/O); 因為Node是single-thread的,透過callback.Promise.async/await能將工作分散給system kernel<br>
+> `One JS Engine Instance`: 一個Javascript實例,用來執行Javascript的程式碼<br>
+> `One Node.js Instance`: 一個Node實例,用來執行Node的程式碼<br>
 
 - Node是一個免費.開源.跨平台的Javascript執行環境,讓開發者可以在瀏覽器以外也能使用Javascript
   + 也因此讓廣大的前端開發者們,可以加入後端開發的行列,並且不用因此需要多學一門程式語言 
