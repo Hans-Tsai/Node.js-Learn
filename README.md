@@ -11,6 +11,8 @@ Node.js Learn<br>
       - [Linux 系統 (以 Ubuntu 為例)](#linux-系統-以-ubuntu-為例)
     - [Node.js 核心觀念](#nodejs-核心觀念)
       - [Introduction to Node.js](#introduction-to-nodejs)
+    - [Node.js 核心模組](#nodejs-核心模組)
+      - [HTTP](#http)
     - [參考資料來源](#參考資料來源)
       - [官方文件](#官方文件)
       - [網路文章](#網路文章)
@@ -84,6 +86,58 @@ Node.js Learn<br>
   + 同時Node也在其標準函式庫中提供了一組非同步I/O原語(asynchronous I/O primitives)來防止Javascript的程式碼被阻塞住,因此在Node中使用非阻塞式語法(non-blocking paradigms)來開發是正常且普遍的
   + 當Node執行會有I/O的操作(e.g. 從網路上讀取資料.存取資料庫or檔案系統)時,Node會自動在response回傳時才恢復操作,而不是無效地阻擋住線程和浪費CPU週期等待時間
 - 受惠於npm的簡單結構,其促使Node生態系可以蓬勃地發展,目前在npm上已經有超過1,000,000個開源軟體&工具可供使用
+- 範例程式碼
+  + ```javascript
+      const http = require('http');
+
+      const hostname = '127.0.0.1';
+      const port = process.env.PORT;
+
+      const server = http.createServer((req, res) => {
+        res.statusCode = 200
+        res.setHeader('Content-Type', 'text/plain')
+        res.end('Hello World!\n')
+      });
+
+      server.listen(port, hostname, () => {
+      console.log(`Server running at http://${hostname}:${port}/`)
+      });
+    ```
+  + 以上程式碼會建立一個新的http server並回傳,同時這個server也會監聽指定的port & host name
+  + 當server準備就緒時,將執行callback function,在這時也會通知我們server正在運行中
+  + 每當收到一個新的request時,都會呼叫該request event,並提供兩個物件(objects)
+    * 請求物件(request): `http.IncomingMessage`
+      * 它會提供request details 
+    * 回應物件(response): `http.ServerResponse`
+      * 它會用來將data回傳給呼叫request event的那方
+  + 在這種狀況下, 我們會將狀態碼設定為200,以表示該request成功<br>
+    => `res.statusCode = 200`
+  + 並設定Content-Type標頭<br>
+    => `res.setHeader('Content-Type', 'text/plain')`
+  + 最後,會關閉response,並將內容作為參數添加到res.end()中<br>
+    => `res.end('Hello World\n')`
+     
+
+
+---
+### Node.js 核心模組
+#### [HTTP](https://nodejs.org/api/http.html)
+> method
+  + [http.createServer([options][, requestListener])](https://nodejs.org/api/http.html#http_http_createserver_options_requestlistener)<br>
+  => 會回傳一個 http.Server 實例
+    * options
+      * http.IncomingMessage
+      * ServerResponse
+      * insecureHTTPParser (Default: false)
+      * maxHeaderSize (Default: 16384 (16KB)
+> Class
+  + [Class: http.IncomingMessage](https://nodejs.org/api/http.html#http_class_http_incomingmessage)
+    * 這個Class物件會由http.server與http.ClientRequest所建
+    * 它是用來作為被傳給request event & response event的第1個參數
+    * 它會被用來存取回應物件的狀態(response status),標頭(response headers),資料(response data)
+  + [Class: http.ServerResponse](https://nodejs.org/api/http.html#http_class_http_serverresponse)
+    * 這個Class物件會由HTTP server內部自動建立,而不是透過user來建立的
+    * 它是用來作為被傳給request event的第2個參數
 
 
 ---
