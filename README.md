@@ -78,7 +78,7 @@ Node.js Learn<br>
 
 - Node是一個免費.開源.跨平台的Javascript執行環境,讓開發者可以在瀏覽器以外也能使用Javascript
   + 也因此讓廣大的前端開發者們,可以加入後端開發的行列,並且不用因此需要多學一門程式語言 
-- Node是基於Chrome瀏覽器的V8引擎來建立出的執行環境,因此能有非常好的效能
+- Node是基於Chrome瀏覽器的V8引擎來建立出的執行環境,因此能有非常好的效能
 - Node是由開源社群來共同維護,並且能使用最新的ECMAScript標準
   + 因此不必等待所有用戶更新他們的瀏覽器,就可以選擇要使用的Node版本來達到來決定要使用哪個ECMAScript版本
   + 可參考官方文件[ECMAScript 2015 (ES6) and beyond](https://nodejs.org/en/docs/es6/) 
