@@ -88,20 +88,20 @@ Node.js Learn<br>
 - 受惠於npm的簡單結構,其促使Node生態系可以蓬勃地發展,目前在npm上已經有超過1,000,000個開源軟體&工具可供使用
 - 範例程式碼
   + ```javascript
-      const http = require('http');
+    const http = require('http');
 
-      const hostname = '127.0.0.1';
-      const port = process.env.PORT;
+    const hostname = '127.0.0.1';
+    const port = process.env.PORT;
 
-      const server = http.createServer((req, res) => {
+    const server = http.createServer((req, res) => {
         res.statusCode = 200
         res.setHeader('Content-Type', 'text/plain')
         res.end('Hello World!\n')
-      });
+    });
 
-      server.listen(port, hostname, () => {
+    server.listen(port, hostname, () => {
       console.log(`Server running at http://${hostname}:${port}/`)
-      });
+    });
     ```
   + 以上程式碼會建立一個新的http server並回傳,同時這個server也會監聽指定的port & host name
   + 當server準備就緒時,將執行callback function,在這時也會通知我們server正在運行中
@@ -124,12 +124,13 @@ Node.js Learn<br>
 #### [HTTP](https://nodejs.org/api/http.html)
 > method
   + [http.createServer([options][, requestListener])](https://nodejs.org/api/http.html#http_http_createserver_options_requestlistener)<br>
-  => 會回傳一個 http.Server 實例
+    * 會回傳一個 http.Server 實例
     * options
       * http.IncomingMessage
       * ServerResponse
       * insecureHTTPParser (Default: false)
       * maxHeaderSize (Default: 16384 (16KB)
+    * requestListener (Function型別)
 > Class
   + [Class: http.IncomingMessage](https://nodejs.org/api/http.html#http_class_http_incomingmessage)
     * 這個Class物件會由http.server與http.ClientRequest所建
@@ -138,6 +139,32 @@ Node.js Learn<br>
   + [Class: http.ServerResponse](https://nodejs.org/api/http.html#http_class_http_serverresponse)
     * 這個Class物件會由HTTP server內部自動建立,而不是透過user來建立的
     * 它是用來作為被傳給request event的第2個參數
+    > property
+      * [response.statusCode](https://nodejs.org/api/http.html#http_response_statuscode)
+        * 當使用隱式標頭(implicit headers)時,也就是當沒有明確地使用[response.writeHead()](https://nodejs.org/api/http.html#http_response_writehead_statuscode_statusmessage_headers)時,這個屬性會在headers被更新時決定要傳給client端什麼狀態碼(status code)
+        * 當回應標頭(response header)已經傳到client端之後,這個屬性會指出已經發送出去的狀態碼
+        * 預設是200 (number型別)
+        * 例: `response.statusCode = 404;`
+      * [response.setHeader(name, value)](https://nodejs.org/api/http.html#http_response_setheader_name_value)
+        * 回傳一個回應物件(response object)
+        * 為隱式標頭(implicit header)設定一筆單一的值,若此標頭已經存在於待發送的header中,那麼待發送header的值就會被取代掉
+        * 若要發送為同一個名稱的多個header時,可以用一個Array['xxx', 'yyy']來包住所有的header值
+          * 如果輸入非字串型別的值,將自動被儲存下來,而無須多做修改
+          * 當header的name或是value包含無效的字元時,就會引發TypeError錯誤
+        * 例: `response.setHeader('Content-Type', 'text/html');`
+        * 例: `response.setHeader('Set-Cookie', ['type=ninja', 'language=javascript']);`
+        * 當headers被設定為使用response.setHeader(),它們將會被合併到其他所有要傳給
+        [response.writeHead()](https://nodejs.org/api/http.html#http_response_writehead_statuscode_statusmessage_headers)的headers,並且會自動將要傳給response.writeHead()的headers列為優先
+          * 若需要逐步新增headers,讓未來有需要的話可以檢索和修改,請使用response.setHeader(),而不要使用response.writeHead()
+        * ```javascript
+          // Returns content-type = text/plain
+          const server = http.createServer((req, res) => {
+            res.setHeader('Content-Type', 'text/html');
+            res.setHeader('X-Foo', 'bar');
+            res.writeHead(200, { 'Content-Type': 'text/plain' });
+            res.end('ok');
+          });
+          ```
 
 
 ---
