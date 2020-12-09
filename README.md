@@ -86,6 +86,7 @@ Node.js Learn<br>
   + 同時Node也在其標準函式庫中提供了一組非同步I/O原語(asynchronous I/O primitives)來防止Javascript的程式碼被阻塞住,因此在Node中使用非阻塞式語法(non-blocking paradigms)來開發是正常且普遍的
   + 當Node執行會有I/O的操作(e.g. 從網路上讀取資料.存取資料庫or檔案系統)時,Node會自動在response回傳時才恢復操作,而不是無效地阻擋住線程和浪費CPU週期等待時間
 - 受惠於npm的簡單結構,其促使Node生態系可以蓬勃地發展,目前在npm上已經有超過1,000,000個開源軟體&工具可供使用
+- Node.js算是一個低階的平台,然而在社群(community)上有數千個函式庫與好用的框架建構於Node.js之上
 - 範例程式碼
   + ```javascript
     const http = require('http');
@@ -130,7 +131,7 @@ Node.js Learn<br>
       * ServerResponse
       * insecureHTTPParser (Default: false)
       * maxHeaderSize (Default: 16384 (16KB)
-    * requestListener (Function型別)
+    * requestListener (Function)
 > Class
   + [Class: http.IncomingMessage](https://nodejs.org/api/http.html#http_class_http_incomingmessage)
     * 這個Class物件會由http.server與http.ClientRequest所建
@@ -145,8 +146,12 @@ Node.js Learn<br>
         * 當回應標頭(response header)已經傳到client端之後,這個屬性會指出已經發送出去的狀態碼
         * 預設是200 (number型別)
         * 例: `response.statusCode = 404;`
-      > method
+    > method
       * [response.setHeader(name, value)](https://nodejs.org/api/http.html#http_response_setheader_name_value)
+        * args
+          * name: (string)
+          * value: (any)
+          * Returns: [http.ServerResponse](https://nodejs.org/api/http.html#http_class_http_serverresponse)  
         * 回傳一個回應物件(response object)
         * 為隱式標頭(implicit header)設定一筆單一的值,若此標頭已經存在於待發送的header中,那麼待發送header的值就會被取代掉
         * 若要發送為同一個名稱的多個header時,可以用一個Array['xxx', 'yyy']來包住所有的header值
@@ -166,6 +171,18 @@ Node.js Learn<br>
             res.end('ok');
           });
           ```
+      * [response.end([data[, encoding]][, callback])](https://nodejs.org/api/http.html#http_response_end_data_encoding_callback)
+        * args
+          * data: (string || Buffer)
+          * encoding: (string)
+          * callback: (Function)
+          * Returns: (this)
+        * 這個方法會向server發送信號,表示所有的回應標頭(response header)和內文(body)皆已發送出去,這時server應認定該請求消息已完成
+        * response.end()需要在每個回應的**結尾**都使用它
+        * 如果data參數有給定的話,它實際上是去呼叫[response.write(data, encoding)](https://nodejs.org/dist/latest-v15.x/docs/api/http.html#http_response_write_chunk_encoding_callback),並接著執行res.end(callback)
+        * 如果callback函式有給定的話,該callback函式會在回應串流(response stream)結束之後才會被呼叫並執行
+
+
 
 
 ---
