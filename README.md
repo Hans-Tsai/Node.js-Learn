@@ -145,8 +145,12 @@ Node.js Learn<br>
         * 當回應標頭(response header)已經傳到client端之後,這個屬性會指出已經發送出去的狀態碼
         * 預設是200 (number型別)
         * 例: `response.statusCode = 404;`
-      > method
+    > method
       * [response.setHeader(name, value)](https://nodejs.org/api/http.html#http_response_setheader_name_value)
+        * args
+          * name (string型別)
+          * value (any型別)
+          * Returns: [http.ServerResponse](https://nodejs.org/api/http.html#http_class_http_serverresponse)  
         * 回傳一個回應物件(response object)
         * 為隱式標頭(implicit header)設定一筆單一的值,若此標頭已經存在於待發送的header中,那麼待發送header的值就會被取代掉
         * 若要發送為同一個名稱的多個header時,可以用一個Array['xxx', 'yyy']來包住所有的header值
@@ -166,7 +170,7 @@ Node.js Learn<br>
             res.end('ok');
           });
           ```
-
+      * [response.end([data[, encoding]][, callback])](https://nodejs.org/api/http.html#http_response_end_data_encoding_callback)
 
 ---
 ### 參考資料來源
