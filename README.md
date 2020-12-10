@@ -121,8 +121,8 @@ Node.js Learn<br>
 
 #### A brief history of Node.js
 - Node.js最初是由Ryan Lienhart Dahl,於2010/05月初次發表,相比於Javascript(1995/12月)與網際網路的誕生(1989年)來說,在技術領域中,並不算是很長的時間,但目前看來Node會持續存在下去
-  + ![Node.js logo](#pic/NodeJS%20logo.png)
-  + ![Node.js 作者 Ryan Lienhart Dahl](#pic/NodeJS作者%20Ryan%20Lienhart%20Dahl.jpg)
+  + ![NodeJS_logo](#pic/NodeJS%20logo.png)
+  + ![NodeJS_作者_Ryan_Lienhart_Dahl](#pic/NodeJS作者%20Ryan%20Lienhart%20Dahl.jpg)
 - 受惠於[瀏覽器的效能競爭戰](https://zh.wikipedia.org/wiki/%E6%B5%8F%E8%A7%88%E5%99%A8%E5%A4%A7%E6%88%98#Google_Chrome%E7%9A%84%E5%B4%9B%E8%B5%B7%E8%88%87Internet_Explorer%E7%9A%84%E8%A1%B0%E8%90%BD)(2003~2008年)後的結果,各家瀏覽器供應商爭相為用戶提供最佳性能,Javscript engine的運行效能也越來越好,而Node使用的Chrome瀏覽器的Javascript engine---V8,在性能上也有卓越的提升
 - 另一個使Node快速崛起的關鍵因素是[Web2.0](https://zh.wikipedia.org/wiki/Web_2.0)的誕生,例如Flickr.Gmail等,讓Javascript開始被視為一個更為重要的程式語言
 - Node恰巧是在正確的時間和正確的時間構建的,它為JavaScript服務器端開發引入了許多創新思維和方法,這些方法和方法已經為許多開發人員提供了幫助,這就是為什麼它開始流行的原因
