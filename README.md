@@ -203,13 +203,8 @@ Node.js Learn<br>
     > method
       * [response.setHeader(name, value)](https://nodejs.org/api/http.html#http_response_setheader_name_value)
         * args
-<<<<<<< HEAD
-          * name (string型別)
-          * value (any型別)
-=======
           * name: (string)
           * value: (any)
->>>>>>> 372209d40ebbdcdfe9f80122c600ea2b390f42a1
           * Returns: [http.ServerResponse](https://nodejs.org/api/http.html#http_class_http_serverresponse)  
         * 回傳一個回應物件(response object)
         * 為隱式標頭(implicit header)設定一筆單一的值,若此標頭已經存在於待發送的header中,那麼待發送header的值就會被取代掉
@@ -230,9 +225,6 @@ Node.js Learn<br>
             res.end('ok');
           });
           ```
-<<<<<<< HEAD
-      * [response.end([data[, encoding]][, callback])](https://nodejs.org/api/http.html#http_response_end_data_encoding_callback)
-=======
       * [response.end([data[, encoding]][, callback])](https://nodejs.org/api/http.html#http_response_end_data_encoding_callback
         * args
           * data: (string || Buffer)
@@ -244,7 +236,6 @@ Node.js Learn<br>
         * 如果data參數有給定的話,它實際上是去呼叫[response.write(data, encoding)](https://nodejs.org/dist/latest-v15.x/docs/api/http.html#http_response_write_chunk_encoding_callback),並接著執行res.end(callback)
         * 如果callback函式有給定的話,該callback函式會在回應串流(response stream)結束之後才會被呼叫並執行
 
->>>>>>> 372209d40ebbdcdfe9f80122c600ea2b390f42a1
 
 ---
 ### 參考資料來源
