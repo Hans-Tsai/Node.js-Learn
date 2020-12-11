@@ -141,7 +141,34 @@ Node.js Learn<br>
   + 西元2013年
     * 第一個使用Node.js的大型部落格平台: [Ghost](https://ghost.org/)
     * [koa](https://koajs.com/)框架 誕生
-
+  + 西元2014年
+    * 重大事件: [io.js](https://socket.io/)誕生,是Node.js的主要Fork出來的專案,目的是為了加入Javascript的ES6語法支援並提升了效能 
+  + 西元2015年
+    * [Node.js基金會](https://openjsf.org/)誕生 (目前隸屬於OpenJS Foundation旗下的其中一個專案)
+    * io.js合併回Node.js專案中
+    * npm開始推出私有模組(private modules)
+    * Node.js 4發布(直接跳過Node.js 1,2,3)
+      * 可參考[Node_changelog](https://github.com/nodejs/node/blob/master/CHANGELOG.md)
+  + 西元2016年
+    * kik模組的left-pad事件爆發,引起開源社群的一陣騷動
+    * [Yarn](https://classic.yarnpkg.com/en/)套件管理包工具 誕生
+    * Node.js 6發布
+  + 西元2017年
+    * npm開始更加注重安全性
+    * Node.js 8發布
+    * [HTTP/2 核心模組](https://nodejs.org/api/http2.html) 發布
+    * V8將Node加入它的測試套件中,使Node成為繼Chrome之後的Javascript engine正式目標
+    * 達成30億次/週的下載流量紀錄
+  + 西元2018年
+    * Node.js 10發布
+    * [ES modules.mjs](https://nodejs.org/api/esm.html)開始加入實驗性支援(experimental support)
+    * Node.js 11發布
+  + 西元2019年
+    * Node.js 12發布  
+    * Node.js 13發布
+  + 西元2020年
+    * Node.js 14發布
+    * Node.js 15發布
 
 
 
