@@ -12,6 +12,7 @@ Node.js Learn<br>
     - [Node.js 核心觀念](#nodejs-核心觀念)
       - [Introduction to Node.js](#introduction-to-nodejs)
       - [A brief history of Node.js](#a-brief-history-of-nodejs)
+      - [How to install Node.js?](#how-to-install-nodejs)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
     - [參考資料來源](#參考資料來源)
@@ -171,6 +172,16 @@ Node.js Learn<br>
     * Node.js 14發布
     * Node.js 15發布
 
+#### How to install Node.js?
+- Node有很多種安裝方式,最常見的方式是透過套件管理包(package manager)下載,在這種情況下,每個作業系統有自己的安裝方式
+  + 可參考[安裝方式](#安裝方式)的章節
+- NVM(Node Version Manager)是一種執行Node.js的流行方法
+  + nvm讓我們可以輕鬆切換Node版本
+  + 假如碰到錯誤時,可以安裝新版本以嘗試輕鬆地回滾(rollback)
+  + nvm也是個有效的工具讓我們可以輕鬆地使用Node的舊版本來測試我們的程式碼
+  + 可參考[Node Version Manager(nvm)](https://github.com/nvm-sh/nvm)
+- 如果使用macOS,推薦使用[Homebrew](https://brew.sh/)來安裝Node
+- 當安裝完Node之後,就可以使用`$ node xxx.js`在CLI中執行Node程式
 
 
 
