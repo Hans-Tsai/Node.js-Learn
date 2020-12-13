@@ -13,6 +13,7 @@ Node.js Learn<br>
       - [Introduction to Node.js](#introduction-to-nodejs)
       - [A brief history of Node.js](#a-brief-history-of-nodejs)
       - [How to install Node.js?](#how-to-install-nodejs)
+      - [How much JavaScript do you need to know to use Node.js?](#how-much-javascript-do-you-need-to-know-to-use-nodejs)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
     - [參考資料來源](#參考資料來源)
@@ -182,6 +183,34 @@ Node.js Learn<br>
   + 可參考[Node Version Manager(nvm)](https://github.com/nvm-sh/nvm)
 - 如果使用macOS,推薦使用[Homebrew](https://brew.sh/)來安裝Node
 - 當安裝完Node之後,就可以使用`$ node xxx.js`在CLI中執行Node程式
+
+#### How much JavaScript do you need to know to use Node.js?
+- 身為一個初學者,我們常常難以判斷要到什麼樣的程度才是對程式設計的能力足夠有自信的
+- 當我們剛開始學習Javascript,我們可能會對Javascript的結束位置,以及Node的起始位置與結束位置感到很困惑
+- 建議先理解Javascript的主要觀念後,在開始投入於Node的研究中
+- 以下是Javascript目前的主要觀念
+  + 詞彙結構(Lexcial Structure)
+  + 運算式(Expressions)
+  + 型別(Types)
+  + 變數(Variables)
+  + 函式(Functions)
+  + `this` 關鍵字
+  + 箭頭函式(Arrow Functions)
+  + 迴圈(Loops)
+  + 範圍(Scopes)
+  + 陣列(Arrays)
+  + 模板文字(Template Literals)
+  + 分號(Semicolons)
+  + 嚴謹模式(Strict Mode)
+  + ECMAScript 6,7,8 (手稿語言規範)
+- 如果能將以上的Javascript主要觀念都掌握到的話,無論是在瀏覽器還是在Node中,您都將成為一名熟練的JavaScript開發人員
+- 以下是理解**非同步程式設計**的(asynchronous programming),這也是Node.js的基本觀念之一
+  + 非同步程式設計與回呼(Asynchronous programming and callbacks)
+  + 計時器(Timers)
+  + [Promise物件](https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Reference/Global_Objects/Promise) (ES6以後開始加入的語法)
+  + [Async & Await](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous)
+  + [閉包](https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Closures)(Closures)
+  + [事件迴圈](https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/EventLoop) (The Event Loop)
 
 
 
