@@ -205,10 +205,10 @@ Node.js Learn<br>
   + ECMAScript 6,7,8 (手稿語言規範)
 - 如果能將以上的Javascript主要觀念都掌握到的話,無論是在瀏覽器還是在Node中,您都將成為一名熟練的JavaScript開發人員
 - 以下是理解**非同步程式設計**的(asynchronous programming),這也是Node.js的基本觀念之一
-  + 非同步程式設計與回呼(Asynchronous programming and callbacks)
-  + 計時器(Timers)
+  + [非同步程式設計](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous)與[回呼](https://developer.mozilla.org/zh-TW/docs/Glossary/Callback_function) (Asynchronous programming and callbacks)
+  + [計時器](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Timeouts_and_intervals) (Timers)
   + [Promise物件](https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Reference/Global_Objects/Promise) (ES6以後開始加入的語法)
-  + [Async & Await](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous)
+  + [Async & Await](https://developer.mozilla.org/zh-TW/docs/Learn/JavaScript/Asynchronous/Async_await)
   + [閉包](https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Closures)(Closures)
   + [事件迴圈](https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/EventLoop) (The Event Loop)
 
