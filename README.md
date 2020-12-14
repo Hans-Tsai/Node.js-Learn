@@ -323,6 +323,7 @@ Node.js Learn<br>
 ---
 ### Node.js 核心模組
 #### [HTTP](https://nodejs.org/api/http.html)
+- 
 > method
   + [http.createServer([options][, requestListener])](https://nodejs.org/api/http.html#http_http_createserver_options_requestlistener)<br>
     * 會回傳一個 http.Server 實例
@@ -421,8 +422,59 @@ Node.js Learn<br>
       * 發送`SIGINT`,`SIGTERM`,`SIGKILL`將導致目標進程(target process)無條件被終止。此後,子進程(subprocess)將回報該進程(process)已被信號(signal)終止了
       * 發送信號(signal) `0` 可以用來做為一種獨立的平台以測試進程(process)的存在  
 > method
-- process.cpuUsage([previousValue])
-- process.memoryUsage()
+- [process.cpuUsage([previousValue])](https://nodejs.org/dist/latest-v15.x/docs/api/process.html#process_process_cpuusage_previousvalue)
+  * args
+    * previousValue: (Object)
+      * 上一次呼叫process.cpuUsage()的回傳值
+  * Returns: (Object)
+    * user: (integer)
+    * system: (integer)
+  * 該方法會回傳一個具有`user`, `system`的物件(`Object`),來表示當前的進程(current process)的`user`和`system`的時間使用率
+    * 這些值都是以百萬分之一秒為單位(微秒)--->時間單位
+    * 這些值分別用來測量花在使用者端的程式碼＆系統端的程式碼的時間
+    * 當有多個CPU內核在為這個進程(process)執行工作時,則這些值最終可能會大於實際經過的時間
+  * 上一次呼叫`process.cpuUsage()`的結果可以作為參數傳遞給函式,以得知差異讀數(diff reading)
+  * ```javascript
+      const startUsage = process.cpuUsage();
+      // { user: 38579, system: 6986 }
+
+      // spin the CPU for 500 milliseconds
+      const now = Date.now();
+      while (Date.now() - now < 500);
+
+      console.log(process.cpuUsage(startUsage));
+      // { user: 514883, system: 11226 }
+    ``` 
+- [process.memoryUsage()](https://nodejs.org/dist/latest-v15.x/docs/api/process.html#process_process_memoryusage)
+  + Returns: (Object)
+    * rss: (integer)
+      * rss => (常駐集的大小,Resident Set Size),代表該進程(process)在主記憶體裝置中已被使用掉的內存記憶體空間(即總分配內存的子集); 包括所有的`C++`與`Javascript`的物件和程式碼
+    * heapTotal: (integer)
+      * 參考V8 engine的內存記憶體使用情況 
+    * heapUsed: (integer)
+      * 參考V8 engine的內存記憶體使用情況 
+    * external: (integer)
+      * 參考由V8 engine管理的`C++物件`綁定到`Javascript物件`的內存記憶體使用量 
+    * arrayBuffers: (integer)
+      * 參考分配到`ArrayBuffers` & `SharedArrayBuffers`,也包含所有Node應用程式的[Buffer](https://nodejs.org/dist/latest-v15.x/docs/api/buffer.html)物件
+      * `arrayBuffers`也包含在`external`的值中
+      * 當Node應用程式被用作嵌入式函式庫時,該值可能為0,是因為在這種情況下`arrayBuffers`可能不會被追蹤到
+  + 該方法會回傳一個物件(`Object`)來描述Node應用程式的內存記憶體(memory)用量
+    * 這個值會以`bytes`為單位來表示
+  + 範例程式碼
+    * 以下面的程式碼為例
+      * ```javascript
+          console.log(process.memoryUsage());
+        ```
+    * 會產生一個物件
+      * `{
+            rss: 4935680,
+            heapTotal: 1826816,
+            heapUsed: 650472,
+            external: 49879,
+            arrayBuffers: 9386
+          }`
+  + 當使用[Worker threads](https://nodejs.org/dist/latest-v15.x/docs/api/worker_threads.html#worker_threads_class_worker)時,`rss`將會是一個對於整個進程(entire process)有效的值(valid),而其他參數僅會參考到當前的進程
 - process.resourceUsage()
 - process.cwd()
 - process.exit([code])
