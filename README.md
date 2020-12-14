@@ -16,6 +16,7 @@ Node.js Learn<br>
       - [How much JavaScript do you need to know to use Node.js?](#how-much-javascript-do-you-need-to-know-to-use-nodejs)
       - [Differences between Node.js and the Browser](#differences-between-nodejs-and-the-browser)
       - [The V8 JavaScript Engine](#the-v8-javascript-engine)
+      - [Run Node.js scripts from the command line](#run-nodejs-scripts-from-the-command-line)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
     - [參考資料來源](#參考資料來源)
@@ -250,8 +251,11 @@ Node.js Learn<br>
   + 演變至今,我們的應用程式已經可以在瀏覽器持續執行數小時,而這也不僅限於單純的表單驗證規則(a few form validation rules)或是簡單的程式碼(simple scripts)
   + 在現代的新世界中,"編譯"Javascript是非常有意義的,因為雖然編寫Javascript仍然需要花費很多時間,但是一旦開發完成後,它將比起純直譯程式碼來的擁有更好的效能
 
-
-
+#### Run Node.js scripts from the command line
+- 當我們安裝好Node.js後,通常我們會用可在全域執行的`node`指令,接著傳遞要執行的檔名作為參數到CLI上
+  + 假設我們的主要Node應用程式的檔名叫做`app.js` 
+  + 例: $ `node app.js`
+  + 提醒: 要在包含`app.js`的檔案路徑下執行該指令才行
 
 
 
