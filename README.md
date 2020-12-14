@@ -413,15 +413,43 @@ Node.js Learn<br>
         process.on('SIGINT', handle);
         process.on('SIGTERM', handle);
       ```
-    * `SIGTERM`與`SIGINT`在非Windows作業系統的環境中,擁有預設處理器可以在退出程式碼之前,重置終端機模式為**128 + signal number**。如果這些信號之一已安裝了監聽器(listener),則將刪除其默認行為(Node應用程式也不再退出)
+    * `SIGTERM`與`SIGINT`在非Windows作業系統的環境中,擁有預設處理器可以在退出程式碼之前,重置終端機模式為**128 + signal number**。如果這些信號之一已安裝了監聽器(listener),則將刪除其默認行為(Node應用程式也不再退出)
     * `SIGTERM`: 在Windows作業系統的環境中不支援,但可以監聽它(listened on)
     * `SIGINT`: 在終端機中是可被所有作業系統所支援的,它通常可以用`ctrl-C`來產生
     * `SIGKILL`: 不能安裝監聽器(listener),它將無條件終止Node應用程式,無論我們在哪個作業系統的環境中
     * 補充: 因為Windows作業系統並不支援信號(signals),所以不能說是等同於信號終止,但是Node有提供了一些仿效的做法,例如: [process.kill()](https://nodejs.org/dist/latest-v15.x/docs/api/process.html#process_process_kill_pid_signal)與[subprocess.kill()](https://nodejs.org/dist/latest-v15.x/docs/api/child_process.html#child_process_subprocess_kill_signal)
       * 發送`SIGINT`,`SIGTERM`,`SIGKILL`將導致目標進程(target process)無條件被終止。此後,子進程(subprocess)將回報該進程(process)已被信號(signal)終止了
       * 發送信號(signal) `0` 可以用來做為一種獨立的平台以測試進程(process)的存在  
+> method
+- process.cpuUsage([previousValue])
+- process.memoryUsage()
+- process.resourceUsage()
+- process.cwd()
+- process.exit([code])
+- process.exitCode
+- procecess.getgid()
+- process.kill(pid[ ,signal])
+- process.nextTick(callback[ ,...args])
+- process.send(message[, sendHandle[, options]][, callback])
+- process.setgid(id)
+- process.uptime()
 
+> property
+- process.debugPort
+- process.env
+- process.execArgv
+- process.execPath
+- process.pid
+- process.platform
+- A note on process I/O
+  + process.stdin
+  + process.stdout
+  + process.stderr
+- process.title
+- process.version
 
+> Exit codes(退出碼)
+- Node應用程式會
 
 
 
