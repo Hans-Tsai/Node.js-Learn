@@ -487,6 +487,7 @@ Node.js Learn<br>
 - process.uptime()
 
 > property
+- process.argv
 - process.debugPort
 - process.env
 - process.execArgv
