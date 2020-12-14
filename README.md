@@ -17,6 +17,7 @@ Node.js Learn<br>
       - [Differences between Node.js and the Browser](#differences-between-nodejs-and-the-browser)
       - [The V8 JavaScript Engine](#the-v8-javascript-engine)
       - [Run Node.js scripts from the command line](#run-nodejs-scripts-from-the-command-line)
+      - [How to exit from a Node.js program?](#how-to-exit-from-a-nodejs-program)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
     - [參考資料來源](#參考資料來源)
@@ -257,6 +258,65 @@ Node.js Learn<br>
   + 例: $ `node app.js`
   + 提醒: 要在包含`app.js`的檔案路徑下執行該指令才行
 
+#### How to exit from a Node.js program?
+- 有多種方法可以終止Node應用程式
+  + CLI: $ `ctrl-C`
+  + 程式碼: `process.exit()`
+  + 程式碼: `process.on('SIGTERM', callback function)`
+- Node的核心模組-[Process](https://nodejs.org/api/process.html)提供了一個簡便的方法,讓我們可以從一個Node應用程式退出,可執行以下的command
+  + $ `process.exit()`
+  + 當Node執行到這邊時,該進程(process)就會被立即強致終止。這代表任何處於`pending狀態`的`callback function`與任何網路請求(network request)仍然會被傳送出去; 然而任何訪問文件系統(`filesystem`)或是進程(`process`),例如: [process.stdout()](https://nodejs.org/api/process.html#process_process_stdout) 或是 [process.stderr](https://nodejs.org/api/process.html#process_process_stderr)都將立刻被不正常地終止(ungracefully terminated right away.)
+  + 如果這樣是我們想要的結果,那我們可以傳遞一個整數,以此作為像作業系統發出的退出碼(exit code)
+    * 例: $ `process.exit(1)`
+    * 補充: 退出碼(exit code)
+      * 預設值: 0 (代表成功) 
+      * 當`exit code` <= 0 時,表示指令執行成功
+      * 當`exit code` > 0 時,表示指令執行失敗
+    * 不同的退出碼具有不同的意義,我們可以利用這些退出碼來讓我們系統中的"程式與程式"之間能互相溝通
+    * 可參考[Node核心模組-Process的 Exit codes 章節](https://nodejs.org/api/process.html#process_exit_codes)
+  + 我們也可以設定process.exitCode屬性來指定當Node應用程式退出時,要回傳什麼退出碼
+    * 使用process.exitCode的情境,需滿足以下條件
+      * 當使用process.exit([code]) -> 且未指定退出碼時
+      * 進程(process)正常地終止(exits gracefully)時
+    * 例: $ `process.exitCode = 1`
+    * 當Node應用程式終止時,將會return該退出碼,在完成處理所有進程(process)後,Node應用程式將會正常地退出
+    * 可以利用`process.exit([code])`來推翻掉(override)先前的`process.exitCode`的設定值
+  + 另一種常見的情況是當我們啟動一個伺服器,例如: HTTP server
+    * ```javascript
+        const express = require('express')
+        const app = express()
+
+        app.get('/', (req, res) => {
+          res.send('Hi!')
+        })
+
+        app.listen(3000, () => console.log('Server ready'))
+      ```
+    * 以上的程式永遠不會終止! 如果我們呼叫`process.exit()`,這時正在處理的pending與running request都將被終止,而這不是一個好的做法
+    * 這時候比較好的解決方法是對該command發出`SIGTERM`信號(signal),並使用process模組的signal handler來進行處理
+      * 可參考[Signal events](https://nodejs.org/api/process.html#process_signal_events)
+    * ```javascript
+        const express = require('express')
+        const app = express()
+        app.get('/', (req, res) => {
+          res.send('Hi!')
+        })
+
+        const server = app.listen(3000, () => console.log('Server ready'))
+
+        process.on('SIGTERM', () => {
+          server.close(() => {
+            console.log('Process terminated')
+          })
+        })
+      ``` 
+    > Q: 什麼是信號(signals)?<br>
+      A: 信號是[POSIX](https://zh.wikipedia.org/wiki/%E5%8F%AF%E7%A7%BB%E6%A4%8D%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3)的相互通訊系統: 當通知(notification)被發送到一個進程(process),以便將發生的事件(event)通知給進程(process)
+    * `SIGKILL`是告訴進程(process)立即中止的信號
+    * `SIGTERM`是告訴進程(process)正常終止的信號。這是從例如[upstart](http://upstart.ubuntu.com/) & [supervisored](http://supervisord.org/)等其他流程管理工具發出的信號
+    * 我們也可以在應用程式中的另一個函式中,發出這個信號
+      * $ `process.kill(process.pid, 'SIGTERM')`
+      * 也可以從其他執行中的Node應用程式or其他在我們的作業系統中正在執行的應用程式,來得知我們想要終止的應用程式的ID(process ID, pid)
 
 
 ---
@@ -331,7 +391,7 @@ Node.js Learn<br>
 - [Express.js](https://expressjs.com/)
 
 #### 網路文章
-- [Understanding Worker Threads in Node.js](https://vagrantpi.github.io/2019/11/01/understanding-worker-threads-in-Node.js/#about-nodejs)
+- [Understanding Worker Threads in Node.js](https://vagrantpi.github.io/2019/11/01/understanding-worker-threads-in-Node.js)
 - [深入理解 Node.js 的設計錯誤 — 從 Ryan Dahl 的演講中反思](https://medium.com/rytass/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3-node-js-%E7%9A%84%E8%A8%AD%E8%A8%88%E9%8C%AF%E8%AA%A4-%E5%BE%9E-ryan-dahl-%E7%9A%84%E6%BC%94%E8%AC%9B%E4%B8%AD%E5%8F%8D%E6%80%9D-cedbf32cb188)
 
 #### 網路影片
