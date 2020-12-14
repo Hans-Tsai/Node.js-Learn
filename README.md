@@ -20,6 +20,7 @@ Node.js Learn<br>
       - [How to exit from a Node.js program?](#how-to-exit-from-a-nodejs-program)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
+      - [Process](#process)
     - [參考資料來源](#參考資料來源)
       - [官方文件](#官方文件)
       - [網路文章](#網路文章)
@@ -380,6 +381,48 @@ Node.js Learn<br>
         * response.end()需要在每個回應的**結尾**都使用它
         * 如果data參數有給定的話,它實際上是去呼叫[response.write(data, encoding)](https://nodejs.org/dist/latest-v15.x/docs/api/http.html#http_response_write_chunk_encoding_callback),並接著執行res.end(callback)
         * 如果callback函式有給定的話,該callback函式會在回應串流(response stream)結束之後才會被呼叫並執行
+
+#### [Process](https://nodejs.org/dist/latest-v15.x/docs/api/process.html)
+- `process`是一個全域的物件,針對當前的Node應用程序的進程(process),提供資訊與控制
+  + 讀: 獲取process資訊(資源使用、執行環境、執行狀態)
+  + 寫: 執行process操作(監聽事件、排程任務、發出警吿)
+- 因為`process`身為global物件,所以可以在Node應用程式中直接使用,而無需事先require()。
+  + 但它也還是能透過require()來匯入並使用這個模組
+  + 例: $ `const process = require('process');`
+> Process events
+  + [Signal events](https://nodejs.org/dist/latest-v15.x/docs/api/process.html#process_signal_events)
+    * 信號事件(Signal events)會在Node進程(process)收到信號時發出(emitted)
+    * 信號(Signals)不能用在[Worker threads](https://nodejs.org/dist/latest-v15.x/docs/api/worker_threads.html#worker_threads_worker_threads)
+    * 信號處理器(signal handler)會將收到的信號名稱(signal's name)做為第一個參數
+      * 例: `SIGINT`, `SIGTERM`
+    * 每個事件(event)的名稱將會是大寫的常用信號名稱
+      * 例: `SIGINT` => SIGINT 信號們
+    * ```javascript
+        // Begin reading from stdin so the process does not exit.
+        process.stdin.resume();
+
+        process.on('SIGINT', () => {
+          console.log('Received SIGINT. Press Control-D to exit.');
+        });
+
+        // Using a single function to handle multiple signals
+        function handle(signal) {
+          console.log(`Received ${signal}`);
+        }
+
+        process.on('SIGINT', handle);
+        process.on('SIGTERM', handle);
+      ```
+    * `SIGTERM`與`SIGINT`在非Windows作業系統的環境中,擁有預設處理器可以在退出程式碼之前,重置終端機模式為**128 + signal number**。如果這些信號之一已安裝了監聽器(listener),則將刪除其默認行為(Node應用程式也不再退出)
+    * `SIGTERM`: 在Windows作業系統的環境中不支援,但可以監聽它(listened on)
+    * `SIGINT`: 在終端機中是可被所有作業系統所支援的,它通常可以用`ctrl-C`來產生
+    * `SIGKILL`: 不能安裝監聽器(listener),它將無條件終止Node應用程式,無論我們在哪個作業系統的環境中
+    * 補充: 因為Windows作業系統並不支援信號(signals),所以不能說是等同於信號終止,但是Node有提供了一些仿效的做法,例如: [process.kill()](https://nodejs.org/dist/latest-v15.x/docs/api/process.html#process_process_kill_pid_signal)與[subprocess.kill()](https://nodejs.org/dist/latest-v15.x/docs/api/child_process.html#child_process_subprocess_kill_signal)
+      * 發送`SIGINT`,`SIGTERM`,`SIGKILL`將導致目標進程(target process)無條件被終止。此後,子進程(subprocess)將回報該進程(process)已被信號(signal)終止了
+      * 發送信號(signal) `0` 可以用來做為一種獨立的平台以測試進程(process)的存在  
+
+
+
 
 
 ---
