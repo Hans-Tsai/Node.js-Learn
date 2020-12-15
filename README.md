@@ -532,10 +532,107 @@ Node.js Learn<br>
     * 以上的程式碼是正確的解決方法,我們應該要先設定好`process.exitCode`屬性的值,而不是直接呼叫`process.exit()`方法,並避免為事件迴圈(event loop)安排額外的工作來允許該進程能自然地退出
     * 如果是因為遇到錯誤情況而有必要強制終止該進程的話,可以拋出一個`uncaught error`,並根據這個錯誤來終止該進程,也會比直接呼叫`process.exit()`來得更安全
   + 在[Worker threads](https://nodejs.org/dist/latest-v15.x/docs/api/worker_threads.html#worker_threads_worker_threads)中,`process.exit()`會停止當前的線程(current thread),而不是當前的進程(current process)
+- [process.kill(pid[ ,signal])](https://nodejs.org/dist/latest-v15.x/docs/api/process.html#process_process_kill_pid_signal)
+  + args
+    * pid: (number)
+      * 給定一個進程(process) ID
+    * signal: (string || number)
+      * 以字串或是數值的形式來發送信號
+      * 預設值: `SIGTERM`
+  + 該方法會將信號(signal)發送給指定`pid`的進程(process)
+  + 信號的名稱為字串型別,常見的像是`SIGINT`, `SIGHUP`
+  + 當給定的目標`pid`不存在時,該方法會拋出錯誤。作為特殊情況時,可以利用`0`作為信號來測試某個`pid`的進程是否存在
+    * 當在Windows作業系統時,想砍掉一個進程群組(kill a process group)會拋出一個錯誤
+  + 其實`process.kill()`這個方法只是一個信號發送器(signal sender),就如同 $`kill` 的系統指令一樣
+    * 比起單純的系統指令 $`kill`,發送信號的這個方法可能會額外做一些其他的事,而不單純只是砍掉目標進程(kill the target process)
+  + 範例程式碼
+    * ```javascript
+        process.on('SIGHUP', () => {
+          console.log('Got SIGHUP signal.');
+        });
 
-- process.exitCode
-- process.kill(pid[ ,signal])
-- process.nextTick(callback[ ,...args])
+        setTimeout(() => {
+          console.log('Exiting.');
+          process.exit(0);
+        }, 100);
+
+        process.kill(process.pid, 'SIGHUP');
+      ```
+    * 當Node應用程式的進程收到`SIGUSR1`的信號時,Node會啟動一個偵錯器(debugger)
+      * 可參考[Signal events](https://nodejs.org/dist/latest-v15.x/docs/api/process.html#process_signal_events)
+- [process.nextTick(callback[ ,...args])](https://nodejs.org/dist/latest-v15.x/docs/api/process.html#process_process_nexttick_callback_args)
+  + args
+    * callback: (Function)
+      * 回呼函式 
+    * ...args: (any)
+      * 當有呼叫callback function時,要附加給該回呼函式的參數們
+    * 該方法會新增一個`callback function`到"next tick queue"。當Javascript堆疊(stack)當前的操作執行完成並允許事件迴圈(event loop)繼續之前,該佇列(queue)會完全耗盡(fully drained)
+      * 如果要循環地重複呼叫`process.nextTick()`,可能會建立一個無限循環的迴圈(infinite loop)
+      * 相關背景知識可參考[Event Loop](https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/#process-nexttick)章節的介紹
+  + 範例程式碼
+    * ```javascript
+        console.log('start');
+        process.nextTick(() => {
+          console.log('nextTick callback');
+        });
+        console.log('scheduled');
+        // Output:
+        // start
+        // scheduled
+        // nextTick callback
+      ```
+  + process.nextTick()方法在開發API時很重要,以便給用戶在物件被構建(constructed)**之後**,但是在任何I/O相關操作發生**之前**,來指派事件處理器(assign event handlers)
+    * ```javascript
+        function MyThing(options) {
+          this.setupOptions(options);
+
+          process.nextTick(() => {
+            this.startDoingStuff();
+          });
+        }
+
+        const thing = new MyThing();
+        thing.getReadyForStuff();
+
+        // thing.startDoingStuff() gets called now, not before.
+  + 對於API來說,要馬 100%同步 or 100%非同步,是很重要的事情
+    * 情境說明(**錯誤示範**)
+      * ```javascript
+          // WARNING!  DO NOT USE!  BAD UNSAFE HAZARD!
+          function maybeSync(arg, cb) {
+            if (arg) {
+              cb();
+              return;
+            }
+
+            fs.stat('file', cb);
+          }
+        ```
+    * 以上的範例是冒險的(hazardous),因為假設我們遇到以下的情況
+      * 接下來的情況會造成不清楚到底是foo() 或是 bar()先被呼叫
+      * 情境說明(**錯誤示範**)
+      * ```javascript
+          const maybeTrue = Math.random() > 0.5;
+
+          maybeSync(maybeTrue, () => {
+            foo();
+          });
+
+          bar();
+        ```
+    * 範例程式碼(**正確做法**)
+      * 以下的做法會比較好 
+      * ```javascript
+          function definitelyAsync(arg, cb) {
+            if (arg) {
+              process.nextTick(cb);
+              return;
+            }
+
+            fs.stat('file', cb);
+          }
+        ```
+
 - process.send(message[, sendHandle[, options]][, callback])
 - process.uptime()
 
@@ -545,6 +642,10 @@ Node.js Learn<br>
 - process.env
 - process.execArgv
 - process.execPath
+- process.exitCode
+  + 型別: (integer)
+  + 當進程被正常地退出時,或是透過`process.exit()`方法退出時但沒有給定退出碼時,`process.exitCode`的屬性值代表該進程的退出碼
+  + 當我們給定process.exit([code])方法的退出碼參數值時,會推翻(override)之前的`process.exitCode`的屬性值設定
 - process.pid
 - process.platform
 - A note on process I/O
