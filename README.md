@@ -98,18 +98,18 @@ Node.js Learn<br>
 - Node.js算是一個低階的平台,然而在社群(community)上有數千個函式庫與好用的框架建構於Node.js之上
 - 範例程式碼
   + ```javascript
-    const http = require('http');
+      const http = require('http');
 
-    const hostname = '127.0.0.1';
-    const port = process.env.PORT;
+      const hostname = '127.0.0.1';
+      const port = process.env.PORT;
 
-    const server = http.createServer((req, res) => {
+      const server = http.createServer((req, res) => {
         res.statusCode = 200
         res.setHeader('Content-Type', 'text/plain')
         res.end('Hello World!\n')
-    });
+      });
 
-    server.listen(port, hostname, () => {
+      server.listen(port, hostname, () => {
       console.log(`Server running at http://${hostname}:${port}/`)
     });
     ```
@@ -391,6 +391,8 @@ Node.js Learn<br>
   + 但它也還是能透過require()來匯入並使用這個模組
   + 例: $ `const process = require('process');`
 > Process events
+  + [Event: 'exit'](https://nodejs.org/api/process.html#process_event_exit)
+    * code: (integer) 
   + [Signal events](https://nodejs.org/dist/latest-v15.x/docs/api/process.html#process_signal_events)
     * 信號事件(Signal events)會在Node進程(process)收到信號時發出(emitted)
     * 信號(Signals)不能用在[Worker threads](https://nodejs.org/dist/latest-v15.x/docs/api/worker_threads.html#worker_threads_worker_threads)
@@ -476,14 +478,65 @@ Node.js Learn<br>
           }`
   + 當使用[Worker threads](https://nodejs.org/dist/latest-v15.x/docs/api/worker_threads.html#worker_threads_class_worker)時,`rss`將會是一個對於整個進程(entire process)有效的值(valid),而其他參數僅會參考到當前的進程
 - process.resourceUsage()
+  + Returns: (Object)
+    * userCPUTime: (integer)
+      * 對應到`ru_utime`的值,並以微秒為單位表示
+      * 與process.cpuUsage().user的值相同
+    * systemCPUTime: (integer)
+      * 對應到`ru_stime`的值,並以微秒為單位表示
+      * 與process.cpuUsage().system的值相同
+  + 該方法會回傳一個物件(`Object`)來表示當前進程(current process)的資源使用率(resource usage); 以上所有該方法的回傳值都是來自於呼叫[uv_rusage_t struct](https://docs.libuv.org/en/v1.x/misc.html#uv_getrusage)的uv_getrusage()方法的回傳值
+    > uv_getrusage(): Gets the resource usage measures for the current process.
 - process.cwd()
+  + Returns: (string)
+    * 該方法會回傳當前進程(current process)所在的工作目錄的路徑(working directory)
+  + 範例程式碼
+    * ```javascript
+        console.log(Current directory:  {process.cwd()});
+      ```
 - process.exit([code])
+  + args
+    * code: (integer)
+      * 表示要指定的退出碼
+      * 預設值: 0 (代表成功)
+  + 該方法指示Node應用程式以同步地方式(synchronously)來終止進程(terminate the process)並顯示退出碼
+    * 若[code]參數被省略,則會以`0`為退出碼或是`process.exitCode`的值為準(當該屬性在之前有被設定過的話)
+    * Node應用程式不會在所有的[Event: 'exit'](https://nodejs.org/api/process.html#process_event_exit)事件監聽器(event listeners)被呼叫之前就終止掉
+  + 範例程式碼
+    * 以失敗(failure)的狀態碼來退出Node應用程式 
+    * $ `process.exit(1);`
+    * 在執行該Node應用程式的shell上,我們會看到退出碼(exit code)為`1`
+  + 當我們呼叫`process.exit()`方法時,會強迫Node應用程式盡快地終止該進程,即便是還有pending狀態中的非同步操作尚未完全完成的情況,包括I/O操作,像是`process.stdout` & `process.stderr`
+    * 在大多數的情況下,其實我們並不需要明確地呼叫`process.exit()`方法。因為在事件循環(event loop)當中沒有額外pending狀態中的工作的話,Node應用程式就會自行退出
+    * 我們也可以透過設定好`process.exitCode`屬性的值,來告知進程在正常退出時,要使用哪個退出碼
+  + 情境說明(**錯誤示範**)
+    * ```javascript
+        // This is an example of what *not* to do:
+        if (someConditionNotMet()) {
+          printUsageToStdout();
+          process.exit(1);
+        }
+      ```
+    * 以上的程式碼是一個使用`process.exit()`的**錯誤示範**,可能會因此導致要print到stdout的資料被截斷或遺失
+    * 這樣做之所以有問題的原因是因為在Node的世界中要寫入到`process.stdout`有時候是非同步的(asynchronous),也可能會在Node的事件迴圈(event loop)中多次發生
+    * 所以我們需要在額外寫入到stdout之後,才能呼叫process.exit()來強制將該進程退出
+  + 範例程式碼(**正確做法**)
+    * ```javascript
+        // How to properly set the exit code while letting
+        // the process exit gracefully.
+        if (someConditionNotMet()) {
+          printUsageToStdout();
+          process.exitCode = 1;
+        }
+      ```
+    * 以上的程式碼是正確的解決方法,我們應該要先設定好`process.exitCode`屬性的值,而不是直接呼叫`process.exit()`方法,並避免為事件迴圈(event loop)安排額外的工作來允許該進程能自然地退出
+    * 如果是因為遇到錯誤情況而有必要強制終止該進程的話,可以拋出一個`uncaught error`,並根據這個錯誤來終止該進程,也會比直接呼叫`process.exit()`來得更安全
+  + 在[Worker threads](https://nodejs.org/dist/latest-v15.x/docs/api/worker_threads.html#worker_threads_worker_threads)中,`process.exit()`會停止當前的線程(current thread),而不是當前的進程(current process)
+
 - process.exitCode
-- procecess.getgid()
 - process.kill(pid[ ,signal])
 - process.nextTick(callback[ ,...args])
 - process.send(message[, sendHandle[, options]][, callback])
-- process.setgid(id)
 - process.uptime()
 
 > property
