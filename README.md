@@ -18,6 +18,8 @@ Node.js Learn<br>
       - [The V8 JavaScript Engine](#the-v8-javascript-engine)
       - [Run Node.js scripts from the command line](#run-nodejs-scripts-from-the-command-line)
       - [How to exit from a Node.js program?](#how-to-exit-from-a-nodejs-program)
+      - [How to read environment variables from Node.js?](#how-to-read-environment-variables-from-nodejs)
+      - [How to use the Node.js REPL?](#how-to-use-the-nodejs-repl)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -231,8 +233,7 @@ Node.js Learn<br>
 - 還有一個重大的差異是在Node中,我們使用的是CommonJS模組系統; 但是在瀏覽器中,我們會依照ECMAScript的模組標準來實作Javascipt語法
   + 實際上,這代表我們會分別使用
     * require() => 在Node.js中
-    * import => 在瀏覽器中  
-
+    * import => 在瀏覽器中
 
 #### The V8 JavaScript Engine
 - [V8](https://v8.dev/)是用來支持Google Chrome瀏覽器的Javascript engine。當我們使用Chrome瀏覽器時,它需要我們的Javascript程式碼並執行它們 
@@ -318,6 +319,74 @@ Node.js Learn<br>
     * 我們也可以在應用程式中的另一個函式中,發出這個信號
       * $ `process.kill(process.pid, 'SIGTERM')`
       * 也可以從其他執行中的Node應用程式or其他在我們的作業系統中正在執行的應用程式,來得知我們想要終止的應用程式的ID(process ID, pid)
+
+#### How to read environment variables from Node.js?
+- `process`核心模組提供了`env`屬性,`process.env`屬性會託管當啟動Node進程(process)的時候的所有Node環境變數
+- 以下是一個預設在`development`環境下,存取`NODE_ENV`這個環境變數的範例
+  + 提醒: 因為它是Node的核心模組,所以`process`模組不需要事先匯入(`require()`),可以直接開始使用
+  + ```javascript
+      process.env.NODE_ENV // "development"
+    ```
+- 當在腳本(script)執行之前,可以先將該屬性設定為`production`,來告訴Node這是一個`production`的生產環境
+  + ```javascript
+      process.env.NODE_ENV // "production"
+    ```
+- 當然我們也可以利用上述的方式再設定我們需要的自定義環境變數
+
+#### How to use the Node.js REPL?
+- 我們可以利用$ `node`指令來執行我們寫好的Node腳本(script)
+  + 例: $ `node script.js`
+- 如果我們省略要執行的腳本名稱這個參數的話,就會進入`REPL模式`
+  > 補充: `REPL`又被稱為Read Evaluate Print Loop(讀取-求值-輸出循環的互動式介面, REPL),是一種程式語言的環境(主要是在CLI console畫面中)。他會使用單個表達式作為使用者輸入,並在執行後將結果回傳到CLI console畫面上<br>
+  > 補充: `REPL模式`因為是互動式介面,所以支援可利用`Tab`鍵做自動補全(autocomplete)的功能,它會嘗試自動完成所寫的內容,以匹配已定義的變量或預定義的變量
+  + node `REPL模式`範例情境
+    * ```console
+        ❯ node
+        >
+      ```
+    * 該指令會停留在閒置模式(idle mode),並等待我們輸入些什麼東西。更精確地說是`REPL模式`正在等待我們輸入一些Javascript的程式碼
+  + 我們從簡單的範例開始看看
+    * ```console
+        > console.log('test')
+        test
+        undefined
+        >
+      ```
+    * 第一個值`test`是要告訴CLI console要打印(print)出什麼值,接著我們收到`undefined`,它是執行中(running)的`console.log()`
+    * 接著我們可以開始輸入一行新的Javascript的程式碼
+- 探索Javascript物件(Objects)
+  + 我們可以試著輸入Javascript的類別(Class),像是`Number`,並在後面加上一個`.` ,再接著按下`Tab`按鈕來自動補全
+  + ![node REPL模式-探索Number類別](/pic/node%20REPL模式-探索Number類別.png)
+- 探索Javascript的全域物件(global)
+  + 我們可以試著輸入Javascript的類別(Class),像是`global`,並在後面加上一個`.` ,再接著按下`Tab`按鈕來自動補全
+  + ![node REPL模式-探索全域物件(global)](/pic/node%20REPL模式-探索全域物件(global).png)
+- 探索特殊變數(`_`)
+  + 如果在某些程式碼後面輸入`_`,則將回傳上一個操作的結果
+- 探索點命令(Dot commands)
+  + REPL模式有一些特別的指令,這些指令都是由`.`為開頭的
+  + 舉例來說
+    * `.help`: 顯示所有的點命令(dot commands)的幫助(help)
+    * `.editor`: 啟用編輯模式,可以輕鬆地開始寫多行Javascript程式碼。一旦進入這個模式,我們將要使用`ctrl-D`的組合鍵來執行我們寫的Javascript多行程式碼
+    * `.break`: 當輸入多行表達式(multi-line expression)時,輸入`.break`指令將終止進一步的輸入(abort further input)。與`ctrl-C`組合鍵的功能是一樣的
+    * `.clear`: 將`REPL`模式的內文重新設定(reset)為一個空物件,並清除當前正在輸入的任何多行表達式
+    * `.load`: 讀取當前工作目錄路徑下的Javascript檔案
+    * `.save`: 將我們在`REPL連線`(session)中的所有對指定檔案的輸入儲存起來
+    * `.exit`: 退出`REPL模式`。與連續按下`ctrl-C`組合鍵**兩次**的功能是一樣的
+  + 其實`REPL模式`會知道什麼時候要輸入多行表達式,而不需要呼叫`.editor`
+    * 以下是範例程式碼 
+      * ```javascript
+          [1, 2, 3].forEach(num => {
+        ```
+    * 這時候當我們按下`enter`鍵時,`REPL模式`會到新的下一行,並以`...`作為開頭,表示我們現在可以繼續在該區塊(block)工作
+      * 情境說明
+      * ```javacript
+          ... console.log(num)
+          ... })
+        ``` 
+    * 如果我們這時候在一行的句尾加上`.break`時,該多行表達式的模式將會停止並不會被執行
+
+
+
 
 
 ---
