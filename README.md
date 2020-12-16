@@ -110,8 +110,8 @@ Node.js Learn<br>
       });
 
       server.listen(port, hostname, () => {
-      console.log(`Server running at http://${hostname}:${port}/`)
-    });
+        console.log(`Server running at http://${hostname}:${port}/`)
+      });
     ```
   + 以上程式碼會建立一個新的http server並回傳,同時這個server也會監聽指定的port & host name
   + 當server準備就緒時,將執行callback function,在這時也會通知我們server正在運行中
@@ -649,7 +649,7 @@ Node.js Learn<br>
     * 如果未使用`IPC channel`來產生Node應用程式的話,則`process.send()`回傳的結果將會是`undefined`
     * 該訊息(message)已經歷過序列化(serialization)與解析(parsing)
       * 結果消息(resulting message)可能會跟最初發送的消息不太一樣
-- process.uptime()
+- [process.uptime()](https://nodejs.org/api/process.html#process_process_uptime)
   + Returns: (number)
   + 該方法會回傳當前Node應用程式已經運行多久的秒數
     * 回傳值會包括含有小數點的秒數,可以利用Math.floor()來算出小於等於所給數字的最大整數
@@ -736,25 +736,40 @@ Node.js Learn<br>
       ```
   + 除非在建立[Worker](https://nodejs.org/api/worker_threads.html#worker_threads_class_worker)實例時有明確指定環境變數,不然每個`Worker thread`都有自己的一份`process.env`副本(copy),是基於它們各自的父線程(parent thread)的環境變數(`process.env`),或是任何被作為`env`選項並給定到`Worker constructor`
     * `Worker threads`之間並無法看到`process.env`的修改,只有主線程(main thread)才能進行對作業系統或是本機加載項(native add-ons)做看得見的修改
-- process.execArgv
-- process.execPath
-- process.exitCode
+- [process.execArgv](https://nodejs.org/api/process.html#process_process_execargv)
+  + Type: (string [set])
+  + 該屬性會回傳當Node應用程式的進程被啟動時,在Node.js命令列上面的特定選項的集合(the set of Node.js-specific command-line options)
+    * 這邊所指的特定選項(options)並不會出現在`process.argv`的屬性值之中,而且也不包括可執行的(executable),該準備要執行的檔案名稱,以及該準備要執行的檔案名稱**後面**的任何選項(options)
+    * 這些選項對於以與父級相同執行環境的子進程(child process)是很有用的
+    * 在終端機(CLI)執行該以下的指令後
+      * 例: $ `node --harmony script.js --version`
+      * 檢視`process.execArgv`的屬性值會得到
+        * => `['--harmony']`
+      * 對照檢視`process.argv`的屬性值會得到
+        * => `['/usr/local/bin/node', 'script.js', '--version']`
+    * 可參考有關[Worker constructor](https://nodejs.org/api/worker_threads.html#worker_threads_new_worker_filename_options)中的`execArgv`屬性以了解更多的訊息
+- [process.execPath](https://nodejs.org/api/process.html#process_process_execpath)
+  + Type: (string)
+  + 該屬性值會回傳Node應用程式的進程中的可執行文件(executable)的絕對路徑
+    * 例: `'/usr/local/bin/node'`  
+    * 如果遇到可執行文件的路徑是`symbolic link`,會自動解決掉該問題 
+- [process.exitCode](https://nodejs.org/api/process.html#process_process_exitcode)
   + 型別: (integer)
   + 當進程被正常地退出時,或是透過`process.exit()`方法退出時但沒有給定退出碼時,`process.exitCode`的屬性值代表該進程的退出碼
   + 當我們給定process.exit([code])方法的退出碼參數值時,會推翻(override)之前的`process.exitCode`的屬性值設定
-- process.pid
+- [process.pid](https://nodejs.org/api/process.html#process_process_pid)
   + Type: (integer)
   + 該屬性會回傳該進程的ID(process ID, pid)
     * $ `console.log(`This process is pid ${process.pid}`);` 
-- A note on process I/O
-  + process.stdin
-  + process.stdout
-  + process.stderr
-- process.title
+- [A note on process I/O](https://nodejs.org/api/process.html#process_a_note_on_process_i_o)
+  + [process.stdin](https://nodejs.org/api/process.html#process_process_stdin)
+  + [process.stdout](https://nodejs.org/api/process.html#process_process_stdout)
+  + [process.stderr](https://nodejs.org/api/process.html#process_process_stderr)
+- [process.title](https://nodejs.org/api/process.html#process_process_title)
   + Type: (string)
   + 該屬性會回傳當前的進程標題(current process title) => 也就是會回傳當前`ps`的值
   + 當指派新的值給`process.title`屬性時,會修改掉當前`ps`的值
-- process.version
+- [process.version](https://nodejs.org/api/process.html#process_process_version)
   + Type: (string)
   + 該屬性值代表Node.js的版本號(version)
     * ```javascript
