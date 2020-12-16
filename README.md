@@ -682,7 +682,60 @@ Node.js Learn<br>
 - [process.debugPort](https://nodejs.org/api/process.html#process_process_debugport)
   + Type: (number)
   + 該屬性值代表當啟用(enabled)Node應用程式的除錯器時(dubugger),所使用的埠號(port)
-- process.env 
+- [process.env](https://nodejs.org/api/process.html#process_process_env)
+  + Type: (Object) 
+  + 該屬性會回傳一個物件,包含使用者的環境變數
+    * 像是以下的`Object`
+    * ```javascript
+        {
+          TERM: 'xterm-256color',
+          SHELL: '/usr/local/bin/bash',
+          USER: 'maciej',
+          PATH: '~/.bin/:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin',
+          PWD: '/Users/maciej',
+          EDITOR: 'vim',
+          SHLVL: '1',
+          HOME: '/Users/maciej',
+          LOGNAME: 'maciej',
+          _: '/usr/local/bin/node'
+        } 
+      ```
+    * 可以修改這個環境變數的物件,但僅限於該Node應用程式進程(process),或者除非明確地要求不會反應到其他[Worker threads](https://nodejs.org/api/worker_threads.html#worker_threads_class_worker)上
+      * 換句話說,以下的範例並不會如預期地運作
+      * $ `node -e 'process.env.foo = "bar"' && echo $foo`
+      * 雖然將執行以下操作
+      * ```javascript
+          process.env.foo = 'bar';
+          console.log(process.env.foo);
+        ```
+  + 從Node v10.0.0的版本以後開始,指派給`process.env`的環境變數的值**不會**再做隱性轉換型別
+    * 所以以下的方式**不建議**再使用
+    * 情境說明(**錯誤示範**)
+    * ```javascript
+        process.env.test = null;
+        console.log(process.env.test);
+        // => 'null'
+        process.env.test = undefined;
+        console.log(process.env.test);
+        // => 'undefined'
+      ```
+  + 如果要從`process.env`的屬性值中,刪除Node應用程式的環境變數的話,可以利用Javascript的`delete`指令來完成
+    * 範例程式碼
+      * ```javascript
+          process.env.TEST = 1;
+          delete process.env.TEST;
+          console.log(process.env.TEST);
+          // => undefined
+        ```
+  + 在Windows作業系統中,環境變數沒有區分大小寫(case-insensitive)
+    * 以下範例程式碼**僅限於Windows作業系統中**可以這樣使用
+    * ```javascript
+        process.env.TEST = 1;
+        console.log(process.env.test);
+        // => 1
+      ```
+  + 除非在建立[Worker](https://nodejs.org/api/worker_threads.html#worker_threads_class_worker)實例時有明確指定環境變數,不然每個`Worker thread`都有自己的一份`process.env`副本(copy),是基於它們各自的父線程(parent thread)的環境變數(`process.env`),或是任何被作為`env`選項並給定到`Worker constructor`
+    * `Worker threads`之間並無法看到`process.env`的修改,只有主線程(main thread)才能進行對作業系統或是本機加載項(native add-ons)做看得見的修改
 - process.execArgv
 - process.execPath
 - process.exitCode
@@ -696,7 +749,18 @@ Node.js Learn<br>
   + process.stdout
   + process.stderr
 - process.title
+  + Type: (string)
+  + 該屬性會回傳當前的進程標題(current process title) => 也就是會回傳當前`ps`的值
+  + 當指派新的值給`process.title`屬性時,會修改掉當前`ps`的值
 - process.version
+  + Type: (string)
+  + 該屬性值代表Node.js的版本號(version)
+    * ```javascript
+        console.log(`Version: ${process.version}`);
+        // Version: v14.8.0
+      ```
+    * 如果想要取得不帶有前綴v開頭的版本號字串的話,可以利用以下的屬性值
+      * $ `process.versions.node`       
 
 > Exit codes(退出碼)
 - Node應用程式會
