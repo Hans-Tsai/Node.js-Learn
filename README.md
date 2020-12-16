@@ -802,7 +802,10 @@ Node.js Learn<br>
       * $ `process.versions.node`       
 
 > Exit codes(退出碼)
-- Node應用程式會
+- 在沒有其他額外的**非同步操作**處於`pending狀態`後,Node應用程式通常會以`0`的退出碼來正常退出
+- 以下是常見的退出碼
+  + `0`: 正常退出 (預設值)
+  + `1`: 未捕獲的致命錯誤(Uncaught Fatal Exception),並且沒有受到`domain`或是[uncaughtException](https://nodejs.org/api/process.html#process_event_uncaughtexception)事件處理器來處理
 
 
 
