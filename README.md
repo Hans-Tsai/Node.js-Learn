@@ -323,7 +323,33 @@ Node.js Learn<br>
 ---
 ### Node.js 核心模組
 #### [HTTP](https://nodejs.org/api/http.html)
-- 
+- 要使用HTTP server & client,必須要先`require('http')`
+- Node的HTTP介面(interfaces)旨在支援HTTP協定的許多功能
+,因為這些功能傳統上較難使用,尤其是在大量.大塊(chunk-encoded)的訊息
+  + 該介面非常地小心,永遠不會緩衝(buffer)整個請求(requests)和回應(responses),所以使用者可以傳送實時資料流(stream data)
+- HTTP訊息標頭(message headers)通常用物件(object)來表示
+  + 範例`HTTP message header`
+  + ```javascript
+      { 'content-length': '123',
+        'content-type': 'text/plain',
+        'connection': 'keep-alive',
+        'host': 'mysite.com',
+        'accept': '*/*' 
+      }
+  + 鍵(keys)要用小寫表示,值(values)是按照原本的不變
+- 為了能支援所有可能的HTTP應用程式,Node的HTTP API是屬於非常底層的,它只處理資料流(stream handling),但是不解析實際的標頭(headers)或是正文(context)
+  + 可參考[message.headers](https://nodejs.org/api/http.html#http_message_headers)以了解該如何處理重複標頭(duplicate headers)的細節
+- 收到的原始標頭會保留在[message.rawHeaders](https://nodejs.org/api/http.html#http_message_rawheaders)屬性值中,並以陣列(array)的形式來儲存該資訊,像是`[key, value, key2, value2, ...]`
+  + 以上述的`HTTP message header`為例,它的`message.rawHeaders`的值會像是以下的陣列(array)形式
+  + ```javascript
+      [ 'ConTent-Length', '123456',
+        'content-LENGTH', '123',
+        'content-type', 'text/plain',
+        'CONNECTION', 'keep-alive',
+        'Host', 'mysite.com',
+        'accepT', '*/*'
+      ]
+    ```
 > method
   + [http.createServer([options][, requestListener])](https://nodejs.org/api/http.html#http_http_createserver_options_requestlistener)<br>
     * 會回傳一個 http.Server 實例
