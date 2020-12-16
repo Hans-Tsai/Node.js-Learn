@@ -743,7 +743,9 @@ Node.js Learn<br>
   + 當進程被正常地退出時,或是透過`process.exit()`方法退出時但沒有給定退出碼時,`process.exitCode`的屬性值代表該進程的退出碼
   + 當我們給定process.exit([code])方法的退出碼參數值時,會推翻(override)之前的`process.exitCode`的屬性值設定
 - process.pid
-- process.platform
+  + Type: (integer)
+  + 該屬性會回傳該進程的ID(process ID, pid)
+    * $ `console.log(`This process is pid ${process.pid}`);` 
 - A note on process I/O
   + process.stdin
   + process.stdout
