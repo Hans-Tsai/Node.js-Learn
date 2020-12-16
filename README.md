@@ -391,7 +391,7 @@ Node.js Learn<br>
   + 但它也還是能透過require()來匯入並使用這個模組
   + 例: $ `const process = require('process');`
 > Process events
-  + [Event: 'exit'](https://nodejs.org/api/process.html#process_event_exit)
+  + [Event: **exit**](https://nodejs.org/api/process.html#process_event_exit)
     * code: (integer) 
   + [Signal events](https://nodejs.org/dist/latest-v15.x/docs/api/process.html#process_signal_events)
     * 信號事件(Signal events)會在Node進程(process)收到信號時發出(emitted)
@@ -633,9 +633,28 @@ Node.js Learn<br>
           }
         ```
 
-- process.send(message[, sendHandle[, options]][, callback])
+- [process.send(message[, sendHandle[, options]][, callback])](https://nodejs.org/api/process.html#process_process_send_message_sendhandle_options_callback)
+  + args
+    * message: (Object)
+    * sendHandle ([net.Server])(https://nodejs.org/api/net.html#net_class_net_server) || [net.Socket](https://nodejs.org/api/net.html#net_class_net_socket))
+    * options: (Object)
+      * 被用作將特定操作類型的發送參數化
+      * `options`也支援以下的屬性
+        * `keepOpen`: (boolean)
+          * 當在傳遞`net.Socket`的實例們(instances)時,可以用來傳遞的值
+          * 預設值: false
+          * 當`keepOpen`=true時, `socket`會在發送過程(sending process)中保持開放
+  + Returns: (boolean)
+    * 如果是利用`IPC channel`來產生Node應用程式的話,`process.send()`方法可以用來傳遞訊息給父進程(parent process)
+      * 消息(message)會被parent's [ChildProcess](https://nodejs.org/api/child_process.html#child_process_class_childprocess)物件作為[message event](https://nodejs.org/api/child_process.html#child_process_event_message)來接收
+    * 如果未使用`IPC channel`來產生Node應用程式的話,則`process.send()`回傳的結果將會是`undefined`
+    * 該訊息(message)已經歷過序列化(serialization)與解析(parsing)
+      * 結果消息(resulting message)可能會跟最初發送的消息不太一樣
 - process.uptime()
-
+  + Returns: (number)
+  + 該方法會回傳當前Node應用程式已經運行多久的秒數
+    * 回傳值會包括含有小數點的秒數,可以利用Math.floor()來算出小於等於所給數字的最大整數
+      * 例: $ `Math.floor(5.95)` => `5`  
 > property
 - process.argv
 - process.debugPort
