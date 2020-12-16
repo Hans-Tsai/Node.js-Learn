@@ -632,7 +632,6 @@ Node.js Learn<br>
             fs.stat('file', cb);
           }
         ```
-
 - [process.send(message[, sendHandle[, options]][, callback])](https://nodejs.org/api/process.html#process_process_send_message_sendhandle_options_callback)
   + args
     * message: (Object)
@@ -656,9 +655,34 @@ Node.js Learn<br>
     * 回傳值會包括含有小數點的秒數,可以利用Math.floor()來算出小於等於所給數字的最大整數
       * 例: $ `Math.floor(5.95)` => `5`  
 > property
-- process.argv
-- process.debugPort
-- process.env
+- [process.argv](https://nodejs.org/api/process.html#process_process_argv)
+  + Type: (string) 
+  + 該屬性會回傳一個陣列(array),該陣列會包含當啟動Node應用程式的進程的時候,整個命令列(command-line)要傳遞的所有參數
+    * 其中的第一個元素會是[process.execPath](https://nodejs.org/api/process.html#process_process_execpath)
+    * 第二個元素會是將要被執行的Javascript檔案的路徑位置
+    * 剩下的元素就是任何其他的命令列參數(command-line arguments)
+  + 範例程式碼
+    * 假設以下範例程式的檔案名稱是`process-args.js`
+    * ```javascript
+        // print process.argv
+        process.argv.forEach((val, index) => {
+          console.log(`${index}: ${val}`);
+        });
+      ```
+    * 可以利用以下的方式來啟動Node應用程式的進程(process)
+      * $ `node process-args.js one two=three four`
+    * 將會回傳以下的值
+      * ```javascript
+          0: /usr/local/bin/node
+          1: /Users/mjr/work/node/process-args.js
+          2: one
+          3: two=three
+          4: four
+        ```
+- [process.debugPort](https://nodejs.org/api/process.html#process_process_debugport)
+  + Type: (number)
+  + 該屬性值代表當啟用(enabled)Node應用程式的除錯器時(dubugger),所使用的埠號(port)
+- process.env 
 - process.execArgv
 - process.execPath
 - process.exitCode
