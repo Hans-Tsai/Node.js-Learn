@@ -372,7 +372,8 @@ Node.js Learn<br>
             res.end('ok');
           });
           ```
-      * [response.end([data[, encoding]][, callback])](https://nodejs.org/api/http.html#http_response_end_data_encoding_callback
+      * [response.end()](https://nodejs.org/api/http.html#http_response_end_data_encoding_callback
+        * 完整版: response.end([data[, encoding]][, callback]) 
         * args
           * data: (string || Buffer)
           * encoding: (string)
