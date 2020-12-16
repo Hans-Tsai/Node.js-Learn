@@ -392,8 +392,30 @@ Node.js Learn<br>
   + 例: $ `const process = require('process');`
 > Process events
   + [Event: **exit**](https://nodejs.org/api/process.html#process_event_exit)
-    * code: (integer) 
-  + [Signal events](https://nodejs.org/dist/latest-v15.x/docs/api/process.html#process_signal_events)
+    * args
+      * code: (integer)
+    * 由於以下的任一個原因而導致Node應用程式即將退出時,將發出(emitted)該事件
+      * 明確地呼叫`process.exit()`方法時
+      * Node的事件循環(event loop)不再需要執行其他額外的工作時
+    * 目前沒有方法可以防止在這個時間點要退出事件循環(event loop),一旦所有的**exit**監聽器(listener)執行結束後,就會終止Node的進程
+    * 只要有給定退出碼(不管是透過`process.exitCode`屬性或是現在這個**exit事件**的`exitCode`參數)並傳遞給`process.exit()`方法時,該事件監聽回呼函式(listener callback function)就會被呼叫
+      * 範例程式碼 
+      * ```javascript
+          process.on('exit', (code) => {
+            console.log(`About to exit with code: ${code}`);
+          });
+        ```
+    * 監聽功能**必須只**執行**同步化的操作**,以下的範例程式碼,該Node進程會在呼叫`exit`事件監聽器(event listeners)後**就立即退出**,因而導致任何仍在事件迴圈(event loop)中的佇列(queued)中的額外的工作都會被拋棄(abandoned)
+      * 以下的程式碼為例,`setTimeout()`這個函式**永遠不會**被執行到
+      * 情境說明(**錯誤示範**)
+        * ```javascript
+            process.on('exit', (code) => {
+              setTimeout(() => {
+                console.log('This will not run');
+              }, 0);
+            });
+          ```
+  + [Event: **Signal events**](https://nodejs.org/dist/latest-v15.x/docs/api/process.html#process_signal_events)
     * 信號事件(Signal events)會在Node進程(process)收到信號時發出(emitted)
     * 信號(Signals)不能用在[Worker threads](https://nodejs.org/dist/latest-v15.x/docs/api/worker_threads.html#worker_threads_worker_threads)
     * 信號處理器(signal handler)會將收到的信號名稱(signal's name)做為第一個參數
