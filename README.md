@@ -20,6 +20,7 @@ Node.js Learn<br>
       - [How to exit from a Node.js program?](#how-to-exit-from-a-nodejs-program)
       - [How to read environment variables from Node.js?](#how-to-read-environment-variables-from-nodejs)
       - [How to use the Node.js REPL?](#how-to-use-the-nodejs-repl)
+      - [Output to the command line using Node.js](#output-to-the-command-line-using-nodejs)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -385,6 +386,73 @@ Node.js Learn<br>
         ``` 
     * 如果我們這時候在一行的句尾加上`.break`時,該多行表達式的模式將會停止並不會被執行
 
+#### Output to the command line using Node.js
+- 利用[console](https://nodejs.org/api/console.html#console_console)核心模組的基本輸出(basic output)
+  + Node有一個`console`核心模組,該模組提供了許多與`CLI`有用的互動方法
+  + 它基本上跟我們在瀏覽器上看到的`console`物件是一樣的
+  + 最基本與最有用的方法是[console.log()](https://nodejs.org/api/console.html#console_console_log_data_args),這個方法會打印出(print)我們傳遞給console的字串
+    * 如果我們傳遞物件,該方法會自動幫我們轉換成字串
+    * 我們也可以傳遞多個變數給`console.log()`
+    * 範例程式碼
+    * ```javascript
+        const x = 'x'
+        const y = 'y'
+        console.log(x, y)
+      ```
+      * 以上的程式碼,Node會將兩個變數都打印出來(print)
+    * 我們也可以傳遞變數給模板字串
+    * 範例程式碼
+    * ```javascript
+          console.log('My %s has %d years', 'cat', 2)
+      ```
+      * `%s`: 將變數格式化為字串
+      * `%d`: 將變數格式化為數字
+      * `%i`: 將變數格式化為其整數部分
+      * `%o`: 將變數格式化為物件
+    * 範例程式碼
+    * ```javascript
+        console.log('%o', Number)
+      ```
+- 清除後台(console)-[process.clear()](https://nodejs.org/api/console.html#console_console_clear)
+  + 範例程式碼
+  + ```javascript
+      console.clear()
+      ```
+    * 該方法會將後台清空(註: 該方法的行為也會取決於我們是使用哪種後台)
+- 計算元素數量-[console.count()](https://nodejs.org/api/console.html#console_console_count_label)
+  + `console.count()`是一個方便的方法
+  + 範例程式碼
+  + ```javascript
+      const x = 1
+      const y = 2
+      const z = 3
+      console.count(
+        'The value of x is ' + x + 
+        ' and has been checked .. how many times?'
+      )
+      console.count(
+        'The value of x is ' + x + 
+        ' and has been checked .. how many times?'
+      )
+      console.count(
+        'The value of y is ' + y + 
+        ' and has been checked .. how many times?'
+      )
+      ```
+    * 以上的程式碼會計算該字串被打印出(print)幾次了,並將其次打印在旁邊
+  + 範例程式碼
+    * 我們也可以只計算蘋果和橘子的數量
+    * ```javascript
+        const oranges = ['orange', 'orange']
+        const apples = ['just one apple']
+        oranges.forEach(fruit => {
+          console.count(fruit)
+        })
+        apples.forEach(fruit => {
+          console.count(fruit)
+        })
+      ```
+ 
 
 
 
