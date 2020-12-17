@@ -902,6 +902,7 @@ Node.js Learn<br>
 - 以下是常見的退出碼
   + `0`: 正常退出 (預設值)
   + `1`: 未捕獲的致命錯誤(Uncaught Fatal Exception),並且沒有受到`domain`或是[uncaughtException](https://nodejs.org/api/process.html#process_event_uncaughtexception)事件處理器來處理
+  + 以下略...
 
 
 
