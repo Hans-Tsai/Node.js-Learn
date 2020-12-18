@@ -443,7 +443,7 @@ Node.js Learn<br>
     * 我們也可以傳遞變數給模板字串
     * 範例程式碼
     * ```javascript
-          console.log('My %s has %d years', 'cat', 2)
+        console.log('My %s has %d years', 'cat', 2)
       ```
       * `%s`: 將變數格式化為字串
       * `%d`: 將變數格式化為數字
