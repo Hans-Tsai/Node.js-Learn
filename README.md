@@ -422,7 +422,7 @@ Node.js Learn<br>
       args['name'] //joe
       ```
     * 以上述範例程式碼為例,`args[0]`是`name=joe`,這種情況我們就會需要來解析(parse)它,最佳的做法是,我們可以利用npm上面的[minimist](https://www.npmjs.com/package/minimist)套件來處理這些**鍵值形式的參數**
-  + 接下來我們就要在每個參數的鍵(key)之前使用雙破折號(double dashes)
+  + 這次我們就要在每個參數的鍵(key)之前使用雙破折號(double dashes)
     * 例: $ `node app.js --name=joe`
   
 
@@ -430,7 +430,7 @@ Node.js Learn<br>
 - 利用[console](https://nodejs.org/api/console.html#console_console)核心模組的基本輸出(basic output)
   + Node有一個`console`核心模組,該模組提供了許多與`CLI`有用的互動方法
   + 它基本上跟我們在瀏覽器上看到的`console`物件是一樣的
-  + 最基本與最有用的方法是[console.log()](https://nodejs.org/api/console.html#console_console_log_data_args),這個方法會打印出(print)我們傳遞給console的字串
+  + 最基本與最有用的方法是[console.log([data][, ...args])](https://nodejs.org/api/console.html#console_console_log_data_args),這個方法會打印出(print)我們傳遞給console的字串
     * 如果我們傳遞物件,該方法會自動幫我們轉換成字串
     * 我們也可以傳遞多個變數給`console.log()`
     * 範例程式碼
@@ -453,13 +453,13 @@ Node.js Learn<br>
     * ```javascript
         console.log('%o', Number)
       ```
-- 清除後台(console)-[process.clear()](https://nodejs.org/api/console.html#console_console_clear)
+- 清除後台(console)-[console.clear()](https://nodejs.org/api/console.html#console_console_clear)
   + 範例程式碼
   + ```javascript
       console.clear()
       ```
     * 該方法會將後台清空(註: 該方法的行為也會取決於我們是使用哪種後台)
-- 計算元素數量-[console.count()](https://nodejs.org/api/console.html#console_console_count_label)
+- 計算元素數量-[console.count([label])](https://nodejs.org/api/console.html#console_console_count_label)
   + `console.count()`是一個方便的方法
   + 範例程式碼
   + ```javascript
@@ -492,7 +492,85 @@ Node.js Learn<br>
           console.count(fruit)
         })
       ```
- 
+- 打印出堆棧追蹤(print stack trace)-[console.trace([message][, ...args])](https://nodejs.org/dist/latest-v15.x/docs/api/console.html#console_console_trace_message_args)
+  + 在某些情況下,打印出函數的堆棧調用情況是很有用的,這也許就能回答我們的一個問題---我們該如何到達程式碼的其中一個部分?
+  + 我們可以利用`console.trace()`方法來完成
+  + 範例程式碼
+    * ```javascript
+        const function2 = () => console.trace()
+        const function1 = () => function2()
+        function1()
+      ```
+      * 以上的範例程式碼會打印出堆棧追蹤(stack trace)
+      * 如果我們在Node的`REPL模式`中嘗試以上的範例程式碼,會得到以下的回傳資訊
+      * ```javascript
+          Trace
+            at function2 (repl:1:33)
+            at function1 (repl:1:25)
+            at repl:1:1
+            at ContextifyScript.Script.runInThisContext (vm.js:44:33)
+            at REPLServer.defaultEval (repl.js:239:29)
+            at bound (domain.js:301:14)
+            at REPLServer.runBound [as eval] (domain.js:314:12)
+            at REPLServer.onLine (repl.js:440:10)
+            at emitOne (events.js:120:20)
+            at REPLServer.emit (events.js:210:7)
+        ```
+- 計算執行Node程式碼所花費的時間-[console.time([label])](https://nodejs.org/dist/latest-v15.x/docs/api/console.html#console_console_time_label) & [console.timeEnd([label])](https://nodejs.org/dist/latest-v15.x/docs/api/console.html#console_console_timeend_label)
+  + 我們可以使用`console.time()` & `console.timeEnd()`
+  + 範例程式碼
+  + ```javascript
+      const doSomething = () => console.log('test')
+      const measureDoingSomething = () => {
+        console.time('doSomething()')
+        //do something, and measure the time it takes
+        doSomething()
+        console.timeEnd('doSomething()')
+      }
+      measureDoingSomething()
+    ```
+- 標準輸出 & 標準錯誤-[console.log([data][, ...args])](https://nodejs.org/dist/latest-v15.x/docs/api/console.html#console_console_log_data_args) & [console.error([data][, ...args])](https://nodejs.org/dist/latest-v15.x/docs/api/console.html#console_console_error_data_args)
+  + 如我們所見,`console.log()`非常適合在後台(Console)打印出訊息,這也就是所謂的標準輸出(standard output, `stdout`)
+  + 反之,`console.error()`則會將訊息打印到標準錯誤(standard error, `stderr`)流(stream)上面
+    + `stderr`流不會出現在後台(Console)上,但是它會出現在錯誤日誌上(error log)
+- 為文字輸出上色-[跳脫序列(escape sequences)](https://gist.github.com/iamnewton/8754917) & npm的[chalk](https://github.com/chalk/chalk) package
+  + 我們可以利用跳脫序列(escape sequence)將文字輸出上色
+  + 跳脫序列是一組字符代表一種顏色
+  + 範例程式碼
+    * ```javascript
+        console.log('\x1b[33m%s\x1b[0m', 'hi!')
+      ```
+    * 在`CLI`上進入Node的`REPL模式`中,執行以上的程式碼會看到`hi`變成黃色的字體
+    * ![利用Node REPL模式下的跳脫序列來為文字輸出上色](/pic/利用Node%20REPL模式下的跳脫序列來為文字輸出上色.png)
+    * 然而這樣做其實是一種低階(low-level)方法,最簡單的做法是利用套件(library)來將文字輸出上色
+  + 我們可以利用npm上面的`chalk`套件,該套件不僅可以為文字輸出上色,也可以將文字輸出的字體變成**粗體**or*斜體*or帶有下劃線
+    * 我們可以透過`CLI`指令來安裝`chalk`這個套件,安裝完後就可以立即使用它
+      * $ `npm install chalk`
+    * 範例程式碼
+    * ```javascript
+        const chalk = require('chalk')
+        console.log(chalk.yellow('hi!'))
+      ```
+      * 從上面的範例程式碼可以看出我們可以使用`chalk.yellow()`這個方法會比起跳脫序列(escape sequences)來得更好記與更好閱讀
+    * 更多相關功能可以參考[chalk]((https://github.com/chalk/chalk))
+- 建立進度條-npm的[progress](https://www.npmjs.com/package/progress) package
+  + `progress`是一個非常棒的套件在CLI console畫面上創造**進度條**的套件
+  + 可以先利用npm來安裝`progress`這個套件
+    * $ `npm install progress`
+  + 範例程式碼
+  + ```javascript
+      const ProgressBar = require('progress')
+
+      const bar = new ProgressBar(':bar', { total: 10 })
+      const timer = setInterval(() => {
+        bar.tick()
+        if (bar.complete) {
+          clearInterval(timer)
+        }
+      }, 100)
+      ```
+    * 以上的範例程式碼會建立一個含有10個步驟(steps)的進度條(progress bar),每100毫秒就會執行一次
+    * 當進度條完成時,就會清除這個間隔(clear the interval)
 
 
 
