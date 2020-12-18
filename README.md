@@ -20,6 +20,7 @@ Node.js Learn<br>
       - [How to exit from a Node.js program?](#how-to-exit-from-a-nodejs-program)
       - [How to read environment variables from Node.js?](#how-to-read-environment-variables-from-nodejs)
       - [How to use the Node.js REPL?](#how-to-use-the-nodejs-repl)
+      - [Node.js, accept arguments from the command line](#nodejs-accept-arguments-from-the-command-line)
       - [Output to the command line using Node.js](#output-to-the-command-line-using-nodejs)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
@@ -385,6 +386,45 @@ Node.js Learn<br>
           ... })
         ``` 
     * 如果我們這時候在一行的句尾加上`.break`時,該多行表達式的模式將會停止並不會被執行
+
+#### Node.js, accept arguments from the command line
+- 我們可以將不限制數量的參數(arguments)傳遞給Node應用程式,參數的形式可以使用以下2種形式
+  + 獨立的參數值(standalone)
+    * $ `node app.js joe`
+  + 鍵->值形式的參數值(key and value)
+    * $ `node app.js name=joe`
+- 這也將改變我們在Node應用程式的程式碼中,如何得到此值的方式,我們可以透過Node內建的核心模組`process`來得到此值,該模組的[process.argv](https://nodejs.org/dist/latest-v15.x/docs/api/process.html#process_process_argv)屬性會揭露(exposes)出一個陣列(array),其中包含當啟動Node應用程式的進程的時候,整個命令列(command-line)要傳遞的所有參數
+  + 第1個元素是node指令的完整路徑(= [process.execPath](https://nodejs.org/api/process.html#process_process_execpath))
+  + 第2個元素會是正在被執行的Javascript檔案的路徑位置
+  + 剩下的元素就是任何其他的命令列參數(command-line arguments)
+- 範例程式碼
+  + 以下的範例程式碼會利用一個迴圈來遍歷(iterate over)所有的參數們(也包括node指令的完整路徑與正在被執行的Javascript檔案的路徑位置)
+  + ```javascript
+      process.argv.forEach((val, index) => {
+        console.log(`${index}: ${val}`)
+      })
+      ```
+- 我們可以透過建立一個新的陣列並切片(`array.slice()`方法)來獲得額外的參數(不包含前兩個參數)
+  + ```javascript
+      const args = process.argv.slice(2)
+    ```
+- 如果我們的參數沒有索引名稱的話(without index name)
+  + 例: $ `node app.js joe`
+    * ```javascript
+        const args = process.argv.slice(2)
+        console.log(args[0])
+      ```
+    * 我們可以透過以上的範例程式碼來存取命令列參數(command-line arguments)
+- 另一種情況是,我們會以鍵值(key-value)形式來傳遞命令列參數
+  + 例: $ `node app.js name=joe`
+  + ```javascript
+      const args = require('minimist')(process.argv.slice(2))
+      args['name'] //joe
+      ```
+    * 以上述範例程式碼為例,`args[0]`是`name=joe`,這種情況我們就會需要來解析(parse)它,最佳的做法是,我們可以利用npm上面的[minimist](https://www.npmjs.com/package/minimist)套件來處理這些**鍵值形式的參數**
+  + 接下來我們就要在每個參數的鍵(key)之前使用雙破折號(double dashes)
+    * 例: $ `node app.js --name=joe`
+  
 
 #### Output to the command line using Node.js
 - 利用[console](https://nodejs.org/api/console.html#console_console)核心模組的基本輸出(basic output)
@@ -845,7 +885,7 @@ Node.js Learn<br>
   + Type: (string) 
   + 該屬性會回傳一個陣列(array),該陣列會包含當啟動Node應用程式的進程的時候,整個命令列(command-line)要傳遞的所有參數
     * 其中的第一個元素會是[process.execPath](https://nodejs.org/api/process.html#process_process_execpath)
-    * 第二個元素會是將要被執行的Javascript檔案的路徑位置
+    * 第二個元素會是正在被執行的Javascript檔案的路徑位置
     * 剩下的元素就是任何其他的命令列參數(command-line arguments)
   + 範例程式碼
     * 假設以下範例程式的檔案名稱是`process-args.js`
