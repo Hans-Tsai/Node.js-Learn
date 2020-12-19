@@ -1135,6 +1135,131 @@ Node.js Learn<br>
         myConsole.warn(`Danger ${name}! Danger!`);
         // Prints: Danger Will Robinson! Danger!, to err
       ```
+> Class
+- [Class: Console](https://nodejs.org/api/console.html#console_class_console)
+  + `Console`類別可以用來建立簡單且可配置(configurable)的輸出流(output streams)紀錄器(logger),並且可以利用以下兩種方式來存取,或是用它們相仿的解構對應物件(destructured counterparts)來存取
+    * 存取方式一: `require('console').Console`
+      * 例: `const { Console } = require('console');`
+    * 存取方式二: `console.Console`
+      * 例: `const { Console } = console;`
+  > method
+    * [console.clear()](https://nodejs.org/api/console.html#console_console_clear)
+      * 當標準輸出(`stdout`)是`TTY`時,呼叫`console.clear()`的時候,會嘗試清除`TTY`; 當標準輸出(`stdout`)不是`TTY`時,則該方法不會做任何事情
+      * 使用特定的`console.clear()`操作時,會因為使用的作業系統不同or終端機類型不同,而有所差異。在大部分的Linux作業系統中,`console.clear()`方法會執行與`clear`指令差不多的操作; 在Windows作業系統中,`console.clear()`將僅會清除掉在當前(current)的終端機視口(terminal viewport)中的Node應用程式的二進制(binary)文件的輸出(output)
+    * [console.count([label])](https://nodejs.org/api/console.html#console_console_count_label)
+      * args
+        * label: (string)
+          * 可以給定要顯示的計數器的標籤值
+          * 預設值: `default`
+      * 該方法會回傳一個內部計數器(internal counter)維持顯示一組`標籤`(label) & `次數`(times)
+        * `標籤`(label): 可以透過呼叫`console.count()`方法時,由開發者給定標籤值
+        * `次數`(times): 指定給標籤,呼叫`console.count()`方法並輸出給`stdout`的次數
+        * 範例程式碼
+        * ```console
+            > console.count()
+            default: 1
+            undefined
+            > console.count('default')
+            default: 2
+            undefined
+            > console.count('abc')
+            abc: 1
+            undefined
+            > console.count('xyz')
+            xyz: 1
+            undefined
+            > console.count('abc')
+            abc: 2
+            undefined
+            > console.count()
+            default: 3
+            undefined
+            >
+          ```
+    * [console.error([data][, ...args])](https://nodejs.org/api/console.html#console_console_error_data_args)
+      * args
+        * data: (any)
+        * ...args: (any)
+      * 該方法會用新的一行(newline)打印(print)出標準錯誤(`stderr`)
+      * 該方法可以傳遞多個參數
+        * 第一個參數會被用來當作主要訊息(primary message)
+        * 其他額外的參數(additional arguments)會被用作替換值(substitution),類似於[printf(3)](https://man7.org/linux/man-pages/man3/printf.3.html)
+          * 其他額外的參數都會被傳遞給`util.format()`方法
+          * 相關資訊可參考[util.format()](https://nodejs.org/api/util.html#util_util_format_format_args)方法
+      * 範例程式碼
+      * ```javascript
+          const code = 5;
+          console.error('error #%d', code);
+          // Prints: error #5, to stderr
+          console.error('error', code);
+          // Prints: error 5, to stderr
+          ```
+        * 若格式化元素(formatted elements),例如: `%d`沒有在新的一行中被發現,則[util.inspect()](https://nodejs.org/api/util.html#util_util_inspect_object_options)方法會被呼叫,並在每個參數上呼叫該元素(`%d`),並將結果的字串值連接起來
+    * [console.log([data][, ...args])](https://nodejs.org/api/console.html#console_console_log_data_args)
+      * args
+        * data: (any)
+        * ...args: (any)
+      * 該方法會用新的一行(newline)打印(print)出標準輸出(`stdout`)
+      * 該方法可以傳遞多個參數
+        * 第一個參數會被用來當作主要訊息(primary message)
+        * 其他額外的參數(additional arguments)會被用作替換值(substitution),類似於[printf(3)](https://man7.org/linux/man-pages/man3/printf.3.html)
+          * 其他額外的參數都會被傳遞給`util.format()`方法
+          * 相關資訊可參考[util.format()](https://nodejs.org/api/util.html#util_util_format_format_args)方法
+      * 範例程式碼
+      * ```javascript
+          const count = 5;
+          console.log('count: %d', count);
+          // Prints: count: 5, to stdout
+          console.log('count:', count);
+          // Prints: count: 5, to stdout
+        ``` 
+    * [console.time([label])](https://nodejs.org/api/console.html#console_console_time_label)
+      * args
+        * label: (string)
+        * 可以給定該計時器的標籤值,以作為計時器識別用
+        * 預設值: `default`
+      * 該方法會啟動一個計時器(timer)被用來計算該操作(operation)的持續時間
+      * 計時器會用獨一無二(unique)的標籤(label)來識別
+      * 計時器會呼叫同標籤(same label)的`console.timeEnd()`方法來停止計時器,並將經過的時間以合適的時間單位輸出到標準輸出(`stdout`)中
+        * 舉例來說,如果經過的時間是3869毫秒(ms),那麼`console.timeEnd()`方法會顯示"3.869"秒
+    * [console.timeEnd([label])](https://nodejs.org/api/console.html#console_console_timeend_label)
+      * args
+        * label: (string)
+        * 可以給定該計時器的標籤值,以作為計時器識別用
+        * 預設值: `default`
+      * 該方法會停止之前透過呼叫`console.time()`方法設定好的計時器,並將結果打印(print)到標準輸出(`stdout`)中
+      * 範例程式碼
+      * ```javascript
+          console.time('100-elements');
+          for (let i = 0; i < 100; i++) {}
+          console.timeEnd('100-elements');
+          // prints 100-elements: 225.438ms
+        ```
+    * [console.trace([message][, ...args])](https://nodejs.org/api/console.html#console_console_trace_message_args)
+      * args
+        * message: (any)
+        * ...args: (any)
+      * 該方法會將`Trace:`這段字串打印(print)到標準錯誤(`stderr`)中,接著透過[util.format()](https://nodejs.org/api/util.html#util_util_format_format_args)方法打印出格式化過的字串(formatted message),並堆棧追蹤(stack trace)到程式碼中的當前位置
+      * 範例程式碼
+      * ```javascript
+          console.trace('Show me');
+          // Prints: (stack trace will vary based on where trace is called)
+          //  Trace: Show me
+          //    at repl:2:9
+          //    at REPLServer.defaultEval (repl.js:248:27)
+          //    at bound (domain.js:287:14)
+          //    at REPLServer.runBound [as eval] (domain.js:300:12)
+          //    at REPLServer.<anonymous> (repl.js:412:12)
+          //    at emitOne (events.js:82:20)
+          //    at REPLServer.emit (events.js:169:7)
+          //    at REPLServer.Interface._onLine (readline.js:210:10)
+          //    at REPLServer.Interface._line (readline.js:549:8)
+          //    at REPLServer.Interface._ttyWrite (readline.js:826:14)
+        ```
+
+
+
+
 
 
 
