@@ -427,6 +427,8 @@ Node.js Learn<br>
   
 
 #### Output to the command line using Node.js
+> npm的[chalk](https://github.com/chalk/chalk)套件--- 可設定終端機輸出文字的樣式與顏色<br>
+> npm的[progress](https://www.npmjs.com/package/progress)套件---可以在`CLI console`畫面上創造進度條的套件<br>
 - 利用[console](https://nodejs.org/api/console.html#console_console)核心模組的基本輸出(basic output)
   + Node有一個`console`核心模組,該模組提供了許多與`CLI`有用的互動方法
   + 它基本上跟我們在瀏覽器上看到的`console`物件是一樣的
