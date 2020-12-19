@@ -1090,6 +1090,52 @@ Node.js Learn<br>
   + `1`: 未捕獲的致命錯誤(Uncaught Fatal Exception),並且沒有受到`domain`或是[uncaughtException](https://nodejs.org/api/process.html#process_event_uncaughtexception)事件處理器來處理
   + 以下略...
 
+- [Console](https://nodejs.org/api/console.html#console_console)
+  + `console`模組提供了一組簡單的除錯控制台(debugging console),類似於網頁瀏覽器所提供的Javascript控制台機制
+  + `console`模組會匯出(export)兩個特定的元件(specific components)
+    * 第一個特定的元件是: [Console類別(class)](https://nodejs.org/api/console.html#console_class_console)的方法,像是`console.log()`&`console.error()`&`console.warn()`,它們可以被用來寫入到Node流(stream)中
+    * 第二個特定的原件是: 一個全域(global)的`console`實例(instance)會寫入到[process.stdout](https://nodejs.org/api/process.html#process_process_stdout)與[process.stderr](https://nodejs.org/api/process.html#process_process_stderr)。全域的`console`物件可以直接被使用,而**不用**事先匯入(**require('console')**)
+  + **注意**: 全域的`console`物件方法既不能像類似它們的瀏覽器API一樣始終同步(consistently synchronous),也不能像Node流(streams)一樣始終非同步(consistently asynchronous)
+    * 可參考`process`模組的 [A note on process I/O](https://nodejs.org/api/process.html#process_a_note_on_process_i_o) 章節
+  + 使用全域的`console物件`的範例程式碼
+    * ```javascript
+        console.log('hello world');
+        // Prints: hello world, to stdout
+        console.log('hello %s', 'world');
+        // Prints: hello world, to stdout
+        console.error(new Error('Whoops, something bad happened'));
+        // Prints error message and stack trace to stderr:
+        //   Error: Whoops, something bad happened
+        //     at [eval]:5:15
+        //     at Script.runInThisContext (node:vm:132:18)
+        //     at Object.runInThisContext (node:vm:309:38)
+        //     at node:internal/process/execution:77:19
+        //     at [eval]-wrapper:6:22
+        //     at evalScript (node:internal/process/execution:76:60)
+        //     at node:internal/main/eval_string:23:3
+
+        const name = 'Will Robinson';
+        console.warn(`Danger ${name}! Danger!`);
+        // Prints: Danger Will Robinson! Danger!, to stderr
+      ```
+  + 使用`Console類別`的範例程式碼
+    * ```javascript
+        const out = getStreamSomehow();
+        const err = getStreamSomehow();
+        const myConsole = new console.Console(out, err);
+
+        myConsole.log('hello world');
+        // Prints: hello world, to out
+        myConsole.log('hello %s', 'world');
+        // Prints: hello world, to out
+        myConsole.error(new Error('Whoops, something bad happened'));
+        // Prints: [Error: Whoops, something bad happened], to err
+
+        const name = 'Will Robinson';
+        myConsole.warn(`Danger ${name}! Danger!`);
+        // Prints: Danger Will Robinson! Danger!, to err
+      ```
+
 
 
 ---
