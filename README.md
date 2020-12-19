@@ -25,6 +25,7 @@ Node.js Learn<br>
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
+      - [Console](#console)
     - [參考資料來源](#參考資料來源)
       - [官方文件](#官方文件)
       - [網路文章](#網路文章)
@@ -1092,7 +1093,7 @@ Node.js Learn<br>
   + `1`: 未捕獲的致命錯誤(Uncaught Fatal Exception),並且沒有受到`domain`或是[uncaughtException](https://nodejs.org/api/process.html#process_event_uncaughtexception)事件處理器來處理
   + 以下略...
 
-- [Console](https://nodejs.org/api/console.html#console_console)
+#### [Console](https://nodejs.org/api/console.html#console_console)
   + `console`模組提供了一組簡單的除錯控制台(debugging console),類似於網頁瀏覽器所提供的Javascript控制台機制
   + `console`模組會匯出(export)兩個特定的元件(specific components)
     * 第一個特定的元件是: [Console類別(class)](https://nodejs.org/api/console.html#console_class_console)的方法,像是`console.log()`&`console.error()`&`console.warn()`,它們可以被用來寫入到Node流(stream)中
