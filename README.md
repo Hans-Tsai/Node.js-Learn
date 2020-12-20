@@ -27,6 +27,7 @@ Node.js Learn<br>
       - [HTTP](#http)
       - [Process](#process)
       - [Console](#console)
+      - [Readline](#readline)
     - [參考資料來源](#參考資料來源)
       - [官方文件](#官方文件)
       - [網路文章](#網路文章)
@@ -1306,10 +1307,51 @@ Node.js Learn<br>
           //    at REPLServer.Interface._ttyWrite (readline.js:826:14)
         ```
 
+#### [Readline](https://nodejs.org/api/readline.html#readline_readline)
+- `Readline`模組提供一個介面能從[Readable stream](https://nodejs.org/api/stream.html#stream_readable_streams)一次一行地讀取數據,它可以用以下的方式來存取
+  + ```javascript
+      const readline = require('readline');
+      ```
+  + 以下是`readline`模組的簡易範例的圖解說明
+  + ```javascript
+      const readline = require('readline');
 
+      const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+      });
 
+      rl.question('What do you think of Node.js? ', (answer) => {
+        // TODO: Log the answer in a database
+        console.log(`Thank you for your valuable feedback: ${answer}`);
 
-
+        rl.close();
+      });
+      ```
+    * 一旦以上的程式碼被呼叫後,Node應用程式就不會終止,直到[readline.Interface](https://nodejs.org/api/readline.html#readline_class_interface)這個介面被關閉為止,因為這個介面會等待輸入流(input stream)接收到數據為止
+> Class
+  + [Class: Interface](https://nodejs.org/api/readline.html#readline_class_interface)
+    + 繼承(Extends): ([EventEmitter](https://nodejs.org/api/events.html#events_class_eventemitter))
+  + `reader.Interface`的實例(instances)是透過[readline.createInterface()](https://nodejs.org/api/readline.html#readline_readline_createinterface_options)方法建造的
+    * 每一個實例都會與單一的輸入可讀取流(input Readable stream) & 單一的輸出可寫入流(output Writable stream)
+    * 輸出流會被用來從輸入流(input stream)中讀取使用者的輸入(input)並打印出提示(prompts)
+> method
+  + [readline.question(query, callback)](https://nodejs.org/api/readline.html#readline_rl_question_query_callback)
+    * args
+      * query (string)
+        * 要寫入到輸出(`output`)的陳述句(statement)或是查詢語句(`query`),位於提示之前(prepended to the prompt)
+      * callback (Function)
+        * 透過使用者對查詢語句(`query`)的回應(response)來呼叫的回呼函式
+    * 該方法會透過寫入輸出(`output`)來展示查詢語句(`query`),並等待使用者輸入後並將該輸入提供給輸入(`input`)。接著會將提供的輸入(provided input)作為第一個參數,傳遞給回呼函式
+    * 當輸入流被暫停(paused)時,呼叫`readline.question()`方法時,會繼續(resume)輸入流
+    * 若`readline.createInterface()`被建立時,該輸出(`output`)被設定為`null`或是`undefined`,該查詢語句(`query`)不會被寫入(written)
+    * 範例程式碼
+    * ```javascript
+        rl.question('What is your favorite food? ', (answer) => {
+          console.log(`Oh, so your favorite food is ${answer}`);
+        });
+        ```
+      * 傳遞給`readline.question()`的回呼函式不會遵從一般接受`Error`物件或是`null`作為第一個參數的模式。回呼函式會以被提供的答案(provided answer)作為唯一的參數
 
 
 ---
