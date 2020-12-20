@@ -1335,23 +1335,28 @@ Node.js Learn<br>
   + `reader.Interface`的實例(instances)是透過[readline.createInterface()](https://nodejs.org/api/readline.html#readline_readline_createinterface_options)方法建造的
     * 每一個實例都會與單一的輸入可讀取流(input Readable stream) & 單一的輸出可寫入流(output Writable stream)
     * 輸出流會被用來從輸入流(input stream)中讀取使用者的輸入(input)並打印出提示(prompts)
-> method
-  + [readline.question(query, callback)](https://nodejs.org/api/readline.html#readline_rl_question_query_callback)
-    * args
-      * query (string)
-        * 要寫入到輸出(`output`)的陳述句(statement)或是查詢語句(`query`),位於提示之前(prepended to the prompt)
-      * callback (Function)
-        * 透過使用者對查詢語句(`query`)的回應(response)來呼叫的回呼函式
-    * 該方法會透過寫入輸出(`output`)來展示查詢語句(`query`),並等待使用者輸入後並將該輸入提供給輸入(`input`)。接著會將提供的輸入(provided input)作為第一個參數,傳遞給回呼函式
-    * 當輸入流被暫停(paused)時,呼叫`readline.question()`方法時,會繼續(resume)輸入流
-    * 若`readline.createInterface()`被建立時,該輸出(`output`)被設定為`null`或是`undefined`,該查詢語句(`query`)不會被寫入(written)
-    * 範例程式碼
-    * ```javascript
-        rl.question('What is your favorite food? ', (answer) => {
-          console.log(`Oh, so your favorite food is ${answer}`);
-        });
-        ```
-      * 傳遞給`readline.question()`的回呼函式不會遵從一般接受`Error`物件或是`null`作為第一個參數的模式。回呼函式會以被提供的答案(provided answer)作為唯一的參數
+    > method
+      + [readline.question(query, callback)](https://nodejs.org/api/readline.html#readline_rl_question_query_callback)
+        * args
+          * query (string)
+            * 要寫入到輸出(`output`)的陳述句(statement)或是查詢語句(`query`),位於提示之前(prepended to the prompt)
+          * callback (Function)
+            * 透過使用者對查詢語句(`query`)的回應(response)來呼叫的回呼函式
+        * 該方法會透過寫入輸出(`output`)來展示查詢語句(`query`),並等待使用者輸入後並將該輸入提供給輸入(`input`)。接著會將提供的輸入(provided input)作為第一個參數,傳遞給回呼函式
+        * 當輸入流被暫停(paused)時,呼叫`readline.question()`方法時,會繼續(resume)輸入流
+        * 若`readline.createInterface()`被建立時,該輸出(`output`)被設定為`null`或是`undefined`,該查詢語句(`query`)不會被寫入(written)
+        * 範例程式碼
+        * ```javascript
+            rl.question('What is your favorite food? ', (answer) => {
+              console.log(`Oh, so your favorite food is ${answer}`);
+            });
+            ```
+          * 傳遞給`readline.question()`的回呼函式不會遵從一般接受`Error`物件或是`null`作為第一個參數的模式。回呼函式會以被提供的答案(provided answer)作為唯一的參數
+      * [readline.close()](https://nodejs.org/api/readline.html#readline_rl_close)
+        * 該方法會關閉`readline.createInterface()`實例,並放棄對輸入流(`input` streams)與輸出流(`output` streams)的控制(control over)。當被呼叫時,[close事件](https://nodejs.org/api/readline.html#readline_event_close)就會被發出(emitted)
+        * 呼叫`readline.close()`方法不會立即停止其它被`readline.Interface`實例所發出的其它事件(包含[line事件](https://nodejs.org/api/readline.html#readline_event_line))
+
+
 
 
 ---
