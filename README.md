@@ -22,6 +22,7 @@ Node.js Learn<br>
       - [How to use the Node.js REPL?](#how-to-use-the-nodejs-repl)
       - [Node.js, accept arguments from the command line](#nodejs-accept-arguments-from-the-command-line)
       - [Output to the command line using Node.js](#output-to-the-command-line-using-nodejs)
+      - [Accept input from the command line in Node.js](#accept-input-from-the-command-line-in-nodejs)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -425,7 +426,6 @@ Node.js Learn<br>
     * 以上述範例程式碼為例,`args[0]`是`name=joe`,這種情況我們就會需要來解析(parse)它,最佳的做法是,我們可以利用npm上面的[minimist](https://www.npmjs.com/package/minimist)套件來處理這些**鍵值形式的參數**
   + 這次我們就要在每個參數的鍵(key)之前使用雙破折號(double dashes)
     * 例: $ `node app.js --name=joe`
-  
 
 #### Output to the command line using Node.js
 > npm的[chalk](https://github.com/chalk/chalk)套件--- 可設定終端機輸出文字的樣式與顏色<br>
@@ -575,6 +575,52 @@ Node.js Learn<br>
     * 以上的範例程式碼會建立一個含有10個步驟(steps)的進度條(progress bar),每100毫秒就會執行一次
     * 當進度條完成時,就會清除這個間隔(clear the interval)
 
+#### Accept input from the command line in Node.js
+> npm的[readline-sync](https://www.npmjs.com/package/readline-sync)套件---提供一個能透過console(TTY)與使用者進行對話的互動式執行地同步讀取行(synchronous readline for interactively running)<br>
+> npm的[inquirer](https://www.npmjs.com/package/inquirer)---收集了常見的`CLI`指令
+- 如何讓Node應用程式的`CLI console`成為互動性(interactive)的控制台
+- 自從Node`v7.0.0`版本之後,Node提供了`readline`這個內建核心模組來確切地執行以下這件事情
+  + 從一個可讀取的流(readable stream),例如: `process.stdin`流(stream)獲得輸入(get input)
+  + 補充: `process.stdin`是在執行Node.js應用程式期間時,終端機輸入的流,一次僅一行
+  + 範例程式碼
+  + ```javascript
+      const readline = require('readline').createInterface({
+        input: process.stdin,
+        output: process.stdout
+      })
+
+      readline.question(`What's your name?`, name => {
+        console.log(`Hi ${name}!`)
+        readline.close()
+      })
+      ```
+    * 以上片段(piece)的程式碼會詢問使用者名稱,一旦使用者輸入文字並按下`enter`鍵後,我們就會發送一個問候(greeting)
+    * 說明: [readline.question()](https://nodejs.org/api/readline.html#readline_rl_question_query_callback)方法顯示第一個參數(例: 一個問句),並等待使用者輸入。一旦使用者輸入文字並按下`enter`鍵後,就會呼叫該方法的第二個參數---回呼函式(callback function)
+    * 在上述的範例程式碼中,我們的回呼函式會關閉讀取行介面(readline interface)---([readline.close()](https://nodejs.org/api/readline.html#readline_rl_close))
+  + `readline`模組提供了許多其他的方法,接下來將會在套件的名稱上設定超連結來讓我們可以去查看該套件的文件
+  + 如果我們要求輸入密碼,我們會希望最好不要以明碼顯示回傳的密碼,而是使用`*`符號來替換顯示使用者輸入的密碼
+    * 這時最簡單的方式是使用就API而言非常類似的,npm上的[readline-sync](https://www.npmjs.com/package/readline-sync)套件,並立即對其進行處理
+  + npm的[inquirer](https://www.npmjs.com/package/inquirer)套件提供了一個更完整且更抽象的解決方案
+    * 我們需要先透過npm安裝`inquirer`套件
+      * $ `npm install inquirer`
+  + 情境說明
+  + ```javascript
+      const inquirer = require('inquirer')
+
+      var questions = [
+        {
+          type: 'input',
+          name: 'name',
+          message: "What's your name?"
+        }
+      ]
+
+      inquirer.prompt(questions).then(answers => {
+        console.log(`Hi ${answers['name']}!`)
+      })
+      ```
+    * `inquirer`這個套件讓我們可以做許多事情像是詢問選擇題(multiple choices),提供單選按鈕(radio button),確認(confirmation),...等等
+    * 值得一提的是所有的替代方案(alternatives),尤其是那些Node提供的內建替代方案還不錯。但如果我們想要將`CLI`互動式輸入提供到另一個更高的水平上時,`inquirer.js`是一個最理想(optimal)的選擇
 
 
 
