@@ -23,11 +23,13 @@ Node.js Learn<br>
       - [Node.js, accept arguments from the command line](#nodejs-accept-arguments-from-the-command-line)
       - [Output to the command line using Node.js](#output-to-the-command-line-using-nodejs)
       - [Accept input from the command line in Node.js](#accept-input-from-the-command-line-in-nodejs)
+      - [Expose functionality from a Node.js file using exports](#expose-functionality-from-a-nodejs-file-using-exports)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
       - [Console](#console)
       - [Readline](#readline)
+      - [CommonJS modules](#commonjs-modules)
     - [參考資料來源](#參考資料來源)
       - [官方文件](#官方文件)
       - [網路文章](#網路文章)
@@ -396,7 +398,7 @@ Node.js Learn<br>
     * $ `node app.js joe`
   + 鍵->值形式的參數值(key and value)
     * $ `node app.js name=joe`
-- 這也將改變我們在Node應用程式的程式碼中,如何得到此值的方式,我們可以透過Node內建的核心模組`process`來得到此值,該模組的[process.argv](https://nodejs.org/dist/latest-v15.x/docs/api/process.html#process_process_argv)屬性會揭露(exposes)出一個陣列(array),其中包含當啟動Node應用程式的進程的時候,整個命令列(command-line)要傳遞的所有參數
+- 這也將改變我們在Node應用程式的程式碼中,如何得到此值的方式,我們可以透過Node內建的核心模組`process`來得到此值,該模組的[process.argv](https://nodejs.org/dist/latest-v15.x/docs/api/process.html#process_process_argv)屬性會公開(exposes)出一個陣列(array),其中包含當啟動Node應用程式的進程的時候,整個命令列(command-line)要傳遞的所有參數
   + 第1個元素是node指令的完整路徑(= [process.execPath](https://nodejs.org/api/process.html#process_process_execpath))
   + 第2個元素會是正在被執行的Javascript檔案的路徑位置
   + 剩下的元素就是任何其他的命令列參數(command-line arguments)
@@ -623,6 +625,65 @@ Node.js Learn<br>
     * `inquirer`這個套件讓我們可以做許多事情像是詢問選擇題(multiple choices),提供單選按鈕(radio button),確認(confirmation),...等等
     * 值得一提的是所有的替代方案(alternatives),尤其是那些Node提供的內建替代方案還不錯。但如果我們想要將`CLI`互動式輸入提供到另一個更高的水平上時,`inquirer.js`是一個最理想(optimal)的選擇
 
+#### Expose functionality from a Node.js file using exports
+- Node擁有內建的模組系統,並能透過匯入(import)來使用由其它Node.js的檔案公開(exposed)出來的功能
+- 假如我們想要匯入某些我們想使用的東西
+  + 範例程式碼
+  + ```javascript
+      const library = require('./library')
+      ```
+    * 可以利用以上的程式碼來匯入存在於(resides)當前檔案目錄下的`library.js`所公開(exposed)出來的功能
+    * 在`library.js`檔案的程式碼中的最下面,需要事先公開(exposed)=> (使用`module.exports`物件的API)出來該檔案的功能,才能在其他需要使用時,直接匯入`library.js`就可以使用
+      * 因為在預設情況下,所有在`library.js`中定義的物件or變數都是私有的(private)並且沒有對外(to outer world)公開(exposed)
+      * 而這也就是[CommonJS modules](https://nodejs.org/api/modules.html#modules_modules_commonjs_modules)模組提供的[module.exports](https://nodejs.org/api/modules.html#modules_module_exports) API,所允許我們這麼做的
+- 當我們指派(assign)一個物件或是一個函式成為`exports`的新屬性時,而這就是我們要公開(exposed)的東西,因此我們就可以在我們的Node應用程式中的其它部分中或甚至是在其它的Node應用程式中也可以使用
+  + 我們可以透過以下2種方式來操作
+  + 方法一: 指派(assign)一個物件給`module.exports`,也就是指派給由Node的`CommonJS modules`核心模組所提供的物件,如此就能將我們的檔案僅對外匯出(export)那個物件
+    * 範例程式碼
+    * ```javascript
+        const car = {
+          brand: 'Ford',
+          model: 'Fiesta'
+        }
+
+        module.exports = car
+
+        //..in the other file
+
+        const car = require('./car')
+      ```
+  + 方法二: 將想要匯出(exported)物件新增(add)為[exports](https://nodejs.org/api/modules.html#modules_exports)的屬性(property),這個方法讓我們能夠匯出多個物件(objects),函式(functions),資料(data)
+    * 範例程式碼
+    * ```javascript
+        const car = {
+          brand: 'Ford',
+          model: 'Fiesta'
+        }
+
+        exports.car = car
+      ```
+    * 或是也可以直接這樣匯出(export)
+    * 範例程式碼
+    * ```javascript
+        exports.car = {
+          brand: 'Ford',
+          model: 'Fiesta'
+        }
+      ```
+    * 接著,我們在另一個檔案中就可以匯入(import)並引用(referencing)這個屬性
+    * 我們可以透過以下2種方式來引用它
+      * 方法一:
+      * ```javascript
+          const items = require('./items')
+          items.car
+          ```
+      * 方法二:
+      * ```javascript
+          const car = require('./items').car
+        ```
+- [module.exports](https://nodejs.org/api/modules.html#modules_module_exports)與[exports](https://nodejs.org/api/modules.html#modules_exports)之間有什麼區別呢?
+  + `module.exports`會公開(exposes)它指向(points to)的對象(object)
+  + `exports`會公開(exposes)它所指向(points to)的對象(object)的屬性(properties)
 
 
 ---
@@ -1355,6 +1416,96 @@ Node.js Learn<br>
       * [readline.close()](https://nodejs.org/api/readline.html#readline_rl_close)
         * 該方法會關閉`readline.createInterface()`實例,並放棄對輸入流(`input` streams)與輸出流(`output` streams)的控制(control over)。當被呼叫時,[close事件](https://nodejs.org/api/readline.html#readline_event_close)就會被發出(emitted)
         * 呼叫`readline.close()`方法不會立即停止其它被`readline.Interface`實例所發出的其它事件(包含[line事件](https://nodejs.org/api/readline.html#readline_event_line))
+
+#### [CommonJS modules](https://nodejs.org/api/modules.html#modules_modules_commonjs_modules)
+- 在Node的模組系統(module system)中,每個檔案都被視為一個分開的模組(separate module)
+  + 以下的情境說明,我們假設有一個檔案,其檔案名稱為`foo.js`
+  + ```javascript
+      const circle = require('./circle.js');
+      console.log(`The area of a circle of radius 4 is ${circle.area(4)}`);
+      ```
+    * 在這個檔案的第一行中,`foo.js`檔案會載入(loads) `circle.js`模組,這兩個檔案都是在同一個檔案目錄(directory)中
+  + 以下是`circle.js`的檔案內容
+    * ```javascript
+        const { PI } = Math;
+
+        exports.area = (r) => PI * r ** 2;
+
+        exports.circumference = (r) => 2 * PI * r;
+      ```
+    * `circle.js`模組已匯出了`area()`與`circumference()`這兩個函式,透過在特殊的`exports`物件上指定(specifying)額外的(additional)屬性可以將函式與物件新增到模組的最上層(root of a module)
+    * 這時該模組(= `circle.js`)的區域變數會是私有的(private),因為Node會將模組(module)包裝(wrapped)成為一個函式
+      * 詳情可參考[module wrapper](https://nodejs.org/api/modules.html#modules_the_module_wrapper)
+    * 在上述的`PI`範例中,`PI`變數就是`circle.js`的私有(private)變數
+- `module.exports`屬性可以被指派(assigned)一個新的值,像是函式or物件
+  + 以下的範例程式碼,`bar.js`檔案會使用到`square`模組,該模組會匯出(exports)一個`Square`類別(class)
+  + ```javascript
+      const Square = require('./square.js');
+      const mySquare = new Square(2);
+      console.log(`The area of mySquare is ${mySquare.area()}`);
+      ```
+    * `square`模組是在`square.js`這個檔案中定義的
+    * ```javascript
+        // Assigning to exports will not modify module, must use module.exports
+        module.exports = class Square {
+          constructor(width) {
+            this.width = width;
+          }
+
+          area() {
+            return this.width ** 2;
+          }
+        };
+      ```
+- 模組系統(module system)會在`require('module')`這個模組中實作(implemented)
+> [Core modules](https://nodejs.org/api/modules.html#modules_core_modules)
+  + Node有許多被編譯(compiled)成二進制文件(binary)的模組,這些Node內建的核心模組在官方文件的其它地方都有更詳細的介紹
+  + `require()`方法會優先讀取Node內建的核心模組,當它們的標識符(identifier)被作為參數傳入給`require()`方法時
+    * ```javascript
+        require('http')
+      ```
+    * 以上的引用方式會優先引用Node內建的核心模組-`HTTP`模組 (即使有同名稱的檔案在目錄中)
+> [Folders as modules](https://nodejs.org/api/modules.html#modules_folders_as_modules)
+  + 將程式(programs)與套件(libraries)整理到一個自給自足的(self-contained)目錄中,然後為這些目錄提供單一個入口(single entry point)是很方便的
+  + 以下有3種方式可以將資料夾(folder)作為參數傳遞給`require()`方法
+    * 方法一: 在該資料夾的最上層(root)建立一個[package.json](https://nodejs.org/api/packages.html#packages_node_js_package_json_field_definitions)檔案,並指定一個`main`屬性值來表示當載入此套件(package)時,預設要引入哪個模組
+      * ```javascript
+          { "name" : "some-library",
+            "main" : "./lib/some-library.js" 
+          }
+          ```
+      * 上述的範例程式碼中,如果在`./some-library/`目錄中有`./some-library/lib/some-library.js`這個檔案的話,Node就會嘗試讀取它
+      * 如果該目錄中沒有該文件,或是[main](https://nodejs.org/api/packages.html#packages_main)目錄已不見了(missing)或是無法找到(cannot be resolved),這時Node就會嘗試去讀取[name](https://nodejs.org/api/packages.html#packages_name)檔案中的`index.js`或是`index.node`
+      * 情境說明(**當該目錄沒有package.json這個檔案,且又找不到.xxx/lib/xxx.js檔案時**),當我們引用`require('./some-library')`的時候,會嘗試去讀取以下2種路徑下的檔案
+      * 第1種: `./some-library/index.js`
+      * 第2種: `./some-library/index.node`
+        * 如果以上的嘗試都失敗的話,Node就會將整個模組(entire module)回報(report)為遺失(missing),並顯示一個預設的錯誤
+        * 預設: `Error: Cannot find module 'some-library'`
+      * 以上就是對Node的`package.json`檔案有所體認的程度(the extent of the awareness)
+    + 方法二: 如果傳遞給`require()`方法的模組標識符(module identifier)不是一個Node內建的核心模組名稱,而且不是以`/`, `../`, `./` 的路徑開頭的話,Node就會從當前模組的父目錄(也就是前一層目錄, parent directory)開始,接著新增一個`node_modules/`資料夾,並嘗試從該位置讀取模組
+      * 如果在該目錄下沒有找到該模組名稱的話,則Node將會往前一層目錄查看,直到到達檔案系統(file system)的根目錄(root)為止
+      * 情境說明(若在`/home/ry/projects/foo.js`的檔案為`require('bar.js')`,則Node會根據以下的順序依序查看接下來的檔案路徑)
+        * `/home/ry/projects/node_modules/bar.js`
+        * `/home/ry/node_modules/bar.js`
+        * `/home/node_modules/bar.js`
+        * `/node_modules/bar.js`
+      * 這樣做也會讓程式本地化(localize)它們自己的相依性(dependencies),而不會互相抵觸(clash)
+      * 我們也可以透過明確的檔案路徑or與該模組一起分發(distributed)的子模組(sub modules)路徑,以後綴(suffix)的方式加在該模組名稱的後面,來引用到我們的程式碼中
+        * 例: `require('example-module/path/to/file')`
+        * 註: 後綴路徑會遵從與該模組相同的模組解析語意(module resolution semantics)
+    + 方法三: 如果`NODE_PATH`這個環境變數設定為以冒號區隔(colon-delimited)的絕對路徑的話,則Node將會搜尋該模組的這些絕對路徑(如果在其他位置沒有找到的話)
+      * 在Windows作業系統中,NODE_PATH會用分號(semicolon)做區隔
+      * `NODE_PATH`起初是為了在當前的模組解析([module resolution](https://nodejs.org/api/modules.html#modules_all_together))演算法被定義之前,能夠支援從不同路徑來載入模組而建立的
+        * 至今,`NODE_PATH`仍然支援,但是Node生態系統已經決定了定位出模組相依性的規範,而顯得`NODE_PATH`不再是那麼必要了
+        * 有時候,當其他人不知道這次的部署(deployments)需要依賴(rely on)`NODE_PATH`環境變數時,會發生出乎意料的行為
+        * 有時候,一個模組的相依性改變了,會導致`NODE_PATH`環境變數搜尋時會載入到不同的該模組的不同版本(甚至是不同的模組)
+      * 此外,Node會根據以下的順序來搜尋`GLOBAL_FOLDERS`清單
+        * `$HOME/.node_modules`
+        * `$HOME/.node_libraries`
+        * `$PREFIX/lib/node`
+        * 註: `$HOME`表示使用者的家目錄; `$PREFIX`表示Node已安裝`node_prefix`
+      * 這些做法主要是基於具有歷史意義的原因
+      * **建議**: 強烈鼓勵將相依的檔案放在本地端的`node_modules`資料夾,這會使載入模組的速度更快 & 更可靠(reliably)
 
 
 
