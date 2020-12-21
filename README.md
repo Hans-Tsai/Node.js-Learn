@@ -1535,8 +1535,77 @@ Node.js Learn<br>
       * 關於以上的範例,`b.js`檔案的`__filename`屬性值會是`/Users/mjr/app/node_modules/b/b.js`; 另外,`a.js`檔案的`__filename`屬性值會是`/Users/mjr/app/a.js`
 > [The module object](https://nodejs.org/api/modules.html#modules_the_module_object)
   + 在每個模組中,`module`物件中閒置的(free)變數代表對於當前模組物件的參考。為了方便起見,`module.exports`也可以透過[exports](https://nodejs.org/dist/latest-v15.x/docs/api/modules.html#modules_exports)這個全域物件來存取。[module](https://nodejs.org/dist/latest-v15.x/docs/api/modules.html#modules_module)物件對於每一個模組來說,實際上是一個區域物件,而不是全域物件
-  > method
-    * 
+    > object
+      * [module.exports](https://nodejs.org/api/modules.html#modules_module_exports)
+        * 該物件是由[Module system](https://nodejs.org/api/module.html#module_modules_module_api)所建立的,有些時候這樣是不能被接受(not acceptable)的,許多人希望他們的模組是某個類別(class)的實例(instance)
+        * 為此,可以將所需匯出的物件指派給`module.exports`物件
+        * 將所需的物件指派給`exports`會簡單地重新綁定(simply rebind)`exports`區域變數,然而這可能不是我們所想要的結果
+        * 範例程式碼(假設我們正在製作一個模組,叫做`a.js`)
+          * ```javascript
+              const EventEmitter = require('events');
+
+              module.exports = new EventEmitter();
+
+              // Do some work, and after some time emit
+              // the 'ready' event from the module itself.
+              setTimeout(() => {
+                module.exports.emit('ready');
+              }, 1000);
+            ```
+        * 這時我們就可以在另外一個檔案中引入上述的模組
+          * ```javascript
+              const a = require('./a');
+              a.on('ready', () => {
+                console.log('module "a" is ready');
+              });
+            ```
+        * 情境說明(**錯誤示範**)---不會被執行
+          * 因為指派給`module.exports`物件需要立即完成它,並且不能在任何回呼函式(callbacks)中完成
+          * `x.js`
+          * ```javascript
+              setTimeout(() => {
+                module.exports = { a: 'hello' };
+              }, 0);
+              ```
+          * `y.js`
+          * ```javascript
+              const x = require('./x');
+              console.log(x.a);
+            ```
+      * [exports shortcut](https://nodejs.org/api/modules.html#modules_module_exports)
+        * 該變數只有在模組檔案層級(module's file-level)的範圍(scope)才可用,並且在模組被評估之前(evaluated)就會被`module.exports`物件指派其值
+        * **該變數允許一個捷徑,因此`module.exports.f = ...`可以被更簡潔地寫成`exports.f = ...`**
+        * 然而,請注意!就如同任何的變數一樣,如果有新的值被指派給`exports`變數,則它就不再被重新綁定到`module.exports`物件上
+        * 範例程式碼
+          * ```javascript
+              module.exports.hello = true; // Exported from require of module
+              exports = { hello: false };  // Not exported, only available in the module
+           ```
+        * 當`module.exports`屬性完全被一個物件取代(replaced)時,通常也會重新指派給`exports`變數
+        * 範例程式碼
+          * ```javascript
+              module.exports = exports = function Constructor() {
+                // ... etc.
+              };
+           ```
+        * 為了說明以上的這種行為,請想像有一個假設的(hypothetical)`require()`方法實作(implementation),該行為與實際的`require()`方法相當類似
+        * 範例程式碼
+          * ```javascript
+              function require(/* ... */) {
+                const module = { exports: {} };
+                ((module, exports) => {
+                  // Module code here. In this example, define a function.
+                  function someFunc() {}
+                  exports = someFunc;
+                  // At this point, exports is no longer a shortcut to module.exports, and
+                  // this module will still export an empty default object.
+                  module.exports = someFunc;
+                  // At this point, the module will now export someFunc, instead of the
+                  // default object.
+                })(module, module.exports);
+                return module.exports;
+              }
+            ```
 
 
 
