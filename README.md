@@ -1506,7 +1506,37 @@ Node.js Learn<br>
         * 註: `$HOME`表示使用者的家目錄; `$PREFIX`表示Node已安裝`node_prefix`
       * 這些做法主要是基於具有歷史意義的原因
       * **建議**: 強烈鼓勵將相依的檔案放在本地端的`node_modules`資料夾,這會使載入模組的速度更快 & 更可靠(reliably)
-
+> [The module scope](https://nodejs.org/api/modules.html#modules_the_module_scope)
+  + [__dirname](https://nodejs.org/api/modules.html#modules_dirname)
+    * Returns: (string)
+    * 該屬性會回傳當前模組的資料夾名稱(也就是所在路徑, directory name)
+    * 這個屬性跟[path.dirname(path)](https://nodejs.org/api/path.html#path_path_dirname_path)與[__filename](https://nodejs.org/api/modules.html#modules_filename)是一樣的
+    * 範例程式碼(從`/Users/mjr`的家目錄中,執行`node example.js`)
+    * ```javascript 
+        console.log(__dirname);
+        // Prints: /Users/mjr
+        console.log(path.dirname(__filename));
+        // Prints: /Users/mjr
+      ```
+  + [__filename](https://nodejs.org/api/modules.html#modules_filename)
+    * Returns: (string)
+    * 該屬性會回傳當前模組的檔案名稱(file name),也就是當前模組的絕對路徑(如果存在連結(symlink)的話,已解析過的)
+    * 對於主程式,`__filename`不一定要與`CLI`中的檔案名稱相同
+    * 範例程式碼(從`/Users/mjr`的家目錄中,執行`node example.js`)
+      * ```javascript
+          console.log(__filename);
+          // Prints: /Users/mjr/example.js
+          console.log(__dirname);
+          // Prints: /Users/mjr
+        ```
+    * 假如有兩個模組--- `a` & `b`,然後`b`模組是`a`模組的相依項目(dependency),並且資料夾結構如下
+      * `/Users/mjr/app/a.js`
+      * `/Users/mjr/app/node_modules/b/b.js`
+      * 關於以上的範例,`b.js`檔案的`__filename`屬性值會是`/Users/mjr/app/node_modules/b/b.js`; 另外,`a.js`檔案的`__filename`屬性值會是`/Users/mjr/app/a.js`
+> [The module object](https://nodejs.org/api/modules.html#modules_the_module_object)
+  + 在每個模組中,`module`物件中閒置的(free)變數代表對於當前模組物件的參考。為了方便起見,`module.exports`也可以透過[exports](https://nodejs.org/dist/latest-v15.x/docs/api/modules.html#modules_exports)這個全域物件來存取。[module](https://nodejs.org/dist/latest-v15.x/docs/api/modules.html#modules_module)物件對於每一個模組來說,實際上是一個區域物件,而不是全域物件
+  > method
+    * 
 
 
 
