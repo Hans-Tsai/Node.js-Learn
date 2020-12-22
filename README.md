@@ -24,6 +24,7 @@ Node.js Learn<br>
       - [Output to the command line using Node.js](#output-to-the-command-line-using-nodejs)
       - [Accept input from the command line in Node.js](#accept-input-from-the-command-line-in-nodejs)
       - [Expose functionality from a Node.js file using exports](#expose-functionality-from-a-nodejs-file-using-exports)
+      - [An introduction to the npm package manager](#an-introduction-to-the-npm-package-manager)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -684,6 +685,66 @@ Node.js Learn<br>
 - [module.exports](https://nodejs.org/api/modules.html#modules_module_exports)與[exports](https://nodejs.org/api/modules.html#modules_exports)之間有什麼區別呢?
   + `module.exports`會公開(exposes)它指向(points to)的對象(object)
   + `exports`會公開(exposes)它所指向(points to)的對象(object)的屬性(properties)
+
+#### An introduction to the npm package manager
+- `npm`介紹
+  + [npm](https://www.npmjs.com/)是Node標準的套件管理工具(standard package manager)
+  + 在2017年1月,根據報告顯示`npm registry`列表上已有超過350,000個套件(packages),也使其成為地球上單一語言程式碼儲存庫,並且我們可以確定在`npm`上有幾乎所有的東西
+  + `npm`起初是用來下載和管理Node套件(package)的相依性(dependencies)的方式,但它此後已經成為前端(frontend) Javascript的工具
+  + `npm`幫助我們完成很多事情,另外`Yarn`是一個`npm`的替代方案(alternative),可以到[Yarn](https://classic.yarnpkg.com/en/)的官方網站去瞧瞧
+- 下載
+  + `npm`會管理我們專案的套件相依性(dependencies)
+  + 安裝所有該專案的套件與其相依的套件(all dependencies)
+    * 如果我們的專案有一個`package.json`檔案的話,只要在終端機執行以下指令
+      * $ `npm install`
+      * 如果我們的專案中不存在`node_modules/`這個資料夾的話,該指令就會安裝所有這個專案會需要的套件,並將這些東西放在`node_modules/`的資料夾
+  + 安裝單一個套件(package)
+    * 我們只想安裝指定的套件的話,可以執行以下指令
+      * $ `npm install <package-name>`
+      * 通常,我們會看到關於這個指令的更多選項,例如以下兩種選項
+        * [--save](https://docs.npmjs.com/cli/v7/configuring-npm/package-json#dependencies): 安裝該套件並新增到`package.json`的`dependencies`鍵中
+        * [--save-dev](https://docs.npmjs.com/cli/v7/configuring-npm/package-json#devdependencies): 安裝該套件並新增到`package.json`的`devDependencies`鍵中
+      * 以上兩種安裝選項的區別主要是`devDependencies`通常是開發工具(development tools),像是測試套件(testing library); 而`dependencies`在生產環境中與應用程式本身綁定在一起
+  + 更新套件(Updating packages)
+    * 使用`npm`也讓更新套件更容易,可以透過執行以下指令
+      * `npm update`
+    * `npm`將檢查所有套件是否有能滿足我們專案中的`package.json`檔案版本限制(constraints)的最新版本
+    * 我們也可以指定要更新單一個套件
+      * $ `npm update <package-name>`
+- 套件的版本控制
+  + 除了單純的下載之外,`npm`也能管理套件的版本,因此我們可以在我們專案中的`package.json`檔案中,對套件指定任何一個特定的版本,或是要求安裝的版本需要高於 or 低於我們所需要的特定版本
+  + 很多時候會發現一個函式庫(library)僅與另一個函式庫的主要版本(major release)所相容(compatible); 或是最新發布的函式庫的版本之中有`bug`,仍然未修復,並造成了一些問題(issue)
+  + 指定一個明確的函式庫(library)版本也可以幫助每個人都使用確定相同的套件(package)版本,因此整個團隊都使用相同的版本來運行程式,直到`package.json`檔案被更新為止
+  + 在以上的情況中,套件的版本管理都非常有用,`npm`也遵循了語意化版本控制的標準(semantic versioning (semver) standard)
+    * [npm Docs---semver](https://docs.npmjs.com/cli/v7/using-npm/semver): `npm`的語意化版本控制工具
+    * [Semantic Versioning 2.0.0](https://semver.org/): 語意化版本的官方網站
+- 執行任務(Running Tasks)
+  + `package.json`支援透過指定格式的命令來執行Node應用程式,可以透過以下指令
+    * $ `npm run <task-name>`
+    * 範例程式碼
+      * ```javascript
+          {
+            "scripts": {
+              "start-dev": "node lib/server-development",
+              "start": "node lib/server-production"
+            },
+          }
+        ```
+    * 以下範例程式碼是利用此功能執行**Webpack**常見的方式
+      * ```javascript
+          {
+            "scripts": {
+              "watch": "webpack --watch --progress --colors --config webpack.conf.js",
+              "dev": "webpack --progress --colors --config webpack.conf.js",
+              "prod": "NODE_ENV=production webpack -p --config webpack.conf.js",
+            },
+          }
+        ```
+  + 因此,我們不用再去記那些容易忘記or輸入錯誤的長指令,而可以像是如下簡潔的方式來執行Node應用程式
+    * $ `npm run watch`
+    * $ `npm run watch`
+    * $ `npm run watch`
+    
 
 
 ---
@@ -1614,6 +1675,7 @@ Node.js Learn<br>
 #### 官方文件
 - [Node.js](https://nodejs.org/en/)
 - [Node Package Manager(NPM)](https://www.npmjs.com/)
+- [Yarn](https://classic.yarnpkg.com/en/)
 - [Node Version Manager(NVM)](https://github.com/nvm-sh/nvm)
 - [Express.js](https://expressjs.com/)
 
