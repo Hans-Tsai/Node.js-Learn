@@ -25,6 +25,7 @@ Node.js Learn<br>
       - [Accept input from the command line in Node.js](#accept-input-from-the-command-line-in-nodejs)
       - [Expose functionality from a Node.js file using exports](#expose-functionality-from-a-nodejs-file-using-exports)
       - [An introduction to the npm package manager](#an-introduction-to-the-npm-package-manager)
+      - [Where does npm install the packages?](#where-does-npm-install-the-packages)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -742,9 +743,28 @@ Node.js Learn<br>
         ```
   + 因此,我們不用再去記那些容易忘記or輸入錯誤的長指令,而可以像是如下簡潔的方式來執行Node應用程式
     * $ `npm run watch`
-    * $ `npm run watch`
-    * $ `npm run watch`
+    * $ `npm run dev`
+    * $ `npm run prod`
     
+#### Where does npm install the packages?
+- 當我們利用`npm`套件管理工具來安裝一個套件時,可以選擇執行以下2種類型的安裝方式
+  + 本地端安裝(a local install)
+  + 全域安裝(a global install)
+- 在預設情況下,我們可以輸入以下指令來安裝套件(=> 本地端安裝)
+  + 例: $ `npm install lodash`
+  + 這樣`npm`就會在當前專案的目錄裡面的`node_modules/`資料夾中安裝該套件
+  + 這時,`npm`也會新增`lodash`這個項目(entry)到當前專案目錄裡的`package.json`檔案中的`dependencies`屬性中
+- 我們也可以使用`-g`選項來執行全域安裝
+  + 例: $ `npm install -g lodash`
+  + 這時,`npm`就不會在當前的資料夾安裝該套件,而是會安裝到一個全域的位置上(global location)
+  + 具體來說,全域安裝的路徑位置在哪裡呢? A: 會依據本地端電腦的作業系統不同而定
+    * 在Windows作業系統中會是`C:\Users\YOU\AppData\Roaming\npm\node_modules`
+    * 在macOS & Linux作業系統中會是`/usr/local/lib/node_modules`
+      * ![npm 全域安裝的路徑位置](/pic/npm%20全域安裝的路徑位置.png)
+  + 然而,如果我們使用`nvm`來管理Node版本的話,全域安裝的路徑位置就會有所不同
+  + 以我使用`nvm`的情況來說,我的套件會被全域安裝在`/Users/joe/.nvm/versions/node/v8.9.0/lib/node_modules`
+
+
 
 
 ---
