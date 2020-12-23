@@ -27,6 +27,7 @@ Node.js Learn<br>
       - [An introduction to the npm package manager](#an-introduction-to-the-npm-package-manager)
       - [Where does npm install the packages?](#where-does-npm-install-the-packages)
       - [How to use or execute a package installed using npm?](#how-to-use-or-execute-a-package-installed-using-npm)
+      - [The package.json guide](#the-packagejson-guide)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -783,6 +784,119 @@ Node.js Learn<br>
   + 我們可以透過`npx`來執行`cowsay`套件來試試看,`npx`會自動去找到該套件的路徑位置
     * 例: $ `npx cowsay`
     * ![cow-say](/pic/cow-say.png)
+
+#### The package.json guide
+- 如果您有使用過Javascript,或是曾經有和Javascript專案互動(interacted)過,或是您是一位Node.js後端開發人員,或是前端開發人員,您肯定認識`package.json`這個檔案
+- 接下來我們會討論`package.json`這個檔案的
+  + 有什麼用途呢?
+  + 我們應該要對於這個檔案有什麼認知呢?
+  + 我們能用它做什麼特別的事情呢?
+- `package.json`有點像是我們專案的清單(manifest),它可以用來做很多事情。它是安裝工具(configuration for tools)的一個中央儲存褲(central repository)
+  + 例如: `npm` & `yarn`都會將套件(package)的名稱(names)與對應版本(versions)都儲存在這裡
+- `package.json`的檔案結構(file structure)
+  + 以下是一個`package.json`檔案的範例
+    * `{}`
+  + 我們可以看到原始的`package.json`檔案內容是空的,對於應用程式來說,它沒有什麼固定的要求,唯一的要求就是需要是`JSON`的資料格式; 否則程式將無法透過程式的方式(programmatically)來讀取它
+  + 如果我們在建構(build)一個Node套件,並透過`npm`來分發(distribute over)它,將發生根本性的變化(things change radically),並且必須有一組屬性來幫助其他人來使用這個套件
+    * 這是另一個`package.json`檔案的範例
+    * ```javascript
+        {
+            "name": "test-project"
+          }
+      ```
+    * 它定義了一個`name`屬性(property),該屬性會告訴應用程式(application)或是套件(package),其屬性也會包含於該`package.json`檔案所屬的專案目錄中
+  + 以下是一個更複雜的範例,這個範例是從Vue.js的應用程式所提取出來的一部分
+    * ```javascript
+        {
+          "name": "test-project",
+          "version": "1.0.0",
+          "description": "A Vue.js project",
+          "main": "src/main.js",
+          "private": true,
+          "scripts": {
+            "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
+            "start": "npm run dev",
+            "unit": "jest --config test/unit/jest.conf.js --coverage",
+            "test": "npm run unit",
+            "lint": "eslint --ext .js,.vue src test/unit",
+            "build": "node build/build.js"
+          },
+          "dependencies": {
+            "vue": "^2.5.2"
+          },
+          "devDependencies": {
+            "autoprefixer": "^7.1.2",
+            "babel-core": "^6.22.1",
+            "babel-eslint": "^8.2.1",
+            "babel-helper-vue-jsx-merge-props": "^2.0.3",
+            "babel-jest": "^21.0.2",
+            "babel-loader": "^7.1.1",
+            "babel-plugin-dynamic-import-node": "^1.2.0",
+            "babel-plugin-syntax-jsx": "^6.18.0",
+            "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
+            "babel-plugin-transform-runtime": "^6.22.0",
+            "babel-plugin-transform-vue-jsx": "^3.5.0",
+            "babel-preset-env": "^1.3.2",
+            "babel-preset-stage-2": "^6.22.0",
+            "chalk": "^2.0.1",
+            "copy-webpack-plugin": "^4.0.1",
+            "css-loader": "^0.28.0",
+            "eslint": "^4.15.0",
+            "eslint-config-airbnb-base": "^11.3.0",
+            "eslint-friendly-formatter": "^3.0.0",
+            "eslint-import-resolver-webpack": "^0.8.3",
+            "eslint-loader": "^1.7.1",
+            "eslint-plugin-import": "^2.7.0",
+            "eslint-plugin-vue": "^4.0.0",
+            "extract-text-webpack-plugin": "^3.0.0",
+            "file-loader": "^1.1.4",
+            "friendly-errors-webpack-plugin": "^1.6.1",
+            "html-webpack-plugin": "^2.30.1",
+            "jest": "^22.0.4",
+            "jest-serializer-vue": "^0.3.0",
+            "node-notifier": "^5.1.2",
+            "optimize-css-assets-webpack-plugin": "^3.2.0",
+            "ora": "^1.2.0",
+            "portfinder": "^1.0.13",
+            "postcss-import": "^11.0.0",
+            "postcss-loader": "^2.0.8",
+            "postcss-url": "^7.2.1",
+            "rimraf": "^2.6.0",
+            "semver": "^5.3.0",
+            "shelljs": "^0.7.6",
+            "uglifyjs-webpack-plugin": "^1.1.1",
+            "url-loader": "^0.5.8",
+            "vue-jest": "^1.0.2",
+            "vue-loader": "^13.3.0",
+            "vue-style-loader": "^3.0.1",
+            "vue-template-compiler": "^2.5.2",
+            "webpack": "^3.6.0",
+            "webpack-bundle-analyzer": "^2.9.0",
+            "webpack-dev-server": "^2.9.1",
+            "webpack-merge": "^4.1.0"
+          },
+          "engines": {
+            "node": ">= 6.0.0",
+            "npm": ">= 3.0.0"
+          },
+          "browserslist": ["> 1%", "last 2 versions", "not ie <= 8"]
+        }
+      ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
