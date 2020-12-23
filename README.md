@@ -26,6 +26,7 @@ Node.js Learn<br>
       - [Expose functionality from a Node.js file using exports](#expose-functionality-from-a-nodejs-file-using-exports)
       - [An introduction to the npm package manager](#an-introduction-to-the-npm-package-manager)
       - [Where does npm install the packages?](#where-does-npm-install-the-packages)
+      - [How to use or execute a package installed using npm?](#how-to-use-or-execute-a-package-installed-using-npm)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -764,6 +765,24 @@ Node.js Learn<br>
   + 然而,如果我們使用`nvm`來管理Node版本的話,全域安裝的路徑位置就會有所不同
   + 以我使用`nvm`的情況來說,我的套件會被全域安裝在`/Users/joe/.nvm/versions/node/v8.9.0/lib/node_modules`
 
+#### How to use or execute a package installed using npm?
+> npm的[cowsay](https://www.npmjs.com/package/cowsay)套件---是一個由`Perl`語言所開發的套件,能提供一個終端機介面的程式,並以母牛(cow)的方式說話
+- 當我們透過`npm`安裝套件到`node_modules/`資料夾時,或是全域安裝時,我們可以透過`require('<package name>')`的語法來引用該套件(package)
+  + 假設我們安裝了`lodash`這個Javascript世界中流行且實用的函式庫(library)
+    * 例: $ `npm install lodash`
+  + 這樣`npm`將會把`lodash`函式庫安裝到當前專案目錄中的`node_modules/`資料夾中
+  + 當我們想要使用`lodash`函式庫在我們的程式碼時,可以利用以下的指令
+    * 例: $ `const _ = require('lodash')`
+    * 以這個範例為例**會將可執行的檔案(executable file)放在`node_modules/.bin/`資料夾下面**
+- 以上的觀念,我們可以利用`npm`上的[cowsay](https://www.npmjs.com/package/cowsay)套件來做個展示
+  + [cowsay](https://www.npmjs.com/package/cowsay)套件能提供一個終端機介面的程式,並以母牛(cow)的方式說話
+  + 當我們透過`npm`安裝`cowsay`套件時,**該套件就會安裝它自己本身** & **其所有相依的套件(dependencies)在`node_modules/`資料夾中**
+    * ![node_modules-content](/pic/node_modules-content.png)
+  + 在`node_modules/`資料夾中會有一個隱藏目錄`.bin/`,裡面包含指向`cowsay`套件的二進制文件(binaries)
+    * ![binary-files](/pic/binary-files.png)
+  + 我們可以透過`npx`來執行`cowsay`套件來試試看,`npx`會自動去找到該套件的路徑位置
+    * 例: $ `npx cowsay`
+    * ![cow-say](/pic/cow-say.png)
 
 
 
