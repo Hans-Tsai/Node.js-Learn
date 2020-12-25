@@ -791,7 +791,7 @@ Node.js Learn<br>
   + 有什麼用途呢?
   + 我們應該要對於這個檔案有什麼認知呢?
   + 我們能用它做什麼特別的事情呢?
-- `package.json`有點像是我們專案的清單(manifest),它可以用來做很多事情。它是安裝工具(configuration for tools)的一個中央儲存褲(central repository)
+- `package.json`有點像是我們專案的清單(manifest),它可以用來做很多事情。它是安裝工具(configuration for tools)的一個中央儲存庫(central repository)
   + 例如: `npm` & `yarn`都會將套件(package)的名稱(names)與對應版本(versions)都儲存在這裡
 - `package.json`的檔案結構(file structure)
   + 以下是一個`package.json`檔案的範例
@@ -882,22 +882,213 @@ Node.js Learn<br>
           "browserslist": ["> 1%", "last 2 versions", "not ie <= 8"]
         }
       ```
-    * 這裡有幾個重要的屬性要說明  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    * 這裡有幾個重要的屬性要說明
+      * `version`: 表示目前的版本號
+      * `name`: 設定應用程式(application)/套件(package)的名稱
+      * `description`: 簡單的描述該應用程式(application)/套件(package)
+      * `main`: 設定應用程式的入口點(entry point)
+      * `private`: 如果設定為`true`,`npm`就會拒絕發布該應用程式(application)/套件(package),此屬性是用來防止我們不小心公開地發布這個應用程式(application)/套件(package)
+      * `scripts`: 定義一組`node`的`CLI`腳本(scripts)指令
+      * `dependencies`: 設定一個`npm`需要安裝的相依性套件清單(list)
+      * `devDependencies`: 設定一個在開發環境(development)中`npm`需要安裝的相依性套件清單(list)
+      * `engines`: 設定要用哪個Node的版本來運行該應用程式(application)/套件(package)
+      * `browserslist`: 用來聲明該應用程式(application)/套件(package)有支援哪些瀏覽器 & 其瀏覽器的版本
+      * 以上的所有屬性,都可以被`npm`或是其他可以讀取`package.json`的檔案所使用
+- `package.json`的屬性分類(properties breakdown)
+  + 本章節會開始詳細描述我們可以使用的`package.json`檔案的屬性細節。在這裡我們主要討論的是套件(package),但是同樣的道理也適用於我們本地端(local)的應用程式
+  + 這些屬性大多數僅會在[npm](https://www.npmjs.com/)官網上所用到。另外,其他屬性則會與我們的程式碼(code)互動(interact with),像是`npm`或是其他的套件管理包工具
+  + 以下列舉`package.json`中的幾個常用且重要的屬性
+    * `name`: 設定套件(package)名稱
+      * ```javascript
+          "name": "test-project"
+          ```
+      * `name`屬性的命名規則有以下幾項
+        * 必須小於214字元(characters)的長度限制
+        * 不能含有空格(spaces)
+        * 僅能使用**小寫**英文字母
+        * 可以使用連字號(hyphens) & 底線(underscores)
+      * 這是因為當該套件(package)被發布(publish)到`npm`上時,它會基於`name`屬性的值來取得一段自己的(own) URL
+      * 如果我們要發布一個套件(package)到`GitHub`上時,此`name`屬性就是一個作為GitHub上儲存庫(repository)的名稱
+    * `author`: 列出該套件的作者的相關資訊,可以用以下2種形式來表示(直接列舉 or 物件(object))
+      * ```javascript
+          {
+            "author": "Joe <joe@whatever.com> (https://whatever.com)"
+          }
+          ```
+      * ```javascript
+          {
+            "author": {
+              "name": "Joe",
+              "email": "joe@whatever.com",
+              "url": "https://whatever.com"
+            }
+          }
+          ```
+      * 作者(author)為一個人,可以用物件(object)的形式來表示,會有一個`name`的鍵(key)值(value),並且通常會有`url`與`email`的鍵值
+    * `contributors`: 除了作者(author)以外,該應用程式(application)/套件(package)可以另外有1~多個貢獻者(contributors),可以用陣列(array)的形式來表示
+      * ```javascript
+          {
+            "contributors": ["Joe <joe@whatever.com> (https://whatever.com)"]
+          }
+          ```
+      * ```javascript
+          {
+            "contributors": [
+              {
+                "name": "Joe",
+                "email": "joe@whatever.com",
+                "url": "https://whatever.com"
+              }
+            ]
+          }
+          ```
+    * `bug`: 連結到該套件(package)的問題追蹤區,大多數情況下會是一個`GitHub`的問題討論頁面(issue page)
+      * ```javascript
+          {
+            "bugs": "https://github.com/whatever/package/issues"
+          }
+        ```
+    * `homepage`: 設定一個該套件(package)的主頁(homepage)畫面連結
+      * ```javascript
+          {
+            "homepage": "https://whatever.com/package"
+          }
+        ```
+    * `version`: 表示當前的(current)套件版本號
+      * ```javascript
+          "version": "1.0.0"
+          ```
+      * 該屬性會遵從語意化版本標記(semantic versioning notation)規則,也就是所有`npm`上的套件版本號都會是**x.x.x**的數字形式
+      * 語意化版本標記(semantic versioning notation)規則
+        * 第一個數字代表主要版本號(major version)
+          * `使用情境`: 當您進行不兼容的API更改時的主要版本 => 也就是當該套件版本**含有重大更改**時
+        * 第二個數字代表次要版本號(minor version)
+          * `使用情境`: 以向下兼容的方式添加功能時的MINOR版本 => 也就是**僅引入(introduces)與過去相容的套件功能**時
+        * 第三個數字代表修補版本號(patch version)
+          * 向後兼容的bug修復程序時的PATCH版本 => 也就是**僅修改錯誤**(only fixes bugs)時
+        * 可參考`npm`上的[semver](https://www.npmjs.com/package/semver)套件(package)
+        * 另外,也可以[Semantic Versioning 2.0.0](https://semver.org/)的官方網站
+    * `license`: 表示一個套件的授權(license)範圍
+      * ```javascript
+          "license": "MIT"
+          ```
+      * 可參考[常見的五個開源專案授權條款,使用軟體更自由](https://noob.tw/open-source-licenses/)
+    * `keywords`: 包含與該套件(package)相關的關鍵字的陣列(array)
+      * ```javascript
+          "keywords": [
+            "email",
+            "machine learning",
+            "ai"
+          ]
+          ```
+      * 該屬性是用來幫助其他人在瀏覽[npm](https://www.npmjs.com/)官網上其他相似的套件時,能透過這些關鍵字更快導向(navigating)到我們的套件
+    * `description`: 包含一段對該套件(package)的簡潔的描述
+      * 該屬性是當我們在`npm`上公開發布(publish)我們的套件(package)時,能讓其他人了解這個套件的用途與使用方法,這是特別有用的
+      * ```javascript
+          "description": "A package to work with strings"
+        ```
+    * `repository`: 指定這個套件(package)的程式碼儲存庫在哪裡
+      * ```javascript
+          "repository": "github:whatever/testing",
+          ```
+      * 注意`github`前綴(prefix)字樣,我們也可以使用其它流行的程式碼儲存庫,像是`gitlab` or `bitbucket`
+        * ```javascript
+            "repository": "gitlab:whatever/testing",
+          ```
+        * ```javascript
+            "repository": "bitbucket:whatever/testing",
+          ```
+      * 我們也可以明確地設定一個版本控制系統(version control system)
+        * ```javascript
+            "repository": {
+              "type": "git",
+              "url": "https://github.com/whatever/testing.git"
+            }
+          ```
+      * 也可以指定其它的版本控制系統,像是`svn`
+        * ```javascript
+            "repository": {
+              "type": "svn",
+              "url": "..."
+            }
+          ```
+    * `main`: 設定一個此套件的進入點(entry point)
+      * 當我們在應用程式中匯入(import)此套件時,該屬性就會從我們應用程式的這個進入點(entry point)路徑裡面,搜尋(search)並匯出(export)模組
+      * ```javascript
+          "main": "src/main.js"
+        ```
+    * `private`: 用來防止我們將此套件不小心公開地發布到`npm`上
+      * 可以將該屬性值設定為`true`,來防止我們將此套件不小心公開地發布到`npm`上
+      * ```javascript
+          "private": true
+        ```
+    * `scripts`: 可用來定義一組可以給Node執行的腳本(scripts)指令
+      * ```javascript
+          "scripts": {
+            "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
+            "start": "npm run dev",
+            "unit": "jest --config test/unit/jest.conf.js --coverage",
+            "test": "npm run unit",
+            "lint": "eslint --ext .js,.vue src test/unit",
+            "build": "node build/build.js"
+          }
+          ```
+      * 這些腳本(scripts)指令是用來在`CLI`終端機上執行的,我們可以透過以下指令的形式來執行
+        * $ `npm run <script name>`
+        * 例: $ `npm run dev` 或是 `yarn dev`
+    * `dependencies`: 設定一個清單來表示該套件的相依套件名稱與其分別的版本號之間的對應關係
+      * 可以用物件(object)的形式來表示,鍵=相依套件的名稱,值=對應的版本號
+      * 我們可以使用`npm`或是`yarn`來安裝所有這些相依套件
+        * 例: $ `npm install <PACKAGENAME>`
+        * 例: $ `yarn add <PACKAGENAME>`
+      * 當透過`npm`或是`yarn`來安裝這些相依套件後,`package.json`檔案的`dependencies`屬性就會自動地新增一條該套件(package)的相依套件(dependencies)的鍵值
+      * ```javascript
+          "dependencies": {
+            "vue": "^2.5.2"
+          }
+        ```
+    * `devDependencies`: 設定一個清單來表示**在開發環境(development)中**該套件的相依套件名稱與其分別的版本號之間的對應關係
+      * 該屬性與前一個`dependencies`屬性的差別是,`devDependencies`屬性中所列出的相依套件需要**在開發環境(development)中**才會被安裝,並不會在生產環境(production)中被安裝
+      * 我們可以使用`npm`或是`yarn`來安裝所有這些相依套件
+        * 例: $ `npm install --save-dev <PACKAGENAME>`
+        * 例: $ `yarn add --dev <PACKAGENAME>`
+      * 當透過`npm`或是`yarn`來安裝這些相依套件後,`package.json`檔案的`dependencies`屬性就會自動地新增一條**在開發環境(development)中**該套件(package)的相依套件(devDependencies)的鍵值
+      * ```javascript
+          "devDependencies": {
+            "autoprefixer": "^7.1.2",
+            "babel-core": "^6.22.1"
+          }
+        ```
+    * `engines`: 可設定此應用程式(application)/套件(package)想要用什麼版本的`Node`, `npm`, `yarn`來執行 or 安裝
+      * 可指定一個明確的版本,或是給定一個版本區間的範圍
+      * ```javascript
+          "engines": {
+            "node": ">= 6.0.0",
+            "npm": ">= 3.0.0",
+            "yarn": "^0.13.0"
+          }
+        ```
+    * `browserslist`: 用來聲明這個套件(package)能支援哪些瀏覽器以及其瀏覽器的對應版本號
+      * 該屬性通常是給[Babel](https://babeljs.io/), [Autoprefixer](https://www.npmjs.com/package/autoprefixer)以及其他的工具來讀取的
+      * 僅會將`polyfills`與`fallbacks`新增到目標瀏覽器中
+      * ```javascript
+          "browserslist": [
+            "> 1%",
+            "last 2 versions",
+            "not ie <= 8"
+          ]
+          ```
+        * 以上的範例設定表示我們想要支援過去所有瀏覽器最新的2個主要版本,並且至少要有使用1%的使用率(依據[CanIUse.com](https://caniuse.com/)的統計數據為準)。另外,不支援IE8以及其更舊的版本
+      * 可參考`npm`上的[browserslist](https://www.npmjs.com/package/browserslist)套件
+    * 特殊命令的屬性(Command-specific properties)
+      * 其實`package.json`檔案還可以託管(host)特殊命令(command-specific)的設定(configuration),像是[eslintConfig](https://eslint.org/docs/user-guide/configuring), [babel](https://babeljs.io/docs/en/configuration)...等等其它的設定
+      * 這些都是特殊命令的屬性設定,我們可以到它們分別的官方文件中查詢該如何設定它們(例: `ESlint`, `Babel`)
+- 套件的版本號(Package versions)
+  + 我們可以從上面的`package.json`範例中看到像是`~3.0.0`或是`^0.13.0`的版本表示方式,這些前綴符號(symbol)代表該套件(package)的這些相依套件(dependencies)可以被更新(update)到哪個版本
+  + 其版本號規則可參考[Semantic Versioning using npm](https://nodejs.dev/learn/semantic-versioning-using-npm)章節的說明
+  + 我們可以使用組合範圍的版本表達方式
+    * 例: `1.0.0 || >=1.1.0 <1.2.0`
+    * 以上的組合範圍的版本表達方式就代表我們可以使用`1.0.0`以上 or 從`1.1.0`起,但低於`1.2.0`的版本
 
 
 ---
@@ -1835,6 +2026,7 @@ Node.js Learn<br>
 #### 網路文章
 - [Understanding Worker Threads in Node.js](https://vagrantpi.github.io/2019/11/01/understanding-worker-threads-in-Node.js)
 - [深入理解 Node.js 的設計錯誤 — 從 Ryan Dahl 的演講中反思](https://medium.com/rytass/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3-node-js-%E7%9A%84%E8%A8%AD%E8%A8%88%E9%8C%AF%E8%AA%A4-%E5%BE%9E-ryan-dahl-%E7%9A%84%E6%BC%94%E8%AC%9B%E4%B8%AD%E5%8F%8D%E6%80%9D-cedbf32cb188)
+- [常見的五個開源專案授權條款,使用軟體更自由](https://noob.tw/open-source-licenses/)
 
 #### 網路影片
 - [10 Things I Regret About Node.js - Ryan Dahl - JSConf EU](https://www.youtube.com/watch?v=M3BM9TB-8yA&feature=emb_logo)
