@@ -28,6 +28,7 @@ Node.js Learn<br>
       - [Where does npm install the packages?](#where-does-npm-install-the-packages)
       - [How to use or execute a package installed using npm?](#how-to-use-or-execute-a-package-installed-using-npm)
       - [The package.json guide](#the-packagejson-guide)
+      - [The package-lock.json file](#the-package-lockjson-file)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -1089,6 +1090,10 @@ Node.js Learn<br>
   + 我們可以使用組合範圍的版本表達方式
     * 例: `1.0.0 || >=1.1.0 <1.2.0`
     * 以上的組合範圍的版本表達方式就代表我們可以使用`1.0.0`以上 or 從`1.1.0`起,但低於`1.2.0`的版本
+
+#### The package-lock.json file
+- 從`npm` v5.0.0開始, 就開始引進(introduced)`package-lock.json`檔案
+
 
 
 ---
