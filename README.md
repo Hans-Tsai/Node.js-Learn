@@ -1093,7 +1093,117 @@ Node.js Learn<br>
 
 #### The package-lock.json file
 - 從`npm` v5.0.0開始, 就開始引進(introduced)`package-lock.json`檔案
+- `package-lock.json`檔案主要是用來追蹤(track)每個套件已安裝的確切(exact)版本,以便可以利用相同的方式來達到100%的複製出同樣的軟體產品,因此也不會受到套件維護者(maintainers)更新這些套件時而影響
+- 這解決了一個`package.json`檔案尚未解決的一個具體的問題。在`package.json`中,我們可以利用[semver](https://docs.npmjs.com/cli/v6/using-npm/semver)來設定(set)我們要升級(upgrade)到的版本,像是次要(minor)或是修補(patch)版本
+  + 範例說明
+  + `~0.13.0`: 表示只想更新(update)修補版本,例如`0.13.1`可以,但是`0.14.0`就不行
+  + `^0.13.0`: 表示只想更新次要(minor)以及修補(patch)版本,例如`0.13.0`和`0.14.0`...等等都是可以的
+  + `0.13.0`: 表示我們將始終使用這個確切的版本號
+- 正常來說,我們**不會提交**(commit)`node_modules/`資料夾,因為它通常很大。當我們想要複製出一份相同的專案,可以透過 $ `npm install` 指令,該指令就會參考`~`與`^`語法(syntax)來下載相應的版本號
+  + 當然,我們有可以指定確切的版本號,像是`0.13.0`
+- 因此,我們的原始專案與新初始化的專案實際上是不同的。即使次要(minor)或是修補(patch)版本不應該引入(introduce)重大更改(breaking changes),但是我們都知道仍然可能有`bug`埋藏在其中
+- `package-lock.json`檔案會設定目前已安裝的套件的**確切版本號**,`npm`就會透過 $ `npm install` 指令來安裝; 其實這不是一個一個新觀念,如同`PHP`的`Composer`套件管理包工具就已經使用類似的系統很多年了
+- 如果該專案是公開的,或是我們有其他協作者(collaborators),或者我們有使用Git作為用來部署的資源,`package-lock.json`檔案都需要被提交(commit)到`Git`的儲存庫中,使它能夠被其他人下載
+- 所有的相依套件都會被`package-lock.json`更新(updated),當我們執行以下指令時
+  + $ `npm update`
+- 以下是在一個空資料夾,執行 $ `npm install cowsay` 來安裝`package-lock.json`所得到的範例檔案結構
+  + ```javascript
+      {
+        "requires": true,
+        "lockfileVersion": 1,
+        "dependencies": {
+          "ansi-regex": {
+            "version": "3.0.0",
+            "resolved": "https://registry.npmjs.org/ansi-regex/-/ansi-regex-3.
+      0.0.tgz",
+            "integrity": "sha1-7QMXwyIGT3lGbAKWa922Bas32Zg="
+          },
+          "cowsay": {
+            "version": "1.3.1",
+            "resolved": "https://registry.npmjs.org/cowsay/-/cowsay-1.3.1.tgz"
+      ,
+            "integrity": "sha512-3PVFe6FePVtPj1HTeLin9v8WyLl+VmM1l1H/5P+BTTDkM
+      Ajufp+0F9eLjzRnOHzVAYeIYFF5po5NjRrgefnRMQ==",
+            "requires": {
+              "get-stdin": "^5.0.1",
+              "optimist": "~0.6.1",
+              "string-width": "~2.1.1",
+              "strip-eof": "^1.0.0"
+            }
+          },
+          "get-stdin": {
+            "version": "5.0.1",
+            "resolved": "https://registry.npmjs.org/get-stdin/-/get-stdin-5.0.
+      1.tgz",
+            "integrity": "sha1-Ei4WFZHiH/TFJTAwVpPyDmOTo5g="
+          },
+          "is-fullwidth-code-point": {
+            "version": "2.0.0",
+            "resolved": "https://registry.npmjs.org/is-fullwidth-code-point/-/
+      is-fullwidth-code-point-2.0.0.tgz",
+            "integrity": "sha1-o7MKXE8ZkYMWeqq5O+764937ZU8="
+          },
+          "minimist": {
+            "version": "0.0.10",
+            "resolved": "https://registry.npmjs.org/minimist/-/minimist-0.0.10
+      .tgz",
+            "integrity": "sha1-3j+YVD2/lggr5IrRoMfNqDYwHc8="
+          },
+          "optimist": {
+            "version": "0.6.1",
+            "resolved": "https://registry.npmjs.org/optimist/-/optimist-0.6.1.tgz",
+            "integrity": "sha1-2j6nRob6IaGaERwybpDrFaAZZoY=",
 
+            "requires": {
+              "minimist": "~0.0.1",
+              "wordwrap": "~0.0.2"
+            }
+          },
+          "string-width": {
+            "version": "2.1.1",
+            "resolved": "https://registry.npmjs.org/string-width/-/string-width-2.1.1.tgz",
+            "integrity": "sha512-nOqH59deCq9SRHlxq1Aw85Jnt4w6KvLKqWVik6oA9ZklXLNIOlqg4F2yrT1MVaTjAqvVwdfeZ7w7aCvJD7ugkw==",
+            "requires": {
+              "is-fullwidth-code-point": "^2.0.0",
+              "strip-ansi": "^4.0.0"
+            }
+          },
+          "strip-ansi": {
+            "version": "4.0.0",
+            "resolved": "https://registry.npmjs.org/strip-ansi/-/strip-ansi-4.0.0.tgz",
+            "integrity": "sha1-qEeQIusaw2iocTibY1JixQXuNo8=",
+            "requires": {
+              "ansi-regex": "^3.0.0"
+            }
+          },
+          "strip-eof": {
+            "version": "1.0.0",
+            "resolved": "https://registry.npmjs.org/strip-eof/-/strip-eof-1.0.0.tgz",
+            "integrity": "sha1-u0P/VZim6wXYm1n80SnJgzE2Br8="
+          },
+          "wordwrap": {
+            "version": "0.0.3",
+            "resolved": "https://registry.npmjs.org/wordwrap/-/wordwrap-0.0.3.tgz",
+            "integrity": "sha1-o9XabNXAvAAI03I0u68b7WMFkQc="
+          }
+        }
+      }
+      ```
+  + `npm`會依據以下4點來安裝`cowsay`
+    * get-stdin
+    * optimist
+    * string-width
+    * strip-eof
+  + 反過來說,以上那些套件也需要其它套件(packages),正如我們從`requires`屬性所看到的
+    * ansi-regex
+    * is-fullwidth-code-point
+    * minimist
+    * wordwrap
+    * strip-eof
+  + 它們都是按照英文字母順序來加入到`package-lock.json`檔案中的,每個套件都會有以下幾種欄位
+    * `version`: 版本號
+    * `resolved`: 指向該套件(package)的下載位置
+    * `integrity`: 可以用來驗證(verify)該套件的一段文字(通常會是`SHA512`形式的值)
 
 
 ---
