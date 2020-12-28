@@ -29,6 +29,7 @@ Node.js Learn<br>
       - [How to use or execute a package installed using npm?](#how-to-use-or-execute-a-package-installed-using-npm)
       - [The package.json guide](#the-packagejson-guide)
       - [The package-lock.json file](#the-package-lockjson-file)
+      - [Find the installed version of an npm package](#find-the-installed-version-of-an-npm-package)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -438,6 +439,7 @@ Node.js Learn<br>
 #### Output to the command line using Node.js
 > npm的[chalk](https://github.com/chalk/chalk)套件--- 可設定終端機輸出文字的樣式與顏色<br>
 > npm的[progress](https://www.npmjs.com/package/progress)套件---可以在`CLI console`畫面上創造進度條的套件<br>
+
 - 利用[console](https://nodejs.org/api/console.html#console_console)核心模組的基本輸出(basic output)
   + Node有一個`console`核心模組,該模組提供了許多與`CLI`有用的互動方法
   + 它基本上跟我們在瀏覽器上看到的`console`物件是一樣的
@@ -586,6 +588,7 @@ Node.js Learn<br>
 #### Accept input from the command line in Node.js
 > npm的[readline-sync](https://www.npmjs.com/package/readline-sync)套件---提供一個能透過console(TTY)與使用者進行對話的互動式執行地同步讀取行(synchronous readline for interactively running)<br>
 > npm的[inquirer](https://www.npmjs.com/package/inquirer)---收集了常見的`CLI`指令
+
 - 如何讓Node應用程式的`CLI console`成為互動性(interactive)的控制台
 - 自從Node`v7.0.0`版本之後,Node提供了`readline`這個內建核心模組來確切地執行以下這件事情
   + 從一個可讀取的流(readable stream),例如: `process.stdin`流(stream)獲得輸入(get input)
@@ -691,6 +694,8 @@ Node.js Learn<br>
   + `exports`會公開(exposes)它所指向(points to)的對象(object)的屬性(properties)
 
 #### An introduction to the npm package manager
+> [npm install](https://docs.npmjs.com/cli/v7/commands/npm-install) - Install a package<br>
+
 - `npm`介紹
   + [npm](https://www.npmjs.com/)是Node標準的套件管理工具(standard package manager)
   + 在2017年1月,根據報告顯示`npm registry`列表上已有超過350,000個套件(packages),也使其成為地球上單一語言程式碼儲存庫,並且我們可以確定在`npm`上有幾乎所有的東西
@@ -1204,6 +1209,29 @@ Node.js Learn<br>
     * `version`: 版本號
     * `resolved`: 指向該套件(package)的下載位置
     * `integrity`: 可以用來驗證(verify)該套件的一段文字(通常會是`SHA512`形式的值)
+
+#### Find the installed version of an npm package
+> [npm list](https://docs.npmjs.com/cli/v7/commands/npm-ls) - List installed packages<br>
+> [npm view](https://docs.npmjs.com/cli/v7/commands/npm-view) - View registry info<br>
+
+- 如果我們想要檢視所有已經安裝的套件的最新版本的話(也包含它們所相依的套件們),可以使用以下指令
+  + $ `npm list`
+    * `-g`: 列出所有已經安裝的全域套件的最新版本
+  + ![npm list example](/pic/npm%20list%20example.png)
+- 我們也可以打開`package-lock.json`檔案來做一些視覺上的掃描(visual scanning)
+  + 如果我們只想要列出第一(最高)階層的套件(基本上就是我們利用`npm`來安裝`package.json`中列出的那些套件們),我們可以使用以下指令
+    * $ `npm list --depth=0`
+      * `--depth`: 想要展示出的套件相依性樹狀圖的最大深度
+    * ![npm list --depth=0](/pic/npm%20list%20--depth=0.png)
+  + 我們有可以透過指定套件名稱來得到其版本號
+    * $ `npm list <package>`
+    * ![npm list <package>](/pic/npm%20list%20<package>.png)
+  + 這也適用於我們安裝的套件(package)的相依套件(dependencies)
+    * ![npm list <dependencies>](/pic/npm%20list%20<dependencies>.png)
+  + 我們也可以查看該套件在`npm`儲存庫(repository)上的最新版本
+    * $ `npm view <package_name> version`
+    * ![npm view <package_name> version](/pic/npm%20view%20<package_name>%20version.png)
+
 
 
 ---
