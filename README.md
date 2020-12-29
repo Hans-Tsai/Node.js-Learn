@@ -36,6 +36,7 @@ Node.js Learn<br>
       - [Uninstalling npm packages](#uninstalling-npm-packages)
       - [npm global or local packages](#npm-global-or-local-packages)
       - [npm dependencies and devDependencies](#npm-dependencies-and-devdependencies)
+      - [The npx Node.js Package Runner](#the-npx-nodejs-package-runner)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -443,7 +444,7 @@ Node.js Learn<br>
     * 例: $ `node app.js --name=joe`
 
 #### Output to the command line using Node.js
-> npm的[chalk](https://github.com/chalk/chalk)套件--- 可設定終端機輸出文字的樣式與顏色<br>
+> npm的[chalk](https://github.com/chalk/chalk)套件---可設定終端機輸出文字的樣式與顏色<br>
 > npm的[progress](https://www.npmjs.com/package/progress)套件---可以在`CLI console`畫面上創造進度條的套件<br>
 
 - 利用[console](https://nodejs.org/api/console.html#console_console)核心模組的基本輸出(basic output)
@@ -1405,6 +1406,21 @@ Node.js Learn<br>
 - 當我們在生產環境(production)中,如果我們輸入$ `npm install`指令,並且在該目錄中已經有一個`package.json`檔案的話,則會安裝`package.json`檔案中`dependencies`屬性裡面的所有套件,因為`npm`預設會假定這是一個開發部署(development deploy)
   + 這時就必須要加上`--production`選項來避免安裝到那些開發環境的相依套件(development dependencies)
     * $ `npm install --production <package-name>`
+
+#### The npx Node.js Package Runner
+> npm的[npx](https://www.npmjs.com/package/npx)套件---execute npm package binaries<br>
+
+- `npx`是一個強大的工具,是從`npm`的`v5.2.0`(約於2017/06月)發布以後,就已經開始可以使用
+  + 如果我們不想下載`npm`,可以透過[install npx as a standalone package](https://www.npmjs.com/package/npx)
+  + `npx`讓我們可以在Node環境中執行程式碼,並透過`npm registry`來發布
+- 輕鬆地執行本地指令(local commands)
+  + 過去,Node的開發者們通常將可執行命令(executable commands)發布為一個全域套件(global package),以使它們立即位於路徑(path)中,並且是立即可以被執行的
+    * 這樣其實很痛苦,因為我們確實無法在同一個指令中安裝不同的版本
+  + 執行$ `npx <command-name>`指令會自動地找出在該專案目錄中的`node_modules/`資料夾中的此指令的確切參考位置(correct reference of the command),而無需知道確切的路徑,也不需要在全域(global)路徑和用戶路徑中(user's path)安裝套件
+- 無需先安裝,就能直接執行的指令
+  + 
+
+
 
 
 
