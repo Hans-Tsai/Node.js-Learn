@@ -35,6 +35,7 @@ Node.js Learn<br>
       - [Semantic Versioning using npm](#semantic-versioning-using-npm)
       - [Uninstalling npm packages](#uninstalling-npm-packages)
       - [npm global or local packages](#npm-global-or-local-packages)
+      - [npm dependencies and devDependencies](#npm-dependencies-and-devdependencies)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -1395,7 +1396,15 @@ Node.js Learn<br>
     * $ `npm list -g --depth 0`
       * ![npm list -g --depth 0](/pic/npm%20list%20-g%20--depth%200.png)
 
-
+#### npm dependencies and devDependencies
+- 當我們透過$ `npm install <package-name>`指令來安裝一個`npm`上的套件時,這就是將其安裝為相依套件(dependency)
+  + 這個被安裝的相依套件會自動地被列出在`package.json`檔案中
+  + 如果我們加上`-D`或是`--save-dev`選項的話,`npm`就會視為要安裝作為開發環境使用的相依套件(development dependency),同時也會自動地新增到`package.json`檔案中的`devDependencies`鍵中
+- 開發環境的相依套件(development dependency)旨在僅用在開發環境所使用的套件(development-only packages),而這些套件也不會在生產環境(production)中所使用
+  + 例: `testing packages` or `webpack` or `Babel`
+- 當我們在生產環境(production)中,如果我們輸入$ `npm install`指令,並且在該目錄中已經有一個`package.json`檔案的話,則會安裝`package.json`檔案中`dependencies`屬性裡面的所有套件,因為`npm`預設會假定這是一個開發部署(development deploy)
+  + 這時就必須要加上`--production`選項來避免安裝到那些開發環境的相依套件(development dependencies)
+    * $ `npm install --production <package-name>`
 
 
 
