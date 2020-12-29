@@ -33,6 +33,7 @@ Node.js Learn<br>
       - [Install an older version of an npm package](#install-an-older-version-of-an-npm-package)
       - [Update all the Node.js dependencies to their latest version](#update-all-the-nodejs-dependencies-to-their-latest-version)
       - [Semantic Versioning using npm](#semantic-versioning-using-npm)
+      - [Uninstalling npm packages](#uninstalling-npm-packages)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -1347,7 +1348,21 @@ Node.js Learn<br>
     * 例: `1.2.1`
   + `latest`: 直接指定可用(available)且最新(latest)的該套件版本號
 
+#### Uninstalling npm packages
+> [npm uninstall](https://docs.npmjs.com/cli/v7/commands/npm-uninstall) - Remove a package<br>
 
+- 要在本地環境(locally)解除安裝(uninstall)之前已安裝過,並且儲存在`node_modules/`資料夾中的套件(packages)。可以在該專案的根目錄(project root folder, => 也就是包含`node_modules/`資料夾的專案根目錄),並透過以下指令
+  + $ `npm uninstall <package-name>`
+- 若想要連同`package.json`檔案中的參考(reference)也刪除掉的話,可以使用`-S`或是`--save`選項
+  + $ `npm uninstall --save <package-name>`
+    * `--save`(=> `-S`): `npm`會將該套件(package)從`package.json`檔案中的`dependencies`鍵之中移除
+- 若此套件(package)為開發環境所使用的套件的話,可以使用`-D`或是`--save-dev`選項
+  + $ `npm uninstall --save-dev <package-name>`
+    * `--save-dev`(=> `-D`): `npm`會將該套件(package)從`package.json`檔案中的`devDependencies`鍵之中移除
+- 若此套件(package)是在全域環境安裝的話,可以使用`-g`或是`--global`選項
+  + $ `npm uninstall -g <package-name>`
+    * `--global`(=> `-g`): `npm`會將該套件(package)從全域環境移除掉,而這時候也無需在意我們是在系統上的哪個目錄下執行該指令,因為我們是要**全域**解除安裝此套件
+  + 例: $ `npm uninstall -g webpack`
 
 
 ---
