@@ -34,6 +34,7 @@ Node.js Learn<br>
       - [Update all the Node.js dependencies to their latest version](#update-all-the-nodejs-dependencies-to-their-latest-version)
       - [Semantic Versioning using npm](#semantic-versioning-using-npm)
       - [Uninstalling npm packages](#uninstalling-npm-packages)
+      - [Uninstalling npm packages](#uninstalling-npm-packages-1)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -1363,6 +1364,41 @@ Node.js Learn<br>
   + $ `npm uninstall -g <package-name>`
     * `--global`(=> `-g`): `npm`會將該套件(package)從全域環境移除掉,而這時候也無需在意我們是在系統上的哪個目錄下執行該指令,因為我們是要**全域**解除安裝此套件
   + 例: $ `npm uninstall -g webpack`
+
+#### Uninstalling npm packages
+> [npx](https://docs.npmjs.com/cli/v7/commands/npx) - Run a command from a local or remote npm package
+- 本地(local)與全域(global)套件(package)的主要差別是
+  + 本地(local)套件會安裝在我們執行$ `npm install <package-name>`指令時的那個目錄下,並將`node_modules/`資料夾放在這個資料夾的裡面
+  + 全域(global)套件則會安裝在作業系統中的單一個路徑下(確切來說要視各作業系統而定),這時就不會管我們是在哪裡執行$ `npm install -g <package-name>`指令了
+- 在我們的程式碼中,我們**僅能引入(require)本地(local)安裝的套件(package)**
+  + 例: `require('package-name')`
+- 所以什麼時候需要本地安裝,而什麼時候需要全域安裝套件呢?
+  + 一般來說,所有的套件都應該要用**本地安裝**(locally)
+    * 這樣可以確保在我們的電腦中有許多的(dozens of)應用程式(application),而這些套件也分別需要用到不同版本的相依套件時,不會混亂掉
+  + 更新全域安裝的套件會讓我們整台電腦的所有專案都被迫需要用最新版本的套件。而這也讓我們可以想像到,對於維運面來說,這會是多大的一場惡夢。因為某些套件可能會破壞(break)與其他相依套件(dependencies)之間的相容性(compatibility)
+- 所有的專案都有它們自己的本地安裝(local)的套件版本,即使這樣可能看似是一種浪費資源的行為,但與其可能造成的負面影響(negative consequences)相比,這樣算是非常小的"浪費"
+- 只有在我們需要一個可執行(executable)在`CLI`介面上的指令(command),並且這個可執行命令是能跨專案之間(across project)能被重複使用的(reused),那這時候就會需要**全域安裝套件**(global)
+  + 我們也可以本地(locally)安裝可執行命令(executable commands),並透過`npx`來執行。但是有些特定的套件(package),還是會建議用全域(globally)的方式來安裝
+    * 以下是一些流行且建議需要全域安裝的套件
+      * npm
+      * create-react-app
+      * vue-cli
+      * grunt-cli
+      * mocha
+      * react-native-cli
+      * gatsby-cli
+      * forever
+      * nodemon
+  + 可參考官方文件---[npx VS npm exec](https://docs.npmjs.com/cli/v7/commands/npx#npx-vs-npm-exec)章節的說明
+  + 如果我們想知道目前在我們系統中已經全域安裝的套件有哪些的話,可以透過執行以下的指令
+    * $ `npm list -g --depth 0`
+      * ![npm list -g --depth 0](/pic/npm%20list%20-g%20--depth%200.png)
+
+
+
+
+
+
 
 
 ---
