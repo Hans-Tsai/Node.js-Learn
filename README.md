@@ -32,6 +32,7 @@ Node.js Learn<br>
       - [Find the installed version of an npm package](#find-the-installed-version-of-an-npm-package)
       - [Install an older version of an npm package](#install-an-older-version-of-an-npm-package)
       - [Update all the Node.js dependencies to their latest version](#update-all-the-nodejs-dependencies-to-their-latest-version)
+      - [Semantic Versioning using npm](#semantic-versioning-using-npm)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -589,7 +590,7 @@ Node.js Learn<br>
 
 #### Accept input from the command line in Node.js
 > npm的[readline-sync](https://www.npmjs.com/package/readline-sync)套件---提供一個能透過console(TTY)與使用者進行對話的互動式執行地同步讀取行(synchronous readline for interactively running)<br>
-> npm的[inquirer](https://www.npmjs.com/package/inquirer)---收集了常見的`CLI`指令
+> npm的[inquirer](https://www.npmjs.com/package/inquirer)---收集了常見的`CLI`指令<br>
 
 - 如何讓Node應用程式的`CLI console`成為互動性(interactive)的控制台
 - 自從Node`v7.0.0`版本之後,Node提供了`readline`這個內建核心模組來確切地執行以下這件事情
@@ -775,7 +776,8 @@ Node.js Learn<br>
   + 以我使用`nvm`的情況來說,我的套件會被全域安裝在`/Users/joe/.nvm/versions/node/v8.9.0/lib/node_modules`
 
 #### How to use or execute a package installed using npm?
-> npm的[cowsay](https://www.npmjs.com/package/cowsay)套件---是一個由`Perl`語言所開發的套件,能提供一個終端機介面的程式,並以母牛(cow)的方式說話
+> npm的[cowsay](https://www.npmjs.com/package/cowsay)套件---是一個由`Perl`語言所開發的套件,能提供一個終端機介面的程式,並以母牛(cow)的方式說話<br>
+
 - 當我們透過`npm`安裝套件到`node_modules/`資料夾時,或是全域安裝時,我們可以透過`require('<package name>')`的語法來引用該套件(package)
   + 假設我們安裝了`lodash`這個Javascript世界中流行且實用的函式庫(library)
     * 例: $ `npm install lodash`
@@ -1248,7 +1250,7 @@ Node.js Learn<br>
 #### Update all the Node.js dependencies to their latest version
 > [npm update](https://docs.npmjs.com/cli/v7/commands/npm-update) - Update a package<br>
 > [npm outdated](https://docs.npmjs.com/cli/v7/commands/npm-outdated) - Check for outdated packages<br>
-> npm的[check updates](https://www.npmjs.com/package/npm-check-updates)套件 --- <br>
+> npm的[check updates](https://www.npmjs.com/package/npm-check-updates)套件---upgrades your package.json dependencies to the latest versions, ignoring specified versions.<br>
 
 - 當我們透過$ `npm install <package-name>`來安裝時,該套件的最新(latest)可用(available)版本就會被下載到`node_modules/`資料夾中,並且將相對應的(corresponding)項目(entry)新增到當前資料夾裡面的`package.json`檔案 & `package-lock.json`檔案中
 - `npm`會自動計算(calculates)該套件的相依套件們(dependencies),並安裝最新可用的相依套件們
@@ -1295,6 +1297,55 @@ Node.js Learn<br>
       * 這樣它就會升級(upgrade)所有在`package.json`檔案中`dependencies`與`devDependencies`的版本提示(version hints),因此`npm`就可以安裝套件新的主要版本
 - 如果我們只是下載遠端儲存庫上的專案,而不包含其`node_modules/`資料夾中的相依套件的話,我們可以透過以下指令,來安裝最新的套件版本
   + $ `npm install`
+
+#### Semantic Versioning using npm
+> npm的[semver](https://docs.npmjs.com/cli/v7/using-npm/semver)套件---The semantic versioner for npm<br>
+
+- 在Node.js套件的世界中,有一件很棒的事情,那就是它們皆同意使用語意化版本規則(using Semantic Versionin)來作為他們的版本編號
+- 語意化版本規則的觀念其實很簡單--->所有的都由三個數字(digits)組合而成
+  + 範例: `x.y.z`
+    * 第1個數字`x`是主要版本(major)
+    * 第2個數字`y`是次要版本(minor)
+    * 第3個數字`z`是修補版本(patch)
+- 當我們發布一個新的套件(package)版本時,我們不僅可以自己選擇要增加的數字之外,也仍須遵守以下規則
+  + `major`: 當我們進行不兼容(incompatible)的API修改(changes)時,可以提升(up)主要版本號
+  + `minor`: 當我們新增一個能向後兼容(backward-compatible, => 也就是能與過去相容)的功能時,可以提升(up)次要版本號
+  + `patch`: 當我們修復(fix)一個能向後兼容(backward-compatible bug fixes)的錯誤(bug)時,可以提升(up)修補版本號
+- 這樣的版本號慣例(convention)也被所有的程式語言所採用(adopted),而`npm`的每個套件(package)有都會遵守(adheres to)此版本號規範,所以此一版本號規範是非常重要的
+- 因為`npm`設定了一些規則,讓我們可以透過`package.json`檔案來選擇當我們利用$ `npm update`指令來更新我們的套件時,要更新到的哪個版本號
+  + 以下是`npm`設定給`package.json`檔案的版本號規範語法
+    * `^`(Tilde Ranges)
+      * 只會更新(updates),但不會更改最左邊(leftmost)非零(non-zero)的數字
+      * 舉例來說,當我們執行$ `npm update`指令時
+        * 例1: `^0.13.0` => 可以更新(update)到`0.13.1`或`0.13.2`...等等
+        * 例2: `^1.13.0` => 可以更新(update)到`1.13.1`或`1.14.0`,但是**不能**更新到`2.0.0`或是再其更之上的版本
+    * `~` (Caret Ranges)
+      * 如果次要版本在`package.json`中已經指定了的話,允許修補層級的更改(patch-level changes); 若不允許修補層級的修改的話,則允許次要版本層級的修改(minor-level changes)
+      * 舉例來說,當我們執行$ `npm update`指令時
+        * 例1: `~0.13.0` => 可以更新到`0.13.1`,但是**不能**更新到`0.14.0`
+    * `>`
+      * 可以接受比我們指定的版本還要高的任何一個版本
+    * `>=`
+      * 可以接受與我們指定的版本相同or還要高的任何一個版本
+    * `<`
+      * 可以接受比我們指定的版本還要低的任何一個版本
+    * `<=`
+      * 可以接受與我們指定的版本相同or還要低的任何一個版本
+    * `=`
+      * 可以接受與我們指定的確切版本**完全相同**的版本
+    * `-` (Hyphen Ranges)
+      * 可以接受一個指定範圍內的所有版本號
+      * 舉例來說,當我們執行$ `npm update`指令時
+        * 例1: `1.2.3 - 2.3.4` => 表示可以更新到 `>=1.2.3 && <=2.3.4`的版本號
+    * `||` (combine sets)
+      * 可以接受一個組合的指定範圍內的所有版本號
+      * 舉例來說,當我們執行$ `npm update`指令時
+        * 例1: `1.0.0 || >=1.1.0 <1.2.0 ` => 可以更新為`1.0.0`的這個確切版本,或是也可以更新到`1.1.0`或是再其更之上的版本,但是**不能**更新為`1.2.0`或是再其更之上的版本
+        * 例2: `1.2.7 || >=1.2.9 <2.0.0` => 可以更新為`1.2.7`的這個確切版本,或是也可以更新到`1.2.9`或是再其更之上的版本,但是**不能**更新為`1.2.8`或是`2.0.0`的版本
+- 語意化版本規則也有其他特殊規則
+  + 無任何符號(no symbol): 只能接受指定的該明確版本
+    * 例: `1.2.1`
+  + `latest`: 直接指定可用(available)且最新(latest)的該套件版本號
 
 
 
