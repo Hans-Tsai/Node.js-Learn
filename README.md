@@ -31,6 +31,7 @@ Node.js Learn<br>
       - [The package-lock.json file](#the-package-lockjson-file)
       - [Find the installed version of an npm package](#find-the-installed-version-of-an-npm-package)
       - [Install an older version of an npm package](#install-an-older-version-of-an-npm-package)
+      - [Update all the Node.js dependencies to their latest version](#update-all-the-nodejs-dependencies-to-their-latest-version)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -1242,6 +1243,59 @@ Node.js Learn<br>
   + $ `npm view <package> versions`
   + 例: $ `npm view cowsay versions`
     * ![npm view <package> versions](/pic/npm%20view%20<package>%20versions.png)
+
+
+#### Update all the Node.js dependencies to their latest version
+> [npm update](https://docs.npmjs.com/cli/v7/commands/npm-update) - Update a package<br>
+> [npm outdated](https://docs.npmjs.com/cli/v7/commands/npm-outdated) - Check for outdated packages<br>
+> npm的[check updates](https://www.npmjs.com/package/npm-check-updates)套件 --- <br>
+
+- 當我們透過$ `npm install <package-name>`來安裝時,該套件的最新(latest)可用(available)版本就會被下載到`node_modules/`資料夾中,並且將相對應的(corresponding)項目(entry)新增到當前資料夾裡面的`package.json`檔案 & `package-lock.json`檔案中
+- `npm`會自動計算(calculates)該套件的相依套件們(dependencies),並安裝最新可用的相依套件們
+- 比如說,當我們安裝`cowsay`這個套件,它是一個可`CLI`介面的工具可以讓一隻牛說些話
+  + 當我們使用$ `npm install`指令時,該項目(entry)就會被新增到`package.json`檔案中
+    * ```javascript
+        {
+          "dependencies": {
+            "cowsay": "^1.3.1"
+          }
+        }
+      ```
+  + 以下是從`package-lock.json`檔案中,萃取(extract)出的片段。為了清楚起見,我們移除了巢狀相依套件的內容
+    * ```javascript
+        {
+          "requires": true,
+          "lockfileVersion": 1,
+          "dependencies": {
+            "cowsay": {
+              "version": "1.3.1",
+              "resolved": "https://registry.npmjs.org/cowsay/-/cowsay-1.3.1.tgz",
+              "integrity": "sha512-3PVFe6FePVtPj1HTeLin9v8WyLl+VmM1l1H/5P+BTTDkMAjufp+0F9eLjzRnOHzVAYeIYFF5po5NjRrgefnRMQ==",
+              "requires": {
+                "get-stdin": "^5.0.1",
+                "optimist": "~0.6.1",
+                "string-width": "~2.1.1",
+                "strip-eof": "^1.0.0"
+              }
+            }
+          }
+        }
+      ```
+  + 以上兩個檔案告訴我們要安裝`cowsay`套件的`v1.3.1`版本,並且我們的更新(updates規則是`^1.3.1`,這代表`npm`可以更新次要(minor)與修補(patch)版本,像是`v1.3.2`,`v1.4.0`, ...等等
+    * 也就是說,當有次要(minor)與修補(patch)版本發布時,我們可以透過$ `npm update`來更新套件版本。這樣一來,我們已安裝的套件就會是最新版本
+      * 同時`package-lock.json`檔案也會勤奮地(diligently)填上(filled with)新版本; 而`package.json`檔案維持不變
+- 可以透過以下指令,發現(discover)是否有套件有發布新版本
+  + $ `npm oudated`
+    * ![npm outdated](/pic/npm%20outdated.png)
+      * 上述的部分套件需要更新主要版本(major),這時候如果我們執行$ `npm update`就**不會**更新到這些套件。若要更新套件的主要(major)版本,絕不會用這種方式,因為依據語意化版本規則的定義,主要版本的更新代表有重大更改(breaking changes),而`npm`想要幫我們省下麻煩
+  + 如果我們確定想要更新套件的**主要(major)版本**的話,可以先**全域**安裝`check-updates`這個套件
+    * $ `npm install -g npm-check-updates`
+    * 接著執行它(該套件)
+    * $ `ncu -u`
+      * 這樣它就會升級(upgrade)所有在`package.json`檔案中`dependencies`與`devDependencies`的版本提示(version hints),因此`npm`就可以安裝套件新的主要版本
+- 如果我們只是下載遠端儲存庫上的專案,而不包含其`node_modules/`資料夾中的相依套件的話,我們可以透過以下指令,來安裝最新的套件版本
+  + $ `npm install`
+
 
 
 
