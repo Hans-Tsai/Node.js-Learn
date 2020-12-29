@@ -34,7 +34,7 @@ Node.js Learn<br>
       - [Update all the Node.js dependencies to their latest version](#update-all-the-nodejs-dependencies-to-their-latest-version)
       - [Semantic Versioning using npm](#semantic-versioning-using-npm)
       - [Uninstalling npm packages](#uninstalling-npm-packages)
-      - [Uninstalling npm packages](#uninstalling-npm-packages-1)
+      - [npm global or local packages](#npm-global-or-local-packages)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -1365,8 +1365,9 @@ Node.js Learn<br>
     * `--global`(=> `-g`): `npm`會將該套件(package)從全域環境移除掉,而這時候也無需在意我們是在系統上的哪個目錄下執行該指令,因為我們是要**全域**解除安裝此套件
   + 例: $ `npm uninstall -g webpack`
 
-#### Uninstalling npm packages
-> [npx](https://docs.npmjs.com/cli/v7/commands/npx) - Run a command from a local or remote npm package
+#### npm global or local packages
+> [npx](https://docs.npmjs.com/cli/v7/commands/npx) - Run a command from a local or remote npm package<br>
+
 - 本地(local)與全域(global)套件(package)的主要差別是
   + 本地(local)套件會安裝在我們執行$ `npm install <package-name>`指令時的那個目錄下,並將`node_modules/`資料夾放在這個資料夾的裡面
   + 全域(global)套件則會安裝在作業系統中的單一個路徑下(確切來說要視各作業系統而定),這時就不會管我們是在哪裡執行$ `npm install -g <package-name>`指令了
