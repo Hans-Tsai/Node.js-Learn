@@ -30,6 +30,7 @@ Node.js Learn<br>
       - [The package.json guide](#the-packagejson-guide)
       - [The package-lock.json file](#the-package-lockjson-file)
       - [Find the installed version of an npm package](#find-the-installed-version-of-an-npm-package)
+      - [Install an older version of an npm package](#install-an-older-version-of-an-npm-package)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -1228,9 +1229,19 @@ Node.js Learn<br>
     * ![npm list <package>](/pic/npm%20list%20<package>.png)
   + 這也適用於我們安裝的套件(package)的相依套件(dependencies)
     * ![npm list <dependencies>](/pic/npm%20list%20<dependencies>.png)
-  + 我們也可以查看該套件在`npm`儲存庫(repository)上的最新版本
+  + 我們也可以查看該套件在`npm`儲存庫(repository)上的**最新版本**
     * $ `npm view <package_name> version`
     * ![npm view <package_name> version](/pic/npm%20view%20<package_name>%20version.png)
+
+#### Install an older version of an npm package
+- 我們可以透過`@`語法(syntax)來安裝較舊版本的`npm`套件(package)
+  + $ `npm install <package>@<version>`
+  + 例: $ `npm install cowsay@1.2.0`
+  + 例: $ `npm install -g webpack@4.16.4`
+- 我們可能會對某個套件的**所有版本**有興趣,我們可以透過以下指令來檢視
+  + $ `npm view <package> versions`
+  + 例: $ `npm view cowsay versions`
+    * ![npm view <package> versions](/pic/npm%20view%20<package>%20versions.png)
 
 
 
