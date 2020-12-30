@@ -37,6 +37,7 @@ Node.js Learn<br>
       - [npm global or local packages](#npm-global-or-local-packages)
       - [npm dependencies and devDependencies](#npm-dependencies-and-devdependencies)
       - [The npx Node.js Package Runner](#the-npx-nodejs-package-runner)
+      - [The Node.js Event Loop](#the-nodejs-event-loop)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -1445,9 +1446,51 @@ Node.js Learn<br>
     * 例: $ `npx https://gist.github.com/zkat/4bc19503fe9e9309e2bfaa2c58074d32`
     * 當我們需要執行我們無法控制的程式碼時,需要更小心地使用`npx`工具。因為越強大的功能,帶來越大的責任
 
+#### The Node.js Event Loop
+- 事件迴圈(Event loop)是要理解Node的其中一個最重要的層面
+- 事件迴圈(Event loop)能解釋Node如何達到**非同步(=> asynchronous)**與**非阻塞I/O(=> non-blocking I/O)**。這也是讓Node能成為殺手級應用程式(killer app),並且能如此成功的原因
+- Node是用**單執行緒(single thread)** 在執行Javascript的程式碼,在同一個時間只會發生一件事
+  + 這個限制其實是很有用的,因為它能大大地簡化我們在開發程式的心力,而不用去擔心併發(concurrency)的問題(issues)
+  + 我們只要專注在如何寫程式碼,並避免任何可能阻塞(block)線程(thread)的事情,像是以下2種情況
+    * 同步網路呼叫(synchronous network calls)
+    * 無限迴圈(infinite loops)
+- 通常在大多數瀏覽器中,每個瀏覽器頁籤(browser tab)都會有一個事件循環,以使每個進程(process)都被隔離開,並避免網頁畫面落入無限迴圈(infinite loops)或是繁重的處理工作,以至於阻塞(block)整個瀏覽器
+- 該環境管理多個併發事件迴圈(multiple concurrent event loops),以處理像是`API`呼叫的工作。網頁工作(Web Workers)也會在其自己的事件迴圈(event loops)中執行
+- 我們最需要關心的是我們的程式碼會在單一事件迴圈(single event loop)上被執行,並且要牢記這一點在心中,以避免造成阻塞(blocking)
+- 阻擋事件迴圈(Blocking the event loop)
+  + 任何花費太多時間才將控制權交還(return back control )給事件迴圈(event loop)的Javascript程式碼,都將阻擋(block)任何該頁面上執行的Javascript程式碼,甚至是阻塞UI線程(UI thread),並且用戶無法點擊按鈕.滑動頁面...等等
+  + 在Javascript中,幾乎所有的**I/O原語(=> I/O primitives)** 都是**非阻塞I/O(=> non-blocking I/O)** 的,例如以下2種情境
+    * 網路請求(Network requests)
+    * 檔案系統操作(filesystem operations)
+    * ...等等
+  + 被阻塞是一種例外,這也就是為什麼Javascript會有這麼多基於回呼函式(`callbacks`)的東西,而近年來也開始有`Promise`與`async/await`
+- 呼叫堆疊(The call stack)
+  + 呼叫堆疊是一種`LIFO`隊列(queue),也就是後進->先出(Last in, First out)的模式
+  + 事件迴圈(event loop)會持續地檢查是否在呼叫堆疊(call stack)中仍有任何函式(function)需要被執行
+  + 這樣做時,它會將任何所有能找到的函式都加入到呼叫堆疊(call stack)中,並依序執行每個函式
+  + 我們會知道自己對於除錯器(debugger)或是瀏覽器控制台(browser console)中,會比較熟悉用哪個方式來追蹤錯誤堆疊(error stack trace)
+    * 瀏覽器會在呼叫堆疊(call stack)中查詢函式(function)的名稱,以通知我們是哪個函式產生(originates)了當前的呼叫(current call)
+    * ![exception-call-stack](/pic/exception-call-stack.png)
+- 一個簡單的事件迴圈說明範例
+  + ```javascript
+      const bar = () => console.log('bar')
 
+      const baz = () => console.log('baz')
 
+      const foo = () => {
+        console.log('foo')
+        bar()
+        baz()
+      }
 
+      foo()
+      ```
+  + 當以上的程式碼被執行時
+    * 首先,是`first()`被呼叫
+    * 接著,在`first()`中,會呼叫`bar()`
+    * 最後,會呼叫`baz()`
+  + 此時,呼叫堆疊(call stack)會看起來如下圖所示
+    * ![call-stack-first-example](/pic/call-stack-first-example.png)
 
 
 
