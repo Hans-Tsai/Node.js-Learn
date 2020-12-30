@@ -1486,11 +1486,82 @@ Node.js Learn<br>
       foo()
       ```
   + 當以上的程式碼被執行時
-    * 首先,是`first()`被呼叫
-    * 接著,在`first()`中,會呼叫`bar()`
+    * 首先,是`foo()`被呼叫
+    * 接著,在`foo()`中,會呼叫`bar()`
     * 最後,會呼叫`baz()`
   + 此時,呼叫堆疊(call stack)會看起來如下圖所示
     * ![call-stack-first-example](/pic/call-stack-first-example.png)
+  + 每次迭代中的事件迴圈都會查看在呼叫堆疊(call stack)中是否有東西,並執行它,直到呼叫堆疊(call stack)變成空的(empty)為止
+    * ![execution-order-first-example](/pic/execution-order-first-example.png)
+- 函式執行隊列(Queuing function execution)
+  + 以上的範例看起來很正常,並沒有什麼特別之處。Javascript會尋找要執行的東西,並且依序執行它們
+  + 讓我們來看看另一個範例,如何將函式(function)推遲(defer)到堆疊(stack)被清除掉之前
+    * ```javascript
+        const bar = () => console.log('bar')
+
+          const baz = () => console.log('baz')
+
+          const foo = () => {
+            console.log('foo')
+            setTimeout(bar, 0)
+            baz()
+          }
+
+          foo()
+      ```
+    * 以上的範例程式碼中的`setTimeout(() => {}, 0)`會去呼叫一個函式(function),一旦這段程式碼中的每個其它函式執行一次,便會執行一次該函式
+    * 這個範例打印(print)出來的結果也許會令我們非常驚訝
+      * ```javascript
+          foo
+          baz
+          bar
+        ```
+    * 說明: 當這段程式碼被執行時
+      * 首先,是`foo()`被呼叫
+      * 接著,在`foo()`內部會先呼叫`setTimeout()`,並將`bar`作為參數(argument),並指示(instruct)它盡快地執行,並傳遞`0`作為計時器(timer)
+      * 最後,會呼叫`baz()`
+    * 此時,呼叫堆疊(call stack)會看起來如下圖所示
+      * ![call-stack-second-example](/pic/call-stack-second-example.png)
+    * 以下是程式(program)中的所有函式的執行順序
+      * ![execution-order-second-example](pic/execution-order-second-example.png)
+  + 為什麼會這樣呢? 我們接著看下去
+- 訊息隊列(Message Queue)
+  + 當`setTimeout()`函式被呼叫時,瀏覽器與Node會啟動一個計時器。當計時器到期時,也就是說在這個情況下,我們將延遲(delay)參數設定為`0`,此時"延遲(delay)"就會立即到期,也會將回呼函式(callback function)放入訊息隊列(Message Queue)中
+  + 在訊息隊列(Message Queue)中,使用者初始化的事件(user-initiated events)像是滑鼠點擊(click),鍵盤事件(keyboard events),獲取回應(fetch responses)都將這此排隊(queued)。然後我們才有機會對其做出反應(react),或像是`DOM事件`--->`window.onLoad`
+  + 事件迴圈(event loop)將會優先處理呼叫堆疊(call stack),並首先處理(processes)在呼叫堆疊中找到的所有內容。一旦呼叫堆疊中沒有任何內容了,它就會開始到訊息隊列(message queue)中處理內容
+    * 我們不必等待像是`setTimeout()`函式,抓取資料(fetch),或是其它函式來完成它們自己的工作,因為它們是由瀏覽器所提供的,而且它們都位於自己的線程中(threads)
+    * 舉例來說,如果將`setTimeout(function[, delay])`函式的`delay`(延遲)->這個參數設定為`2`秒,我們不需要真的去等待2秒,它會在其它地方發生
+- ES6工作隊列(ES6 Job Queue)
+  + ES6(= ECMAScript 2015)引進(introduced)了工作隊列(job queue)的觀念,並且透過`Promise`物件來使用工作隊列(job queue)
+    * 補充: [Promise](https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Reference/Global_Objects/Promise)物件也是從ES6開始引進的
+    * **Promise物件**是一種盡快地執行**非同步函式(async function)** 的一種方式,而不是(rather than)放在呼叫堆疊(call stack)的最後面
+    * 那些在當前函式結束之前已經解決(resolve)的`Promise`物件,將在當前函式之後立即被執行
+    * 我發現可以用遊樂園的過山車設施來做個比喻會更好,訊息隊列(message queue)會將我們放在隊列(queue)的後面,在所有其他人的後面,而我們會因此需要等到輪到我們為止。然而,工作隊列(job queue)就是快速通關券讓我們能夠搭乘完一個遊樂設施之後**緊接著**再搭乘下一個遊樂設施
+    * 範例程式碼
+      * ```javascript
+          const bar = () => console.log('bar')
+
+          const baz = () => console.log('baz')
+
+          const foo = () => {
+            console.log('foo')
+            setTimeout(bar, 0)
+            new Promise((resolve, reject) =>
+              resolve('should be right after baz, before bar')
+            ).then(resolve => console.log(resolve))
+            baz()
+          }
+
+          foo()
+          ```
+    * 以上的範例程式碼將會回傳
+      * ```javascript
+          foo
+          baz
+          should be right after baz, before bar
+          bar
+        ```
+  + 這是`Promises`(和基於`Promise`建構的`Async/ await`)<-->與透過`setTimeout()`或其它平台API的普通,舊的非同步函數(asynchronous functions)之間的巨大區別
 
 
 
