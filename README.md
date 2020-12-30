@@ -1409,6 +1409,7 @@ Node.js Learn<br>
 
 #### The npx Node.js Package Runner
 > npm的[npx](https://www.npmjs.com/package/npx)套件---execute npm package binaries<br>
+> [nvm](https://github.com/nvm-sh/nvm)---nvm is a version manager for node.js, designed to be installed per-user, and invoked per-shell<br>
 
 - `npx`是一個強大的工具,是從`npm`的`v5.2.0`(約於2017/06月)發布以後,就已經開始可以使用
   + 如果我們不想下載`npm`,可以透過[install npx as a standalone package](https://www.npmjs.com/package/npx)
@@ -1418,7 +1419,31 @@ Node.js Learn<br>
     * 這樣其實很痛苦,因為我們確實無法在同一個指令中安裝不同的版本
   + 執行$ `npx <command-name>`指令會自動地找出在該專案目錄中的`node_modules/`資料夾中的此指令的確切參考位置(correct reference of the command),而無需知道確切的路徑,也不需要在全域(global)路徑和用戶路徑中(user's path)安裝套件
 - 無需先安裝,就能直接執行的指令
-  + 
+  + `npx`套件的的另一個重要的功能是我們能直接執行指令(run commands),而不需要事先安裝它們
+    * 這個功能是非常有用的,主要是因為
+      * 我們不需要事先安裝該套件
+      * 我們可以透過`syntax @version`的方式來執行同一個指令的不同版本
+  + 我們用`npm`的`cowsay`套件來做個展示透過`npx`來呼叫`cowsay`套件的指令。該套件會打印(print)出一隻牛並說出我們在`CLI`介面上輸入的指令
+    * 舉例來說,當我們在`CLI`介面上輸入$ `cowsay "Hello"`
+      * ![cowsay "Hello"](/pic/cowsay%20"Hello".png)
+      * 以上的方式,僅會在我們有透過`npm`全域(globally)安裝`cowsay`套件時才能使用,否則當我們執行該指令時,會得到錯誤(error)
+    * `npx`可以使我們不必事先本地(locally)安裝,就能執行該指令
+      * 例: $ `npx cowsay "Hello"`
+  + 然而,這是一個有趣但沒有用的範,其他情境包括
+    * 執行`vue CLI`工具
+      * 例: $ `npx @vue/cli create my-vue-app`
+    * 透過`npm`的`create-react-app`來建立一個新的React app
+      * 例: $ `npx create-react-app my-react-app`
+- 透過不同的Node版本來執行程式碼
+  + 我們可以透過`@`語法來指定一個特定的Node版本,並與`npm`的[node](https://www.npmjs.com/package/node)套件一起搭配來使用
+    * 例: $ `npx node@10 -v` #v10.18.1
+    * 例: $ `npx node@12 -v` #v12.14.1
+  + 這麼做能讓我們能不用特別去使用像是`nvm`或是其他Node的版本管理工具(Node.js version management tools)
+- 可以直接從`URL`上執行一段程式碼的片段(snippets)
+  + `npx`並不會限制我們使用`npm`上面發布的套件
+  + 我們可以利用以下的方式來直接執行`GitHub gist`上的程式碼片段
+    * 例: $ `npx https://gist.github.com/zkat/4bc19503fe9e9309e2bfaa2c58074d32`
+    * 當我們需要執行我們無法控制的程式碼時,需要更小心地使用`npx`工具。因為越強大的功能,帶來越大的責任
 
 
 
