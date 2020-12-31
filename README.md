@@ -39,6 +39,7 @@ Node.js Learn<br>
       - [The npx Node.js Package Runner](#the-npx-nodejs-package-runner)
       - [The Node.js Event Loop](#the-nodejs-event-loop)
       - [Understanding process.nextTick()](#understanding-processnexttick)
+      - [Understanding setImmediate()](#understanding-setimmediate)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -1565,6 +1566,8 @@ Node.js Learn<br>
   + 這是`Promises`(和基於`Promise`建構的`Async/ await`)<-->與透過`setTimeout()`或其它平台API的普通,舊的非同步函數(asynchronous functions)之間的巨大區別
 
 #### Understanding process.nextTick()
+> Node內建核心模組`Process`中的[process.nextTick(callback[, ...args])](https://nodejs.org/dist/latest-v15.x/docs/api/process.html#process_process_nexttick_callback_args)---process.nextTick() adds callback to the "next tick queue". This queue is fully drained after the current operation on the JavaScript stack runs to completion and before the event loop is allowed to continue. It's possible to create an infinite loop if one were to recursively call process.nextTick()<br>
+
 - 當我們嘗試理解Node的事件迴圈(event loop)時,`process.nextTick()`方法就是它一個重要的部分
 - 每次事件迴圈經過完整的一趟(full trip)時,我們稱其為`tick`
   + 當我們傳遞一個函式(function)給`process.nextTick()`方法時,會指示(instruct)引擎(engine)於當前操作結束之後,並且於下一個事件迴圈(event loop)`tick`開始之前,呼叫(invoke)此方法(`process.nextTick()`)
@@ -1579,6 +1582,21 @@ Node.js Learn<br>
   + 呼叫`setTimeout(() => {}, 0)`方法會在下一個`tick`結束之後才執行函式,比起使用`nextTick()`方法需要在下一個`tick`開始之前,優先呼叫和執行它,相對慢很多
   + 建議使用`process.nextTick()`方法來確保在下一次事件迴圈(event loop)迭代(iteration)中,已經執行了程式碼
 
+#### Understanding setImmediate()
+> Node內建核心模組`Timer`中的[setImmediate(callback[, ...args])](https://nodejs.org/api/timers.html#timers_setimmediate_callback_args)---Schedules the "immediate" execution of the callback after I/O events' callbacks.<br>
+> Node內建核心模組`Timer`中的[setTimeout(callback[, delay[, ...args]])](https://nodejs.org/api/timers.html#timers_settimeout_callback_delay_args)---Schedules execution of a one-time callback after delay milliseconds.<br>
+
+- 當我們想要讓某個片段的程式碼立即被執行時,其中一個選擇是可以使用Node提供的`setImmediate()`方法
+  + ```javascript
+      setImmediate(() => {
+        //run something
+      })
+      ```
+    * 任何函式作為參數傳遞給`setImmediate()`方法,都會在下一次事件迴圈(event loop)迭代(iteration)被當作回呼函式(callback)執行
+  + `setImmediate()`與`setTimeout(() => {}, 0)`與`process.nextTick()`三者有什麼不同呢?
+    * 當傳遞一個函式(function)給`process.nextTick()`方法時,該函式會在當前操作(current operation)之後,並於當前事件迴圈(event loop)的迭代中(current iteration)被執行
+    * 這也意味著`process.nextTick()`方法總是會在`setTimeout()`方法 & `setImmediate()`方法之前被執行
+    * 當設定`setTimeout(callback[, delay[, ...args]])`方法的延遲(`delay`)參數為`0`毫秒時,這時該方法會非常類似於`setImmediate()`方法。執行順序將取決於不同的因素所影響,但它們都會在下一次事件迴圈(event loop)的迭代中(current iteration)被執行
 
 
 
