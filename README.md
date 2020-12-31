@@ -38,6 +38,7 @@ Node.js Learn<br>
       - [npm dependencies and devDependencies](#npm-dependencies-and-devdependencies)
       - [The npx Node.js Package Runner](#the-npx-nodejs-package-runner)
       - [The Node.js Event Loop](#the-nodejs-event-loop)
+      - [Understanding process.nextTick()](#understanding-processnexttick)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -1562,6 +1563,32 @@ Node.js Learn<br>
           bar
         ```
   + 這是`Promises`(和基於`Promise`建構的`Async/ await`)<-->與透過`setTimeout()`或其它平台API的普通,舊的非同步函數(asynchronous functions)之間的巨大區別
+
+#### Understanding process.nextTick()
+- 當我們嘗試理解Node的事件迴圈(event loop)時,`process.nextTick()`方法就是它一個重要的部分
+- 每次事件迴圈經過完整的一趟(full trip)時,我們稱其為`tick`
+  + 當我們傳遞一個函式(function)給`process.nextTick()`方法時,會指示(instruct)引擎(engine)於當前操作結束之後,並且於下一個事件迴圈(event loop)`tick`開始之前,呼叫(invoke)此方法(`process.nextTick()`)
+  + 範例程式碼
+  + ```javascript
+      process.nextTick(() => {
+        //do something
+      })
+      ```
+    * 該事件迴圈(event loop)正忙於處理當前的程式碼
+    * 當該操作結束後,Javascript引擎(engine)會以非同步(asynchronouly)的方式來處理函式(function)
+  + 呼叫`setTimeout(() => {}, 0)`方法會在下一個`tick`結束之後才執行函式,比起使用`nextTick()`方法需要在下一個`tick`開始之前,優先呼叫和執行它,相對慢很多
+  + 建議使用`process.nextTick()`方法來確保在下一次事件迴圈(event loop)迭代(iteration)中,已經執行了程式碼
+
+
+
+
+
+
+
+
+
+
+
 
 
 
