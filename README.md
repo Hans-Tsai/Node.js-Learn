@@ -40,6 +40,7 @@ Node.js Learn<br>
       - [The Node.js Event Loop](#the-nodejs-event-loop)
       - [Understanding process.nextTick()](#understanding-processnexttick)
       - [Understanding setImmediate()](#understanding-setimmediate)
+      - [Discover JavaScript Timers](#discover-javascript-timers)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -1583,8 +1584,8 @@ Node.js Learn<br>
   + 建議使用`process.nextTick()`方法來確保在下一次事件迴圈(event loop)迭代(iteration)中,已經執行了程式碼
 
 #### Understanding setImmediate()
-> Node內建核心模組`Timer`中的[setImmediate(callback[, ...args])](https://nodejs.org/api/timers.html#timers_setimmediate_callback_args)---Schedules the "immediate" execution of the callback after I/O events' callbacks.<br>
-> Node內建核心模組`Timer`中的[setTimeout(callback[, delay[, ...args]])](https://nodejs.org/api/timers.html#timers_settimeout_callback_delay_args)---Schedules execution of a one-time callback after delay milliseconds.<br>
+> Node內建核心模組`Timers`中的[setImmediate(callback[, ...args])](https://nodejs.org/api/timers.html#timers_setimmediate_callback_args)---Schedules the "immediate" execution of the callback after I/O events' callbacks.<br>
+> Node內建核心模組`Timers`中的[setTimeout(callback[, delay[, ...args]])](https://nodejs.org/api/timers.html#timers_settimeout_callback_delay_args)---Schedules execution of a one-time callback after delay milliseconds.<br>
 
 - 當我們想要讓某個片段的程式碼立即被執行時,其中一個選擇是可以使用Node提供的`setImmediate()`方法
   + ```javascript
@@ -1599,8 +1600,13 @@ Node.js Learn<br>
     * 當設定`setTimeout(callback[, delay[, ...args]])`方法的延遲(`delay`)參數為`0`毫秒時,這時該方法會非常類似於`setImmediate()`方法。執行順序將取決於不同的因素所影響,但它們都會在下一次事件迴圈(event loop)的迭代中(current iteration)被執行
 
 
+#### Discover JavaScript Timers
+> Node內建核心模組`Timers`中的[setInterval(callback[, delay[, ...args]])](https://nodejs.org/dist/latest-v15.x/docs/api/timers.html#timers_setinterval_callback_delay_args)---Schedules repeated execution of callback every delay milliseconds.<br>
 
-
+- 有些瀏覽器(例如: `IE`或是`Edge`)會實作`setImmediate()`方法也能達到相同的功能,但那樣做不算是標準的,而且也無法在其它瀏覽器中使用。但是這算是Node的標準功能之一
+  + 關於`setImmediate()`方法對於各瀏覽器的支援,可參考[Efficient Script Yielding: setImmediate()](https://caniuse.com/setimmediate)
+- `SetInterval()`方法
+  + 
 
 
 
