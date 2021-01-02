@@ -1605,8 +1605,9 @@ Node.js Learn<br>
 
 - 有些瀏覽器(例如: `IE`或是`Edge`)會實作`setImmediate()`方法也能達到相同的功能,但那樣做不算是標準的,而且也無法在其它瀏覽器中使用。但是這算是Node的標準功能之一
   + 關於`setImmediate()`方法對於各瀏覽器的支援,可參考[Efficient Script Yielding: setImmediate()](https://caniuse.com/setimmediate)
-- `SetInterval()`方法
-  + 
+- `setInterval()`方法
+  + `setInterval()`方法與`setTimeout()`方法很類似,兩者的差別是
+    * `setInterval()`方法會永遠執行下去,而不是只執行一次,並且我們可以指定想要的間隔執行時間(以毫秒為單位)
 
 
 
