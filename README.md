@@ -47,6 +47,7 @@ Node.js Learn<br>
       - [Console](#console)
       - [Readline](#readline)
       - [CommonJS modules](#commonjs-modules)
+      - [Timers](#timers)
     - [參考資料來源](#參考資料來源)
       - [官方文件](#官方文件)
       - [網路文章](#網路文章)
@@ -2631,6 +2632,40 @@ Node.js Learn<br>
               }
             ```
 
+#### [Timers](https://nodejs.org/dist/latest-v15.x/docs/api/timers.html#timers_timers)
+- `timer`模組會揭露(exposes)一個全域的API,用來安排在將來的某個時段呼叫該函式所使用的。因為`timer`模組中的方法都是全域的,所以不用事先引用(`require('timers')`)模組後才能使用這些API
+- Node的`timer`模組中的方法會實作(implement)類似於網頁瀏覽器(web browsers)中`timers`API,但會使用不同的實作方法
+  + 而Node的`timer`模組會圍繞在[事件迴圈(event loop)](https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/#setimmediate-vs-settimeout)的基礎之上來實作不同的方法
+> method
+  + [setImmediate(callback[, ...args])](https://nodejs.org/dist/latest-v15.x/docs/api/timers.html#timers_setimmediate_callback_args)
+    * args
+      * callback: (Function)
+        * 在本次的事件迴圈結束時,要呼叫的函式
+      * ...args: (any)
+        * 當回呼函式(callback)被呼叫時,可以選擇性地(optional)傳遞參數(arguments)
+      * Returns: 可以傳遞給[clearImmediate()](https://nodejs.org/dist/latest-v15.x/docs/api/timers.html#timers_clearimmediate_immediate)方法所使用的`Immediate物件`
+    * 安排在`callback I/O事件`的立即執行(immediate execution)回呼函式
+    * 當有多個`setImmediate()`方法被使用時,這些回呼函式會依照被建立的順序排隊等待被執行(queued for execution)。整個回呼隊列(callback queue)會處理每次的事件迴圈迭代(event loop iteration)
+      * 如果有一個立即執行計時器(immediate timer)正在一個回呼執行(execution callback)中的隊列(queue)中,該立即執行計時器(immediate timer)就不會被觸發,直到下次事件迴圈迭代(the next event loop iteration)以前
+    * 如果`setImmediate()`方法的`callback`參數不是一個函式(function)的話,會拋出一個[TypeError](https://nodejs.org/dist/latest-v15.x/docs/api/errors.html#errors_class_typeerror)錯誤
+    * `setImmediate()`方法有一個客製化的`promises`變形(custom variant for promises),可以利用Node的內建核心模組`Util`中的[util.promisify()](https://nodejs.org/dist/latest-v15.x/docs/api/util.html#util_util_promisify_original)方法
+      * ```javascript
+          const util = require('util');
+          const setImmediatePromise = util.promisify(setImmediate);
+
+          setImmediatePromise('foobar').then((value) => {
+            // value === 'foobar' (passing values is optional)
+            // This is executed after all I/O callbacks.
+          });
+
+          // Or with async function
+          async function timerExample() {
+            console.log('Before I/O callbacks');
+            await setImmediatePromise();
+            console.log('After I/O callbacks');
+          }
+          timerExample();
+        ```
 
 
 ---
