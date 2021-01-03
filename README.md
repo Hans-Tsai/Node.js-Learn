@@ -1601,13 +1601,105 @@ Node.js Learn<br>
 
 
 #### Discover JavaScript Timers
+> Node內建核心模組`Timers`中的[setTimeout(callback[, delay[, ...args]])](https://nodejs.org/dist/latest-v15.x/docs/api/timers.html#timers_settimeout_callback_delay_args)---Schedules execution of a one-time callback after delay milliseconds.<br>
 > Node內建核心模組`Timers`中的[setInterval(callback[, delay[, ...args]])](https://nodejs.org/dist/latest-v15.x/docs/api/timers.html#timers_setinterval_callback_delay_args)---Schedules repeated execution of callback every delay milliseconds.<br>
+> Node內建核心模組`Timers`中的[clearTimeout(timeout)](https://nodejs.org/dist/latest-v15.x/docs/api/timers.html#timers_cleartimeout_timeout)---Cancels a Timeout object created by setTimeout().<br>
+> Node內建核心模組`Timers`中的[setImmediate(callback[, ...args])](https://nodejs.org/dist/latest-v15.x/docs/api/timers.html#timers_setimmediate_callback_args)---Schedules the "immediate" execution of the callback after I/O events' callbacks.<br>
 
-- 有些瀏覽器(例如: `IE`或是`Edge`)會實作`setImmediate()`方法也能達到相同的功能,但那樣做不算是標準的,而且也無法在其它瀏覽器中使用。但是這算是Node的標準功能之一
-  + 關於`setImmediate()`方法對於各瀏覽器的支援,可參考[Efficient Script Yielding: setImmediate()](https://caniuse.com/setimmediate)
+- `setTimeout()`方法
+  + 當我們在撰寫Javascript程式碼時,有時我們會希望延遲(delay)某些函式的執行
+  + 這就是`setTimeout()`方法在做的事情。我們可以指定一個要延遲執行的回呼函式(callback function),並且指定一個想要延遲執行的時間(以毫秒為單位)
+    * ```javascript
+        setTimeout(() => {
+          // runs after 2 seconds
+        }, 2000)
+
+        setTimeout(() => {
+          // runs after 50 milliseconds
+        }, 50)
+      ```
+      * 這個語法定義了一個新的函式,讓我們可以撰寫任何我們想要執行的函式,或是填入我們想要呼叫的函式並給一組參數(a set of parameters)
+    * ```javascript
+        const myFunction = (firstParam, secondParam) => {
+          // do something
+        }
+
+        // runs after 2 seconds
+        setTimeout(myFunction, 2000, firstParam, secondParam)
+      ```
+      * `setTimeout()`方法會回傳一個計時器ID(Timer ID),通常我們不會用到這個計時器ID,但是我們仍然可以將這個計時器ID記下來
+    * ```javascript
+        const id = setTimeout(() => {
+          // should run after 2 seconds
+        }, 2000)
+
+        // I changed my mind
+        clearTimeout(id)
+      ```
+      * 當我們想要將這個排定要執行的函式取消時,就會需要用到這個計時器ID
+  + 零延遲執行(Zero delay)
+    * 當我們指定要延遲的時間為`0`毫秒時,該回呼函式就會盡快地立即被執行,並且在當前的回呼函式(callback function)執行完後
+    * ```javascript
+        setTimeout(() => {
+          console.log('after ')
+        }, 0)
+
+        console.log(' before ')
+      ```
+      * 以上的範例會打印(print)出`before after`
+      * 這個做法(**將函式加入調度器(scheduler)的排隊(queuing)中**)對於在密集任務時,用來避免CPU資源的阻塞 or 對於要執行繁重的計算時,能讓其他函式先被執行是非常有用的
+  + 有些瀏覽器(例如: `IE`或是`Edge`)會實作`setImmediate()`方法也能達到相同的功能,但那樣做不算是標準的,而且也無法在其它瀏覽器中使用。但是這算是Node的標準功能之一
+    * 關於`setImmediate()`方法對於各瀏覽器的支援,可參考[Efficient Script Yielding: setImmediate()](https://caniuse.com/setimmediate)
 - `setInterval()`方法
   + `setInterval()`方法與`setTimeout()`方法很類似,兩者的差別是
     * `setInterval()`方法會永遠執行下去,而不是只執行一次,並且我們可以指定想要的間隔執行時間(以毫秒為單位)
+    * ```javascript
+        setInterval(() => {
+          // runs every 2 seconds
+        }, 2000)
+      ```
+      * 以上的範例程式碼,會持續每2秒執行一次,直到我們利用`clearInterval()`方法來停止(stop)它
+    * ```javascript
+        const id = setInterval(() => {
+          // runs every 2 seconds
+        }, 2000)
+
+        clearInterval(id)
+      ```
+      * 而要停止`clearInterval()`方法,需要傳遞給該方法間隔器ID(interval ID, => 由`setInterval()`方法所回傳的)
+    * 常見的做法會是在`setInterval()`回呼函式中呼叫`clearInterval()`方法,來讓`setInterval()`方法自己自動地決定是否要再執行一次(again)或是停止(stop)
+    * ```javascript
+        const interval = setInterval(() => {
+          if (App.somethingIWait === 'arrived') {
+            clearInterval(interval)
+            return
+          }
+          // otherwise do things
+        }, 100)
+      ```
+      * 以上的範例程式碼,會在執行某些東西後,直到`App.somethingIWait`這個屬性的值等於`'arrived'`字串時,才會停止
+  + 遞迴計時器(Recursive Timeout)
+    * `setInterval()`方法會啟動一個每`n`豪秒執行一次的函式,而無須考慮該函式何時會執行完畢
+    * 如果有一個函式,每次都會花相同的時間才會執行完畢,那就不會有問題
+      * ![setinterval-ok](/pic/setinterval-ok.png)
+    * 也有可能該函式每次會因為網路速度的情況(network conditions),花費不同的時間才會執行完畢
+      * ![setinterval-varying-duration](/pic/setinterval-varying-duration.png)
+    * 也因此只要任何一次需要花費比較長的時間才會執行完畢的回呼函式就會與下一次要執行的時間**重疊**(overlaps)
+      * ![setinterval-overlapping](/pic/setinterval-overlapping.png)
+      * 為了避免上述**重疊**的情況,我們可以在回呼函式(callback function)執行完畢後,再安排一個遞迴計時器(recursive timeout)
+        * ```javascript
+            const myFunction = () => {
+              // do something
+
+              setTimeout(myFunction, 1000)
+            }
+
+            setTimeout(myFunction, 1000)
+          ```
+      * 當達成(achieve)這個遞迴計時器(recursive timeout)的情境(scenario),會如下圖所示
+        * ![recursive-settimeout](/pic/recursive-settimeout.png)
+- `setTimeout()`與`setInterval()`皆為Node的內建核心模組[Timers](https://nodejs.org/dist/latest-v15.x/docs/api/timers.html#timers_timers)的方法
+  + Node也提供`setImmediate()`方法,這個方法就相當於使用`setTimeout(() => {}, 0)`,主要用來搭配Node的事件迴圈(event loop)使用
 
 
 
