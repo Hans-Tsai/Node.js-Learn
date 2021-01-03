@@ -2669,7 +2669,7 @@ Node.js Learn<br>
   + [setInterval(callback[, delay[, ...args]])](https://nodejs.org/dist/latest-v15.x/docs/api/timers.html#timers_setinterval_callback_delay_args)
     * args
       * callback: (Function)
-        * 設定當計時器(timer)經過設定好的間隔時間(elapses)後,要執行的回呼函式(callback function)
+        * 設定當計時器(timer)經過設定好的間隔時間(elapses)後,要**重複執行**的回呼函式(callback function)
       * delay: (number)
         * 呼叫回呼函式(callback)之前要間隔的毫秒數
         * 預設值: `1`
@@ -2679,6 +2679,31 @@ Node.js Learn<br>
       * Returns: 可以傳遞給[clearInterval()](https://nodejs.org/dist/latest-v15.x/docs/api/timers.html#timers_clearinterval_timeout)方法所使用的`Timeout物件`
     * 安排一個會每`n`毫秒後,重複(repeated)執行的回呼函式(callback function)
     * 如果`setInterval()`方法的`callback`參數不是一個函式(function)的話,會拋出一個[TypeError](https://nodejs.org/dist/latest-v15.x/docs/api/errors.html#errors_class_typeerror)錯誤
+  + [setTimeout(callback[, delay[, ...args]])](https://nodejs.org/dist/latest-v15.x/docs/api/timers.html#timers_setinterval_callback_delay_args)
+    * args
+      * callback: (function)
+        * 設定當計時器(timer)經過設定好的間隔時間(elapses)後,要**執行一次**的回呼函式(callback function)
+      * delay: (number)
+        * 呼叫回呼函式(callback)之前要經過的毫秒數
+        * 預設值: `1`
+        * 當該參數的值大於`2147483647`或是小於`1`時,都會被設定為`1`; 若該參數為非整數的值,會被無條件捨去後,變成整數
+      * ...args: (any)
+        * 當回呼函式(callback)被呼叫時,可以選擇性地(optional)傳遞參數(arguments)
+      * Returns: 可以傳遞給[clearTimeout()](https://nodejs.org/dist/latest-v15.x/docs/api/timers.html#timers_cleartimeout_timeout)方法所使用的`Timeout物件`
+    * 安排一個當經過`n`毫秒後,會執行的回呼函式(callback function)
+    * 注意: `setTimeout()`方法要呼叫的回呼函式可能不會在設定好的毫秒數後,被精確地(precisely)呼叫。Node**不能保證**回呼函式被呼叫的精確時間(exact timing)以及順序(ordering)。只能盡量讓要呼叫的回呼函式(callback)在設定好的時間後被觸發
+    * 如果`setTimeout()`方法的`callback`參數不是一個函式(function)的話,會拋出一個[TypeError](https://nodejs.org/dist/latest-v15.x/docs/api/errors.html#errors_class_typeerror)錯誤
+    * `setTimeout()`方法有一個客製化的`promises`變形(custom variant for promises),可以利用Node的內建核心模組`Util`中的[util.promisify()](https://nodejs.org/dist/latest-v15.x/docs/api/util.html#util_util_promisify_original)方法
+      * ```javascript
+          const util = require('util');
+          const setTimeoutPromise = util.promisify(setTimeout);
+
+          setTimeoutPromise(40, 'foobar').then((value) => {
+            // value === 'foobar' (passing values is optional)
+            // This is executed after about 40 milliseconds.
+          });
+        ```
+
 
 
 ---
