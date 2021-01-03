@@ -2643,7 +2643,7 @@ Node.js Learn<br>
         * 在本次的事件迴圈結束時,要呼叫的函式
       * ...args: (any)
         * 當回呼函式(callback)被呼叫時,可以選擇性地(optional)傳遞參數(arguments)
-      * Returns: 可以傳遞給[clearImmediate()](https://nodejs.org/dist/latest-v15.x/docs/api/timers.html#timers_clearimmediate_immediate)方法所使用的`Immediate物件`
+      * Returns: 可以傳遞給[clearImmediate()](https://nodejs.org/dist/latest-v15.x/docs/api/timers.html#timers_clearimmediate_immediate)方法所使用的`Timeout物件`
     * 安排在`callback I/O事件`的立即執行(immediate execution)回呼函式
     * 當有多個`setImmediate()`方法被使用時,這些回呼函式會依照被建立的順序排隊等待被執行(queued for execution)。整個回呼隊列(callback queue)會處理每次的事件迴圈迭代(event loop iteration)
       * 如果有一個立即執行計時器(immediate timer)正在一個回呼執行(execution callback)中的隊列(queue)中,該立即執行計時器(immediate timer)就不會被觸發,直到下次事件迴圈迭代(the next event loop iteration)以前
@@ -2666,6 +2666,19 @@ Node.js Learn<br>
           }
           timerExample();
         ```
+  + [setInterval(callback[, delay[, ...args]])](https://nodejs.org/dist/latest-v15.x/docs/api/timers.html#timers_setinterval_callback_delay_args)
+    * args
+      * callback: (Function)
+        * 設定當計時器(timer)經過設定好的間隔時間(elapses)後,要執行的回呼函式(callback function)
+      * delay: (number)
+        * 呼叫回呼函式(callback)之前要間隔的毫秒數
+        * 預設值: `1`
+        * 當該參數的值大於`2147483647`或是小於`1`時,都會被設定為`1`; 若該參數為非整數的值,會被無條件捨去後,變成整數
+      * `...args`: (any)
+        * 當回呼函式(callback)被呼叫時,可以選擇性地(optional)傳遞參數(arguments)
+      * Returns: 可以傳遞給[clearInterval()](https://nodejs.org/dist/latest-v15.x/docs/api/timers.html#timers_clearinterval_timeout)方法所使用的`Timeout物件`
+    * 安排一個會每`n`毫秒後,重複(repeated)執行的回呼函式(callback function)
+    * 如果`setInterval()`方法的`callback`參數不是一個函式(function)的話,會拋出一個[TypeError](https://nodejs.org/dist/latest-v15.x/docs/api/errors.html#errors_class_typeerror)錯誤
 
 
 ---
