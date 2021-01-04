@@ -42,6 +42,7 @@ Node.js Learn<br>
       - [Understanding setImmediate()](#understanding-setimmediate)
       - [Discover JavaScript Timers](#discover-javascript-timers)
       - [JavaScript Asynchronous Programming and Callbacks](#javascript-asynchronous-programming-and-callbacks)
+      - [JavaScript Asynchronous Programming and Callbacks](#javascript-asynchronous-programming-and-callbacks-1)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -1791,11 +1792,146 @@ Node.js Learn<br>
       ```
       * 以上的範例程式碼只是4層的程式碼,但是可能會有更多層的程式碼,這樣就不好玩了
       * 那我們該怎麼解決這個問題呢?
-- 回呼韓式的替代方案(Alternatives to callbacks)
+- 回呼函式的替代方案(Alternatives to callbacks)
   + **從ES6開始**,Javascript程式語言開始引進(introduced)了許多能夠不涉及(do not involve)使用回呼函式(callbacks)來處理非同步(asynchronous)程式碼的功能,例如以下2種功能
     * `Promise`物件 (ES6)
     * `Async/Await`語法 (ES8)
 
+#### JavaScript Asynchronous Programming and Callbacks
+> [Promise物件 (by MDN官方文件)](https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Reference/Global_Objects/Promise) --- The Promise object represents the eventual completion (or failure) of an asynchronous operation and its resulting value.<br>
+> [如何使用Promise物件 (by MDN官方文件)](https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Guide/Using_promises)<br>
+> [Fetch API (by MDN官方文件)](https://developer.mozilla.org/zh-TW/docs/Web/API/Fetch_API) --- The Fetch API provides an interface for fetching resources (including across the network). It will seem familiar to anyone who has used XMLHttpRequest, but the new API provides a more powerful and flexible feature set.<br>
+
+- Promise物件的介紹
+  + ```javascript
+      let done = true
+
+      const isItDoneYet = new Promise((resolve, reject) => {
+        if (done) {
+          const workDone = 'Here is the thing I built'
+          resolve(workDone)
+        } else {
+          const why = 'Still working on something else'
+          reject(why)
+        }
+      })
+
+      const checkIfItsDone = () => {
+        isItDoneYet
+          .then(ok => {
+            console.log(ok)
+          })
+          .catch(err => {
+            console.error(err)
+          })
+      }
+
+      checkIfItsDone()
+      ```
+    * 以上的範例程式碼會打印出`Here is the thing I built`
+  + **`Promise`物件通常會被定義為一個最終(eventually)將會變成一個可用的(available)代理值(a proxy for a value)**
+  + `Promise`物件是一種能處理非同步(asynchronous)程式碼的方法,而不用陷入回呼地獄(callback hell)
+    * 可參考[callback hell](http://callbackhell.com/)
+  + 自從2015年(ES6的標準化與引入)開始後,`Promise`物件已經成為Javascript程式語言的一部分了,並且在近年來更與ES8的`Async/Await`語法整合得更好
+    * 非同步函式(Async functions)會在背景中(behind the scenes)使用`Promise`物件,所以了解`Promise`物件運作的原理 & 理解`Async/Await`語法是如何作用的是非常重要的
+  + `Promise`物件簡單來說是如何運作的呢?
+    * 一旦`Promise`物件被呼叫後,它將會以待處理狀態(pending state)開始。這意味著被呼叫的函式(calling function)將會繼續執行,然而`Promise`物件仍然處於待處理狀態(`pending`),直到被解決(`resolves`)為止,進而將所請求到的任何數據傳遞給其呼叫的函式(calling function)
+    * 建立出來的`Promise`物件最終(eventually)將會**已解決的狀態(resolved state)** 或是 **被拒絕的狀態(rejected state)** 結束(end in),並呼叫各自對應的(respective)回呼函式(callback functions),再傳遞給`then()`與`catch()`之後就會立即結束(upon finishing)
+  + 有哪些Javascript的APIs會使用到`Promise`物件呢?
+    * 在我們自己的程式碼或是函式庫(library)的程式碼中,標準的現代化Web APIs也會使用到`Promise`物件,像是以下3種Web APIs
+      * [the Battery API](https://developer.mozilla.org/zh-TW/docs/Web/API/Battery_Status_API)
+      * [the Fetch API](https://developer.mozilla.org/zh-TW/docs/Web/API/Fetch_API/Using_Fetch)
+      * [Service Workers](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker)
+    * 在現代化的Javascript中,我們不太可能會發現自己沒有在使用`Promise`物件,所以讓我們開始深入鑽研它吧!
+- 創造一個承諾物件
+  + `Promise`物件API會揭露(exposes)一個建構子(constructor),我們可以使用`new Promise()`的語法來初始化一個`Promise`物件
+    * ```javascript
+        let done = true
+
+        const isItDoneYet = new Promise((resolve, reject) => {
+          if (done) {
+            const workDone = 'Here is the thing I built'
+            resolve(workDone)
+          } else {
+            const why = 'Still working on something else'
+            reject(why)
+          }
+        })
+      ```
+      * 如我們所見,這個`Promise`物件會檢查全域的`done`常數(global constant),而如果`done`這個全域常數的值為`true`的話,則`Promise`物件就會進入已解決的狀態(resolved state) (由於`resolve`回呼函式已經被呼叫); 否則,`reject`回呼函式就會被執行,並將`Promise`物件變成被拒絕的狀態(rejected state)
+        * 而如果上述的2種函式(`resolve` callback function & `reject` callback function)都沒有被呼叫的話,`Promise`物件就會維持為待處理狀態(`pending` state)
+      * 我們可以利用`resolve`與`reject`兩個語法來將`Promise`物件的結果狀態(resulting state) & 將如何處理的方法 回傳給呼叫方(caller)。在上述的範例程式碼中,我們僅回傳一個字串(string),但其實也可以回傳一個物件(object)或甚至是`null`
+      * 因為我們已經在上述的範例程式碼摘錄(snippet)中,建立了一個`Promise`物件,**因此它已經開始執行了**。這將會有助於我們了解以下的"如何使用`Promise`物件"章節
+  + 另一個我們可能會碰到的更常見做法是一種被稱為**Promisifying**的技術。這種技術是一個能夠使用古典的Javascript函式來接收(takes)一個回呼函式(callback),並使其回傳一個`Promise`物件
+    * ```javascript
+        const fs = require('fs')
+
+        const getFile = (fileName) => {
+          return new Promise((resolve, reject) => {
+            fs.readFile(fileName, (err, data) => {
+              if (err) {
+                reject (err)  // calling `reject` will cause the promise to fail with or without the error passed as an argument
+                return        // and we don't want to go any further
+              }
+              resolve(data)
+            })
+          })
+        }
+
+        getFile('/etc/passwd')
+        .then(data => console.log(data))
+        .catch(err => console.error(err))
+      ```
+    * 補充: 在最近的Node版本中,我們不需要為許多的API進行手動轉換(manual conversion)。假設我們要使用的**Promisifying**技術有正確的簽名(correct signature)的話,在Node的內建核心模組`Util`中有一個方法叫做[util.promisify(original)](https://nodejs.org/docs/latest-v11.x/api/util.html#util_util_promisify_original)可以使用,來幫助我們實現**Promisifying**技術
+- 使用`Promise`物件
+  + 在上一個章節中,我們介紹了一個`Promise`物件是如何被建立的?
+  + 現在,我們要來看一個`Promise`物件是如何被使用的(used)
+  + ```javascript
+      const isItDoneYet = new Promise(/* ... as above ... */)
+      //...
+
+      const checkIfItsDone = () => {
+        isItDoneYet
+          .then(ok => {
+            console.log(ok)
+          })
+          .catch(err => {
+            console.error(err)
+          })
+      }
+      ```
+    * 執行`checkIfItsDone()`方法將會指定(specify),當`isItDoneYet`這個`Promise`物件在
+      * 已解決的狀態(resolves)時,會執行`then()`方法裡面的函式
+      * 或是
+      * 被拒絕的狀態(rejects)時,會執行`catch()`方法裡面的函式
+- 連鎖`Promise`物件(Chaining promises)
+  + 一個`Promise`物件可以被回傳給另一個`Promise`物件,來創造出一串連鎖`Promise`物件(a chain of promises)
+  + [Fetch API](https://developer.mozilla.org/zh-TW/docs/Web/API/Fetch_API)就是一個很好的連鎖`Promise`物件的例子。`Fetch API`能讓我們獲取資源(get a resource)並且當資源被獲取(fetched)時,將連鎖`Promise`物件(a chain of promises)排隊(queue)後執行(execute)
+    * `Fetch API`是一個基於`Promise`物件的機制(mechanism),呼叫`fetch()`方法相當於透過`new Promise()`建構子來建立出一個屬於我們自定義的`Promise`物件
+    * ```javascript
+        const status = response => {
+          if (response.status >= 200 && response.status < 300) {
+            return Promise.resolve(response)
+          }
+          return Promise.reject(new Error(response.statusText))
+        }
+
+        const json = response => response.json()
+
+        fetch('/todos.json')
+          .then(status)    // note that the `status` function is actually **called** here, and that it **returns a promise***
+          .then(json)      // likewise, the only difference here is that the `json` function here returns a promise that resolves with `data`
+          .then(data => {  // ... which is why `data` shows up here as the first parameter to the anonymous function
+            console.log('Request succeeded with JSON response', data)
+          })
+          .catch(error => {
+            console.log('Request failed', error)
+          })
+      ```
+      * 在以上的範例程式碼中,我們呼叫了`fetch()`方法,從根目錄中的`todos.json`這個檔案中來獲得一個待辦清單(a list of TODO items),接著我們就建立出一串連鎖`Promise`物件(a chain of promises)
+      * 執行`fetch()`方法會回傳一個[response](https://fetch.spec.whatwg.org/#concept-response)物件,它具有許多屬性(properties),我們有參考(reference)的屬性有以下2種
+        * `reponse.status`: 一個代表HTTP狀態碼(status code)的數值(numeric value)
+        * `response.statusText`: 一個狀態訊息,如果是`'OK'`則表示該請求成功(request succeeded)
 
 
 
