@@ -1740,7 +1740,61 @@ Node.js Learn<br>
             //do what you want
           })
         ```
+    * 回呼函式(Callbacks)還有用在很多地方,而不只是在`DOM`事件中
+    * 另一個常見的做法是使用計時器(timers)
+      * ```javascript
+          setTimeout(() => {
+            // runs after 2 seconds
+          }, 2000)
+        ```
+    * 另外,`XHR`請求(requests)也能接受回呼函式(callback function),在以下的範例程式碼中,透過指定一個函式給當一個特定的事件(particular event)發生(occur)時會呼叫的屬性(property)
+      * 在這次的範例中,所謂特定的事件就是代表請求的狀態發生改變時(the state of the request changes)
+      * ```javascript
+          const xhr = new XMLHttpRequest()
+          xhr.onreadystatechange = () => {
+            if (xhr.readyState === 4) {
+              xhr.status === 200 ? console.log(xhr.responseText) : console.error('error')
+            }
+          }
+          xhr.open('GET', 'https://yoursite.com')
+          xhr.send()
+        ```
+- 在回呼函式中處理錯誤(Handling errors in callbacks)
+  + 我們平常會如何處理(handle)回呼函式(callbacks)的錯誤(errors)呢?
+    * 一個很常見的策略(strategy)是利用Node所採取的方法,也就是在任何一個回呼函式中的第一個參數(first parameter)就是錯誤(`error`)物件: **error-first callbacks**
+    * 如果沒有發生錯誤(`error`)的話,該物件的值就是`null`; 而如果有發生錯誤(`error`)的話,該錯誤(`error`)物件就會包括關於這個錯誤(`error`)的一些描述(description)以及其他資訊(information)
+    * ```javascript
+        fs.readFile('/file.json', (err, data) => {
+          if (err !== null) {
+            //handle error
+            console.log(err)
+            return
+          }
 
+          //no errors, process data
+          console.log(data)
+        })
+      ```
+- 回呼函式的問題(The problem with callbacks)
+  + 回呼函式(Callbacks)很適合用於簡單的情境中
+  + 然而每一個回呼韓式都會增加一層巢狀(nesting),這時候如果我們有很多的回呼函式(callbacks),程式碼很快地就會開始變得複雜
+    * ```javascript
+        window.addEventListener('load', () => {
+          document.getElementById('button').addEventListener('click', () => {
+            setTimeout(() => {
+              items.forEach(item => {
+                //your code here
+              })
+            }, 2000)
+          })
+        })
+      ```
+      * 以上的範例程式碼只是4層的程式碼,但是可能會有更多層的程式碼,這樣就不好玩了
+      * 那我們該怎麼解決這個問題呢?
+- 回呼韓式的替代方案(Alternatives to callbacks)
+  + **從ES6開始**,Javascript程式語言開始引進(introduced)了許多能夠不涉及(do not involve)使用回呼函式(callbacks)來處理非同步(asynchronous)程式碼的功能,例如以下2種功能
+    * `Promise`物件 (ES6)
+    * `Async/Await`語法 (ES8)
 
 
 
