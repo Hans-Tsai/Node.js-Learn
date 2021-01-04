@@ -1890,6 +1890,31 @@ Node.js Learn<br>
       const isItDoneYet = new Promise(/* ... as above ... */)
       //...
 
+          //no errors, process data
+          console.log(data)
+        })
+      ```
+- 回呼函式的問題(The problem with callbacks)
+  + 回呼函式(Callbacks)很適合用於簡單的情境中
+  + 然而每一個回呼韓式都會增加一層巢狀(nesting),這時候如果我們有很多的回呼函式(callbacks),程式碼很快地就會開始變得複雜
+    * ```javascript
+        window.addEventListener('load', () => {
+          document.getElementById('button').addEventListener('click', () => {
+            setTimeout(() => {
+              items.forEach(item => {
+                //your code here
+              })
+            }, 2000)
+          })
+        })
+      ```
+      * 以上的範例程式碼只是4層的程式碼,但是可能會有更多層的程式碼,這樣就不好玩了
+      * 那我們該怎麼解決這個問題呢?
+- 回呼韓式的替代方案(Alternatives to callbacks)
+  + **從ES6開始**,Javascript程式語言開始引進(introduced)了許多能夠不涉及(do not involve)使用回呼函式(callbacks)來處理非同步(asynchronous)程式碼的功能,例如以下2種功能
+    * `Promise`物件 (ES6)
+    * `Async/Await`語法 (ES8)
+
       const checkIfItsDone = () => {
         isItDoneYet
           .then(ok => {
