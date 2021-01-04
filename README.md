@@ -41,6 +41,7 @@ Node.js Learn<br>
       - [Understanding process.nextTick()](#understanding-processnexttick)
       - [Understanding setImmediate()](#understanding-setimmediate)
       - [Discover JavaScript Timers](#discover-javascript-timers)
+      - [JavaScript Asynchronous Programming and Callbacks](#javascript-asynchronous-programming-and-callbacks)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -1600,7 +1601,6 @@ Node.js Learn<br>
     * 這也意味著`process.nextTick()`方法總是會在`setTimeout()`方法 & `setImmediate()`方法之前被執行
     * 當設定`setTimeout(callback[, delay[, ...args]])`方法的延遲(`delay`)參數為`0`毫秒時,這時該方法會非常類似於`setImmediate()`方法。執行順序將取決於不同的因素所影響,但它們都會在下一次事件迴圈(event loop)的迭代中(current iteration)被執行
 
-
 #### Discover JavaScript Timers
 > Node內建核心模組`Timers`中的[setTimeout(callback[, delay[, ...args]])](https://nodejs.org/dist/latest-v15.x/docs/api/timers.html#timers_settimeout_callback_delay_args)---Schedules execution of a one-time callback after delay milliseconds.<br>
 > Node內建核心模組`Timers`中的[setInterval(callback[, delay[, ...args]])](https://nodejs.org/dist/latest-v15.x/docs/api/timers.html#timers_setinterval_callback_delay_args)---Schedules repeated execution of callback every delay milliseconds.<br>
@@ -1702,10 +1702,44 @@ Node.js Learn<br>
 - `setTimeout()`與`setInterval()`皆為Node的內建核心模組[Timers](https://nodejs.org/dist/latest-v15.x/docs/api/timers.html#timers_timers)的方法
   + Node也提供`setImmediate()`方法,這個方法就相當於使用`setTimeout(() => {}, 0)`,主要用來搭配Node的事件迴圈(event loop)使用
 
-
-
-
-
+#### JavaScript Asynchronous Programming and Callbacks
+- 程式語言的非同步性(asynchronicity)
+  + 電腦都是設計可以非同步的,非同步(asynchronous)意味著事件可以獨立於(independently)主程式流(the main program flow)發生(happen)
+  + 在當前的消費者電腦(consumer computers)中,每個程式都會運行一個特定的時間段(time slot)後,然後停止運行,以讓其它程式可以繼續執行。這個循環運行得很快,以至於我們通常不會注意到,我們會以為是我們的電腦能同時(simultaneously)執行多個程式,事實上這只是一個幻覺(illusion)
+  + 我們這邊不會深入探討這個觀念,但是我們必須要把這個觀念視為一個正常的情況,也就是程式可以是非同步(asynchronous)執行的,直到他們需要被注意時才會停止(halt),這也能讓電腦能同時(in the meantime)執行其它事情
+    * 當程式正在等待來自網路的回應(response from the network)時,該程式是無法在請求完成之前停止(halt)處理器(processor)的
+  + 正常來說,程式語言是同步的(synchronous),其中有些程式語言有提供方法來管理非同步性(asynchronicity)或是透過函式庫(library)來處理
+    * 預設情況下,`C`、`Java`、`C#`、`PHP`、`Go`、`Ruby`、`Swift`、`Python`都是非同步(asynchronous)的
+    * 其中一些程式語言**透過線程(thread)來處理非同步(async)行為,從而產生(spawning)一個新的進程(process)**
+- Javascript
+  + **Javascript程式語言,預設是同步(synchronous)且單執行緒(single threaded)的**。這意味著程式碼不能創造新的線程(threads),並平行(parallel)執行
+  + ```javascript
+      const a = 1
+      const b = 2
+      const c = a * b
+      console.log(c)
+      doSomething()
+      ```
+    * 雖然以上的範例程式碼"看起來"是依序執行的,但是Javascript這個程式語言,起初是誕生於瀏覽器(browser)的,它一開始的工作是用來回應(response)使用者的行為(user actions),像是`onClick`、`onMouseOver`、`OnChange`、`OnSubmit`...等等。該如何使用同步程式設計模型(synchronous programming model)來做到這些事情呢?
+    * 答案是它的"環境"(environment)。瀏覽器(browser)會透過提供一組能夠處理這種功能的APIs來完成這一點
+    * 最近,Node引進(introduced)了一個非阻塞I/O環境(non-blocking I/O environment)來將該概念(concept)延伸(extend)到文件存取(file access)、網路呼叫(network calls)...等等
+- 回呼函式(Callbacks)
+  + 因為我們無法得知使用者何時會點擊按鈕,所以我們可以對該點擊事件(click event)定義(define)一個事件處理器(event handler)。這個事件處理器(event handler)會接受(accepts)一個函式(function),而這個函式會在該事件被觸發(triggered)時呼叫
+    * ```javascript
+        document.getElementById('button').addEventListener('click', () => {
+          //item clicked
+        })
+      ```
+    * 而這也就是所謂的"回呼函式"(callback)
+  + **回呼函式(callback function)是一個簡單的函式,能夠作為值傳遞給另一個函式,並且僅在事件被觸發時才會執行**
+    * 我們可以這樣做的原因是,在Javascript這個程式語言中,有一級函式(first-class functions)這種東西,也就是函式能作為值並指派給變數,再傳遞給其他函式(=> 這種函式被稱作"高階函式", (higher-order functions))
+    * 常見的做法是將客戶端的程式碼包裝在`window`物件的`load`事件監聽器(event listener),它只會在頁面準備好時才會執行回呼函式
+      * ```javascript
+          window.addEventListener('load', () => {
+            //window loaded
+            //do what you want
+          })
+        ```
 
 
 
