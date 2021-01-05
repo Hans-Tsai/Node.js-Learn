@@ -44,6 +44,7 @@ Node.js Learn<br>
       - [JavaScript Asynchronous Programming and Callbacks](#javascript-asynchronous-programming-and-callbacks)
       - [Understanding JavaScript Promises](#understanding-javascript-promises)
       - [Modern Asynchronous JavaScript with Async and Await](#modern-asynchronous-javascript-with-async-and-await)
+      - [The Node.js Event emitter](#the-nodejs-event-emitter)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -2172,6 +2173,55 @@ Node.js Learn<br>
 - 更容易地除錯(Easier debugging)
   + 要除錯(debugging)`Promise`物件是困難的,因為除錯器(debugger)不會跳過(step over)非同步程式碼(asynchronous code)
   + `async/await`語法讓除錯(debug)變得更容易,因為對於編譯器(compiler)來說,這就像是同步程式碼(synchronous code)
+
+#### The Node.js Event emitter
+> Node內建核心模組[Events](https://nodejs.org/api/events.html#events_events)<br>
+
+- 如果我們在瀏覽器使用Javascript工作,就會知道透過多少事件(through events)來跟使用者進行互動(interaction),像是`mouse click`, `keyboard button presses`, `reacting to mouse movements`, ...等等
+- 在後端(backend),Node為我們提供(offer)了利用`Events`內建核心模組來建構出一個類似的系統(similar system)的選項(option)
+  + 特別的是,這個模組提供了一個[EventEmitter Class](https://nodejs.org/api/events.html#events_class_eventemitter)類別,用來處理(handle)我們的事件(events)
+- 我們初始化可以這樣使用
+  + ```javascript
+      const EventEmitter = require('events')
+      const eventEmitter = new EventEmitter()
+      ```
+    * 這樣做的話,該`EventEmitter`物件,除了其他的東西之外,我們先介紹`eventEmitter.on()`方法與`eventEmitter.emit()`方法
+      * [emitter.emit(eventName[, ...args])](https://nodejs.org/api/events.html#events_emitter_emit_eventname_args)方法: 可以被用來觸發(trigger)一個事件(event)
+      * [emitter.on(eventName, listener)](https://nodejs.org/api/events.html#events_emitter_on_eventname_listener)方法: 可以被用來新增作為,當事件(event)被觸發(triggered)時,要執行的回呼函式(callback function)
+  + 舉個例子來說,我們建立一個`start`事件(event),作為一個範例而言,我們對該事件的反應(react)就是把字串記錄(logging)到控制台(console)上
+    * ```javascript
+        eventEmitter.on('start', () => {
+          console.log('started')
+        })
+      ```
+  + 這時,當我們執行
+    * ```javascript
+        eventEmitter.emit('start')
+      ```
+    * 該事件的處理函式(the event handler function )就會被觸發(triggered),並且我們會得到控制台的記錄(console log)
+    * 我們將以上的東西作為額外的參數(additional arguments),傳遞(passing)給事件處理器(event handler),也就是指傳遞給`emit()`方法
+      * ```javascript
+          eventEmitter.on('start', number => {
+            console.log(`started ${number}`)
+          })
+
+          eventEmitter.emit('start', 23)
+          ```
+      * 多個參數(multiple arguments)的情況
+      * ```javascript
+          eventEmitter.on('start', (start, end) => {
+            console.log(`started from ${start} to ${end}`)
+          })
+
+          eventEmitter.emit('start', 1, 100)
+        ```
+- `EventEmitter`物件(object)也公開(exposes)了許多其它的方法(method),來跟事件(events)做互動(interact),像是以下3種方法
+  + [emitter.once(eventName, listener)](https://nodejs.org/api/events.html#events_emitter_once_eventname_listener): 新增(add)一個一次性(one-time)的事件監聽器(listener)
+  + [emitter.removeListener(eventName, listener)](https://nodejs.org/api/events.html#events_emitter_removelistener_eventname_listener): 從指定的事件中移除指定的事件監聽器(remove an event listener from an event)
+    * 等同於[emitter.off(eventName, listener)](https://nodejs.org/api/events.html#events_emitter_off_eventname_listener)
+  + [emitter.removeAllListeners([eventName])](https://nodejs.org/api/events.html#events_emitter_removealllisteners_eventname): 刪除指定的事件中所有的事件監聽器(remove all listeners for an event)
+
+
 
 
 ---
