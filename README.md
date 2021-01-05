@@ -48,6 +48,7 @@ Node.js Learn<br>
       - [Build an HTTP Server](#build-an-http-server)
       - [Making HTTP requests with Node.js](#making-http-requests-with-nodejs)
       - [Make an HTTP POST request using Node.js](#make-an-http-post-request-using-nodejs)
+      - [Get HTTP request body data using Node.js](#get-http-request-body-data-using-nodejs)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -2387,24 +2388,64 @@ Node.js Learn<br>
       req.end()
     ```
 
+#### Get HTTP request body data using Node.js
+> [Express框架](https://expressjs.com/)<br>
 
+- 這是以`JSON`格式來提取(extract)請求內文(request body)的資料(data)的方式
+  + 如果我們正在使用[Express框架](https://expressjs.com/),那很簡單,只要使用Node的`body-parser`模組
+  + 舉例來說,假如我們想要獲得請求的內文(request body)
+    * ```javascript
+        const axios = require('axios')
 
+        axios.post('https://whatever.com/todos', {
+          todo: 'Buy the milk'
+        })
+      ```
+  + 這會與伺服器端的程式碼(server-side code)相對應(matching)
+    * ```javascript
+        const express = require('express')
+        const app = express()
 
+        app.use(
+          express.urlencoded({
+            extended: true
+          })
+        )
 
+        app.use(express.json())
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+        app.post('/todos', (req, res) => {
+          console.log(req.body.todo)
+        })
+      ```
+  + 如果我們沒有在使用`Express`框架,只想要使用普通的Node來完成此操作的話,那麼就會需要做更多的工作。當然,這是因為`Express`框架已經幫我們抽象(abstracts)了很多此類的東西了
+    * 要理解的關鍵是,當我們利用`http.creatServer()`方法來初始化一個`HTTP`伺服器(server)的話,這時當伺服器獲得(get)所有的`HTTP`請求標頭(request headers)時,而不是請求正文(request body)
+      * 請求物件(request object)傳遞給回呼函式(callback)的關係(connection)是一種串流(stream)
+      * 因此我們必須監聽(listen)要處理(processed)的請求正文的內容(body content),並且這個請求正文的內容是成塊處理的(processed in chunks)
+    * 首先,我們會透過監聽(listening)`data`這個事件流(event stream),然後當`data`這個事件流結束(`data` ends)時,就會呼叫`end`這個事件流(event stream)一次(once)
+      * ```javascript
+          const server = http.createServer((req, res) => {
+            // we can access HTTP headers
+            req.on('data', chunk => {
+              console.log(`Data chunk available: ${chunk}`)
+            })
+            req.on('end', () => {
+              //end of data
+            })
+          })
+        ```
+    * 因此,為了要存取資料(access data),假設我們預期(expect)會收到(receive)一個字串(string),我們必須將其放入(put into)陣列(array)中
+      * ```javascript
+          const server = http.createServer((req, res) => {
+            let data = '';
+            req.on('data', chunk => {
+              data += chunk;
+            })
+            req.on('end', () => {
+              JSON.parse(data).todo // 'Buy the milk'
+            })
+          })
+        ```
 
 
 ---
