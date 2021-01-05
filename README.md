@@ -42,7 +42,8 @@ Node.js Learn<br>
       - [Understanding setImmediate()](#understanding-setimmediate)
       - [Discover JavaScript Timers](#discover-javascript-timers)
       - [JavaScript Asynchronous Programming and Callbacks](#javascript-asynchronous-programming-and-callbacks)
-      - [JavaScript Asynchronous Programming and Callbacks](#javascript-asynchronous-programming-and-callbacks-1)
+      - [Understanding JavaScript Promises](#understanding-javascript-promises)
+      - [Modern Asynchronous JavaScript with Async and Await](#modern-asynchronous-javascript-with-async-and-await)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -1797,7 +1798,7 @@ Node.js Learn<br>
     * `Promise`物件 (ES6)
     * `Async/Await`語法 (ES8)
 
-#### JavaScript Asynchronous Programming and Callbacks
+#### Understanding JavaScript Promises
 > [Promise物件 (by MDN官方文件)](https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Reference/Global_Objects/Promise) --- The Promise object represents the eventual completion (or failure) of an asynchronous operation and its resulting value.<br>
 > [如何使用Promise物件 (by MDN官方文件)](https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Guide/Using_promises)<br>
 > [Fetch API (by MDN官方文件)](https://developer.mozilla.org/zh-TW/docs/Web/API/Fetch_API) --- The Fetch API provides an interface for fetching resources (including across the network). It will seem familiar to anyone who has used XMLHttpRequest, but the new API provides a more powerful and flexible feature set.<br>
@@ -1844,7 +1845,7 @@ Node.js Learn<br>
       * [Service Workers](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker)
     * 在現代化的Javascript中,我們不太可能會發現自己沒有在使用`Promise`物件,所以讓我們開始深入鑽研它吧!
 - 創造一個承諾物件
-  + `Promise`物件API會揭露(exposes)一個建構子(constructor),我們可以使用`new Promise()`的語法來初始化一個`Promise`物件
+  + `Promise`物件API會公開(exposes)一個建構子(constructor),我們可以使用`new Promise()`的語法來初始化一個`Promise`物件
     * ```javascript
         let done = true
 
@@ -2046,6 +2047,131 @@ Node.js Learn<br>
   + 未處理的被拒絕的`Promise`物件警告(UnhandledPromiseRejectionWarning)
     * 這個錯誤表示我們呼叫的`Promise`物件被拒絕(rejected)了,但這時候找不到任何一個`catch()`陳述式來處理這個錯誤(error)。這時,我們可以新增一個`catch()`陳述式在引起問題(offending)的`then()`方法的後面來適當地(properly)處理這個錯誤(error)
 
+#### Modern Asynchronous JavaScript with Async and Await
+- 介紹
+  + Javascript在很短的時間內從回呼函式(callbacks)發展成`Promise`物件(=> 從ES6引入的),再演變成`async/await`語法(=> 從ES8引入的),來使Javascript的非同步(asynchronous)語法更簡化了
+  + 非同步函式(Async functions)是由`Promise`物件們 & 生成器(generators)的結合(combination)。基本上,它們算是一種更高階的`Promise`物件的抽象(abstraction)
+  + 讓我再重複一次,**`async/await`語法是建立在`Promise`物件的基礎之上的**
+- 為什麼`async/await`語法會被引進(introduced)呢?
+  + `async/await`語法能減少關於`Promise`物件的樣板(boilerplate),並且可以打破(break) "不能破壞`Promise`物件鏈" 的這個限制(limitation)
+  + 當`Promise`物件在ES6開始引入(introduced)時,它們旨在解決非同步程式碼(asynchronous code)的問題,當然`Promise`物件有完成這個目標了。但是在接下來的2年內(=> ES6~ES8),`Promise`物件很明顯地,不能作為最後的解決方案(final solution)
+  + `Promise`物件的引入(introduced)是用來解決(solve)著名的回呼地獄(callback hell)問題。但是`Promise`物件自己本身也引入了複雜性與語法複雜性(syntax complexity)
+    * 它們是很好的原語(primitives),可以向開發人員公開更好的語法。因此,當時機合適時,我們就能開始使用`async/await`語法
+  + `async/await`語法能讓程式碼"看起來"是同步的(synchronous),**但是在背景中(behind the scenes)它們是非同步的(asynchronous)且非阻塞的(non-blocking)**
+- 這是如何運作的呢?
+  + 一個非同步函式(async function)會回傳一個`Promise`物件,如同以下的範例程式碼
+    * ```javascript
+        const doSomethingAsync = () => {
+          return new Promise(resolve => {
+            setTimeout(() => resolve('I did something'), 3000)
+          })
+        }
+      ```
+    * 如果我們想要呼叫以上的範例函式的話,就要前置(prepend) `await`語法來呼叫,並且呼叫的程式碼會直到當該`Promise`物件被解決(resolved)或是被拒絕(rejected)後才會停止
+  + **警告(caveat): 客戶端函式(client function)必須定義為(defined as)非同步函式(async function)**
+    * ```javascript
+        const doSomething = async () => {
+          console.log(await doSomethingAsync())
+        }
+      ```
+- 一個快速的範例
+  + 以下是一個關於`async/await`語法的快速範例,以非同步(asynchronous)的方式來執行函式(function)
+  + ```javascript
+      const doSomethingAsync = () => {
+        return new Promise(resolve => {
+          setTimeout(() => resolve('I did something'), 3000)
+        })
+      }
+
+      const doSomething = async () => {
+        console.log(await doSomethingAsync())
+      }
+
+      console.log('Before')
+      doSomething()
+      console.log('After')
+      ```
+    * 以上的範例程式碼會"依序"回傳
+      * Before
+      * After
+      * I did something
+- Promise all the things
+  + 在任何函式前置(prepending) `async`關鍵字(keyword)表示該函式(function)會回傳一個`Promise`物件
+    * 即使`async function`看起來沒有明確地這麼做,但是在其內部(internally)會回傳一個`Promise`物件
+  + 這也就是為什麼以下的這段範例程式碼是有效的(valid)
+    * ```javascript
+        const aFunction = async () => {
+          return 'test'
+        }
+
+        aFunction().then(alert) // This will alert 'test'
+      ```
+    * 以上的範例程式碼也相當於下面這段範例程式碼
+    * ```javascript
+        const aFunction = () => {
+          return Promise.resolve('test')
+        }
+
+        aFunction().then(alert) // This will alert 'test'
+      ```
+- 程式碼也會變得更容易閱讀
+  + 如同上一個章節的範例程式碼,這次的範例程式碼看起來非常簡單。從程式碼的比較中可以看出,使用`Promise`物件,並搭配`Promise`物件鏈與回呼函式(callback functions)可以讓程式碼變得更簡潔
+  + 以下是2個非常簡單的範例程式碼的比較,當程式碼開始變得複雜的時候,使用`async/await`語法能帶來很多好處
+    * 這是利用`Promise`物件獲得一個`JSON`資源,解析(parse)它
+      * ```javascript
+          const getFirstUserData = () => {
+            return fetch('/users.json') // get users list
+              .then(response => response.json()) // parse JSON
+              .then(users => users[0]) // pick first user
+              .then(user => fetch(`/users/${user.name}`)) // get user data
+              .then(userResponse => userResponse.json()) // parse JSON
+          }
+
+          getFirstUserData()
+        ```
+    * 這是利用`async/await`語法提供的相同功能
+      * ```javascript
+          const getFirstUserData = async () => {
+            const response = await fetch('/users.json') // get users list
+            const users = await response.json() // parse JSON
+            const user = users[0] // pick first user
+            const userResponse = await fetch(`/users/${user.name}`) // get user data
+            const userData = await userResponse.json() // parse JSON
+            return userData
+          }
+
+          getFirstUserData()
+        ```
+- 多個非同步函式的串連(Multiple async functions in series)
+  + 非同步函式(async function)可以很簡單地被串連,並且語法上比起單純的(plain)`Promise`物件的語法更容易閱讀(much more readable)
+  + ```javascript
+      const promiseToDoSomething = () => {
+        return new Promise(resolve => {
+          setTimeout(() => resolve('I did something'), 10000)
+        })
+      }
+
+      const watchOverSomeoneDoingSomething = async () => {
+        const something = await promiseToDoSomething()
+        return something + '\nand I watched'
+      }
+
+      const watchOverSomeoneWatchingSomeoneDoingSomething = async () => {
+        const something = await watchOverSomeoneDoingSomething()
+        return something + '\nand I watched as well'
+      }
+
+      watchOverSomeoneWatchingSomeoneDoingSomething().then(res => {
+        console.log(res)
+      })
+      ```
+    * 以上的範例程式碼會"依序"回傳
+      * I did something
+      * and I watched
+      * and I watched as well
+- 更容易地除錯(Easier debugging)
+  + 要除錯(debugging)`Promise`物件是困難的,因為除錯器(debugger)不會跳過(step over)非同步程式碼(asynchronous code)
+  + `async/await`語法讓除錯(debug)變得更容易,因為對於編譯器(compiler)來說,這就像是同步程式碼(synchronous code)
 
 
 ---
@@ -2970,7 +3096,7 @@ Node.js Learn<br>
             ```
 
 #### [Timers](https://nodejs.org/dist/latest-v15.x/docs/api/timers.html#timers_timers)
-- `timer`模組會揭露(exposes)一個全域的API,用來安排在將來的某個時段呼叫該函式所使用的。因為`timer`模組中的方法都是全域的,所以不用事先引用(`require('timers')`)模組後才能使用這些API
+- `timer`模組會公開(exposes)一個全域的API,用來安排在將來的某個時段呼叫該函式所使用的。因為`timer`模組中的方法都是全域的,所以不用事先引用(`require('timers')`)模組後才能使用這些API
 - Node的`timer`模組中的方法會實作(implement)類似於網頁瀏覽器(web browsers)中`timers`API,但會使用不同的實作方法
   + 而Node的`timer`模組會圍繞在[事件迴圈(event loop)](https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/#setimmediate-vs-settimeout)的基礎之上來實作不同的方法
 > method
