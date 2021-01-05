@@ -1778,7 +1778,7 @@ Node.js Learn<br>
       ```
 - 回呼函式的問題(The problem with callbacks)
   + 回呼函式(Callbacks)很適合用於簡單的情境中
-  + 然而每一個回呼韓式都會增加一層巢狀(nesting),這時候如果我們有很多的回呼函式(callbacks),程式碼很快地就會開始變得複雜
+  + 然而每一個回呼函式都會增加一層巢狀(nesting),這時候如果我們有很多的回呼函式(callbacks),程式碼很快地就會開始變得複雜
     * ```javascript
         window.addEventListener('load', () => {
           document.getElementById('button').addEventListener('click', () => {
@@ -1896,7 +1896,7 @@ Node.js Learn<br>
       ```
 - 回呼函式的問題(The problem with callbacks)
   + 回呼函式(Callbacks)很適合用於簡單的情境中
-  + 然而每一個回呼韓式都會增加一層巢狀(nesting),這時候如果我們有很多的回呼函式(callbacks),程式碼很快地就會開始變得複雜
+  + 然而每一個回呼函式都會增加一層巢狀(nesting),這時候如果我們有很多的回呼函式(callbacks),程式碼很快地就會開始變得複雜
     * ```javascript
         window.addEventListener('load', () => {
           document.getElementById('button').addEventListener('click', () => {
@@ -1910,7 +1910,7 @@ Node.js Learn<br>
       ```
       * 以上的範例程式碼只是4層的程式碼,但是可能會有更多層的程式碼,這樣就不好玩了
       * 那我們該怎麼解決這個問題呢?
-- 回呼韓式的替代方案(Alternatives to callbacks)
+- 回呼函式的替代方案(Alternatives to callbacks)
   + **從ES6開始**,Javascript程式語言開始引進(introduced)了許多能夠不涉及(do not involve)使用回呼函式(callbacks)來處理非同步(asynchronous)程式碼的功能,例如以下2種功能
     * `Promise`物件 (ES6)
     * `Async/Await`語法 (ES8)
@@ -1957,6 +1957,94 @@ Node.js Learn<br>
       * 執行`fetch()`方法會回傳一個[response](https://fetch.spec.whatwg.org/#concept-response)物件,它具有許多屬性(properties),我們有參考(reference)的屬性有以下2種
         * `reponse.status`: 一個代表HTTP狀態碼(status code)的數值(numeric value)
         * `response.statusText`: 一個狀態訊息,如果是`'OK'`則表示該請求成功(request succeeded)
+      * 自定義的: `response`物件也有`response.json()`方法,可以回傳一個`Promise`物件,這個方法可以用來處理內文(the content of the body),並轉換成`JSON`格式
+      * 所以考慮到這些前提(premises),就會發生這種情況,一串連鎖`Promise`物件中的第一個`Promise`物件是我們定義的`status()`函式,該函式用來檢查回應的狀態(reponse status),若這個回應狀態碼不是成功的(= `200`~`299`),該函式就會拒絕(rejects)這個`Promise`物件
+        * 此操作(operation)將會導致整個該`Promise`物件會跳過列出的(listed)所有連鎖`Promise`物件鏈,並直接跳到下面的`catch()`陳述句,該函式會記錄請求失敗(`Request failed`)的文本(text) & 錯誤訊息(error message)
+      * 如果我們自定義的`status()`函式回傳的回應狀態碼是成功的話,它會呼叫我們自定義的`repsonse.json()`函式。由於前一個(previous)`Promise`物件在請求成功(successful)後會回傳一個`response`物件,我們會將這個`response`物件作為下一個`Promise`物件的輸入(input)
+      * 在以上的範例程式碼中,我們會回傳一個經過`response.json()`函式處理過(`JSON` processed)的資料(data),因此第三個`Promise`物件就能直接收到(receives)這個`JSON`物件
+        * ```javascript
+            .then((data) => {
+              console.log('Request succeeded with JSON response', data)
+            })
+          ```
+        * 接下來,我們只要將這個記錄到控制台(console)即可
+- 處理錯誤(Handling errors)
+  + 在上一節的範例中,我們在連鎖`Promise`物件鏈中附加了`catch()`函式
+    * ```javascript
+        .catch(error => {
+          console.log('Request failed', error)
+        })
+      ```
+  + 如果在整個連鎖`Promise`物件鏈中有任何的失敗(fails)並引起(raises)一個錯誤(error)或是被拒絕的`Promise`物件,程式碼的流程控制權(control)將會轉移到整個連鎖`Promise`物件鏈下面且最近的(nearest)`catch()`陳述句
+    * ```javascript
+        new Promise((resolve, reject) => {
+          throw new Error('Error')
+        }).catch(err => {
+          console.error(err)
+        })
+
+        // or
+
+        new Promise((resolve, reject) => {
+          reject('Error')
+        }).catch(err => {
+          console.error(err)
+        })
+      ```
+  + 串鏈錯誤(Cascading errors)
+    * 如果在`catch()`陳述句裡面,又引起(raises)了一個錯誤(error),我們可以再附加第2個`catch()`函式來處理該錯誤(error),以此類推
+    * ```javascript
+        new Promise((resolve, reject) => {
+          throw new Error('Error')
+        })
+          .catch(err => {
+            throw new Error('Error')
+          })
+          .catch(err => {
+            console.error(err)
+          })
+      ```
+- 編排`Promise`物件(Orchestrating promises)
+  + [Promise.all(iterable)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all)
+    * **如果我們想要同步化(synchronize)不同的`Promise`物件,`Promise.all()`方法可以定義一個`Promise`物件的清單(list),並在全部的`Promise`物件都被解決(all resolved)後,執行一些操作**
+      * ```javascript
+          const f1 = fetch('/something.json')
+          const f2 = fetch('/something2.json')
+
+          Promise.all([f1, f2])
+            .then(res => {
+              console.log('Array of results', res)
+            })
+            .catch(err => {
+              console.error(err)
+            })
+        ```
+    * 我們可以使用ES6(= ES2015)引進的解構指派語法(destructuring assignment syntax)來這樣做
+      * ```javascript
+          Promise.all([f1, f2]).then(([res1, res2]) => {
+            console.log('Results', res1, res2)
+          })
+        ```
+    * 當然,我們也可以使用[fetch()](https://developer.mozilla.org/zh-TW/docs/Web/API/Fetch_API/Using_Fetch) API來實作,**任何`Promise`物件都可以使用`Promise.all()`方法**
+  + [Promise.race(iterable)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/race)
+    * **當我們將傳遞給`Promise.race()`方法的第1個`Promise`物件被解決(resolved)時,會執行該方法,並且它只會執行其附加的回呼函式(attached callback)"一次",並解決第1個`Promise`物件的結果**
+      * ```javascript
+          const first = new Promise((resolve, reject) => {
+            setTimeout(resolve, 500, 'first')
+          })
+          const second = new Promise((resolve, reject) => {
+            setTimeout(resolve, 100, 'second')
+          })
+
+          Promise.race([first, second]).then(result => {
+            console.log(result) // second
+          })
+        ```
+- 常見的錯誤(Common errors)
+  + 未捕獲的型別錯誤: `undefined`不是一個`Promise`物件(Uncaught TypeError: undefined is not a promise)
+    * 如果在控制台(console)得到此錯誤(error)時,可以去確認一下我們是使用`new Promise()`語法來建立一個新的`Promise`物件,而"不是"使用`Promise()`語法
+  + 未處理的被拒絕的`Promise`物件警告(UnhandledPromiseRejectionWarning)
+    * 這個錯誤表示我們呼叫的`Promise`物件被拒絕(rejected)了,但這時候找不到任何一個`catch()`陳述式來處理這個錯誤(error)。這時,我們可以新增一個`catch()`陳述式在引起問題(offending)的`then()`方法的後面來適當地(properly)處理這個錯誤(error)
 
 
 
