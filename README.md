@@ -45,6 +45,7 @@ Node.js Learn<br>
       - [Understanding JavaScript Promises](#understanding-javascript-promises)
       - [Modern Asynchronous JavaScript with Async and Await](#modern-asynchronous-javascript-with-async-and-await)
       - [The Node.js Event emitter](#the-nodejs-event-emitter)
+      - [Build an HTTP Server](#build-an-http-server)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -2220,6 +2221,48 @@ Node.js Learn<br>
   + [emitter.removeListener(eventName, listener)](https://nodejs.org/api/events.html#events_emitter_removelistener_eventname_listener): 從指定的事件中移除指定的事件監聽器(remove an event listener from an event)
     * 等同於[emitter.off(eventName, listener)](https://nodejs.org/api/events.html#events_emitter_off_eventname_listener)
   + [emitter.removeAllListeners([eventName])](https://nodejs.org/api/events.html#events_emitter_removealllisteners_eventname): 刪除指定的事件中所有的事件監聽器(remove all listeners for an event)
+
+#### Build an HTTP Server
+> Node內建核心模組[HTTP](https://nodejs.org/api/http.html#http_http)<br>
+
+- 這是一個Hello World範例的HTTP web server
+  + ```javascript
+      const http = require('http')
+
+      const port = process.env.PORT
+
+      const server = http.createServer((req, res) => {
+        res.statusCode = 200
+        res.setHeader('Content-Type', 'text/html')
+        res.end('<h1>Hello, World!</h1>')
+      })
+
+      server.listen(port, () => {
+        console.log(`Server running at port ${port}`)
+      })
+      ```
+    * 以上的範例程式碼會打印出`Hello, World!`字串
+  + 讓我們來簡單地分析一下這段範例程式碼,包括Node的`HTTP`內建核心模組
+    * 我們可以利用`HTTP`模組(module)來建立一個HTTP 伺服器(server)
+    * 這個`HTTP server`被設定用來監聽指定的`3000` port。當伺服器準備好後,就會呼叫[server.listen()](https://nodejs.org/api/http.html#http_server_listen)這個回呼函式(callback function)
+    * 我們傳遞的回呼函式是將在收到每個請求(every request)時,立即(upon)要執行的回呼函式(callback function)
+    * 每當(whenever)收到(received)一個新的請求(new request)時,就會呼叫[request事件(event)](https://nodejs.org/api/http.html#http_event_request),並提供2個物件(objects)
+      * 請求物件(request): 會是一個[http.IncomingMessage](https://nodejs.org/api/http.html#http_class_http_incomingmessage)物件
+        * 該物件會提供關於請求的細節(request details)。透過這個物件,我們可以用來存取(access)請求標頭(request headers)與請求資料(request data)
+      * 回應物件(response): 會是一個[http.ServerResponse](https://nodejs.org/api/http.html#http_class_http_serverresponse)物件
+        * 該物件是被用來產生(populate)出我們將要回傳給客戶端(client)的資料(data)
+    * 在這次的範例程式碼中,我們有設定了回應物件(response)的狀態碼(statusCode)的屬性(property)值為`200`,來表示這是一個成功的請求(successful response)
+      * ```javascript
+          res.statusCode = 200
+        ```
+    * 在這次的範例程式碼中,我們也有設定了回應物件(response)的內文標題形式(`Content-Type header`)
+      * ```javascript
+          res.setHeader('Content-Type', 'text/plain')
+        ```
+    * 在這次範例程式碼的結尾,我們也關閉了回應物件(response),並將內容作為參數(argument)傳遞給`response.end()`方法
+      * ```javascript
+          res.end('Hello World\n')
+        ```
 
 
 
