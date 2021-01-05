@@ -56,12 +56,11 @@ Node.js Learn<br>
       - [Readline](#readline)
       - [CommonJS modules](#commonjs-modules)
       - [Timers](#timers)
+      - [Events](#events)
     - [參考資料來源](#參考資料來源)
       - [官方文件](#官方文件)
       - [網路文章](#網路文章)
       - [網路影片](#網路影片)
-
-
 
 
 ---
@@ -3440,6 +3439,24 @@ Node.js Learn<br>
             // This is executed after about 40 milliseconds.
           });
         ```
+
+#### [Events](https://nodejs.org/dist/latest-v15.x/docs/api/events.html#events_events)
+- 大部分Node中的核心API都是基於慣用的(idiomatic)非同步(asynchronous)事件驅動(event-driven)架構(architecture)。在這種架構中,某些類型的物件(被稱為`emitters`)會發出(emit)被命名的事件(named events),導致(cause)函式物件(`Function` object, => 也就是監聽器(listeners))被呼叫(to be called)
+- 舉例來說,每當有同級連接(peer connects)時,都會發出(emit)一次事件(event)到一個[net.Server](https://nodejs.org/dist/latest-v15.x/docs/api/net.html#net_class_net_server)物件(object); 當檔案被開啟(opened)時,會有一個[fs.ReadStream](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_class_fs_readstream)實例(instance)會發出(emit)一個事件(event); 每當(whenever)有資料可以被讀取時,就會發出(emit)一個[stream](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html)事件(event)
+- 發出的事件(emit events)中的所有物件(objects)都是[EventEmitter](https://nodejs.org/dist/latest-v15.x/docs/api/events.html#events_class_eventemitter)類別(class)的實例(instances)。這些物件會公開(expose)一個`emitter.on()`函式(function),這個函式允許(allows)一個或多個函式附加到(attached)由該物件(by object)所發出(emitted)的被命名的事件(named events)上。**通常,事件名稱都是用駝峰命名法(camel-cased)來命名的字串(strings),但是可以使用任何有效的(valid)Javascript屬性鍵(property key)**
+- 當`EventEmitter`物件發出(emits)一個事件(event),所有被附加到(attached)那個特定的(specific)事件上的函式(functions)都會被同步地呼叫(called synchronously)。被呼叫的監聽器(the called listeners)所返回(returned)的任何值都會被忽略(ignored)和丟棄(discarded)掉
+- 以下的範例程式碼會展示(shows)具有單一個(single)監聽器(listener)的簡單`EventEmitter`物件實例(instance)。`eventEmitter.on()`方法是用來註冊監聽器(register listeners),而`eventEmitter.emit()`方法則是用來觸發(trigger)一個事件(event)
+  + ```javascript
+      const EventEmitter = require('events');
+
+      class MyEmitter extends EventEmitter {}
+
+      const myEmitter = new MyEmitter();
+      myEmitter.on('event', () => {
+        console.log('an event occurred!');
+      });
+      myEmitter.emit('event');
+    ```
 
 
 
