@@ -46,6 +46,7 @@ Node.js Learn<br>
       - [Modern Asynchronous JavaScript with Async and Await](#modern-asynchronous-javascript-with-async-and-await)
       - [The Node.js Event emitter](#the-nodejs-event-emitter)
       - [Build an HTTP Server](#build-an-http-server)
+      - [Making HTTP requests with Node.js](#making-http-requests-with-nodejs)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -2263,6 +2264,91 @@ Node.js Learn<br>
       * ```javascript
           res.end('Hello World\n')
         ```
+
+#### Making HTTP requests with Node.js
+> Node內建核心模組[HTTPS](https://nodejs.org/dist/latest-v15.x/docs/api/https.html#https_https)<br>
+
+- 完成一個`GET`請求(Perform a `GET` Request)
+  + ```javascript
+      const https = require('https')
+      const options = {
+        hostname: 'whatever.com',
+        port: 443,
+        path: '/todos',
+        method: 'GET'  // 完成一個GET請求
+      }
+
+      const req = https.request(options, res => {
+        console.log(`statusCode: ${res.statusCode}`)
+
+        res.on('data', d => {
+          process.stdout.write(d)
+        })
+      })
+
+      req.on('error', error => {
+        console.error(error)
+      })
+
+      req.end()
+    ```
+- 完成一個`POST`請求(Perform a `POST` Request)
+  + ```javascript
+      const https = require('https')
+
+      const data = JSON.stringify({
+        todo: 'Buy the milk'
+      })
+
+      const options = {
+        hostname: 'whatever.com',
+        port: 443,
+        path: '/todos',
+        method: 'POST',  // 完成一個POST請求 
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': data.length
+        }
+      }
+
+      const req = https.request(options, res => {
+        console.log(`statusCode: ${res.statusCode}`)
+
+        res.on('data', d => {
+          process.stdout.write(d)
+        })
+      })
+
+      req.on('error', error => {
+        console.error(error)
+      })
+
+      req.write(data)
+      req.end()
+    ```
+- 完成一個`PUT`與`DELETE`請求(`PUT` and `DELETE`)
+  + `PUT`與`DELETE`請求跟`POST`請求(request)的格式(format)相同,只要修改`options.method`這個屬性值就可以用了
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
