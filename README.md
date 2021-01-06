@@ -3457,6 +3457,102 @@ Node.js Learn<br>
       });
       myEmitter.emit('event');
     ```
+> 傳遞參數與`this`給事件監聽器(Passing arguments and this to listeners)
+  + `eventEmitter.emit()`方法允許將任意一組參數(arguments)傳遞給事件監聽器函式(listener functions)。
+  + 請記住! 在呼叫普通的(ordinary)事件監聽器函式(listener function)時,`this`這個關鍵字會被刻意地(intentionally)被設定作為引用(reference)事件監聽器(listener)所附加的`EventEmitter`實例(instance)
+    * ```javascript 
+        const myEmitter = new MyEmitter();
+        myEmitter.on('event', function(a, b) {
+          console.log(a, b, this, this === myEmitter);
+          // Prints:
+          //   a b MyEmitter {
+          //     domain: null,
+          //     _events: { event: [Function] },
+          //     _eventsCount: 1,
+          //     _maxListeners: undefined } true
+        });
+        myEmitter.emit('event', 'a', 'b');
+      ```
+  + 可以使用ES6的箭頭函式(Arrow Functions)來作為事件監聽器(listeners),然而當這麼做時,`this`關鍵字就不會再引用(reference)`EventEmitter`實例(instance)
+    * ```javascript
+        const myEmitter = new MyEmitter();
+        myEmitter.on('event', (a, b) => {
+          console.log(a, b, this);
+          // Prints: a b {}
+        });
+        myEmitter.emit('event', 'a', 'b');
+      ```
+> 非同步與同步(Asynchronous vs. synchronous)
+  + `Eventemitter`實例(instance)會同步地(synchronously)依據所有的事件監聽器(listeners)的照序(in the order)呼叫,這樣可以確保(ensures)事件的正確排序(proper sequencing),並且能避免爭用條件(race conditions)與邏輯錯誤(logic error)
+    * 等到適當時機(appropriate)時,事件監聽器函式(listener functions)可以利用`setImmediate()`方法 & `process.nextTick()`方法來切換到非同步操作模式(asynchronous mode of operation)
+  + ```javascript
+      const myEmitter = new MyEmitter();
+      myEmitter.on('event', (a, b) => {
+        setImmediate(() => {
+          console.log('this happens asynchronously');
+        });
+      });
+      myEmitter.emit('event', 'a', 'b');
+    ```
+> 僅處理事件"1次"(Handling events only once)
+  + 若利用`eventEmitter.on()`方法來註冊(registered)一個事件監聽器(listener)時,則當每次(every time)發出(emitted)被命名的事件(named event)時,都會呼叫(invoked)該事件監聽器(listener)
+    * ```javascript
+        const myEmitter = new MyEmitter();
+        let m = 0;
+        myEmitter.on('event', () => {
+          console.log(++m);
+        });
+        myEmitter.emit('event');
+        // Prints: 1
+        myEmitter.emit('event');
+        // Prints: 2
+      ```
+  + 若利用`eventEmitter.once()`方法的話,可以註冊(register)一個針對特定事件(particular event)才會**最多被呼叫一次**(called at most once)的事件監聽器(listener)。而一旦這個特定事件被發出(emitted)時,該事件監聽器(listener)就會被取消註冊(unregistered)後,再呼叫(called)該事件監聽器(listener)
+    * ```javascript
+        const myEmitter = new MyEmitter();
+        let m = 0;
+        myEmitter.once('event', () => {
+          console.log(++m);
+        });
+        myEmitter.emit('event');
+        // Prints: 1
+        myEmitter.emit('event');
+        // Ignored
+      ```
+> 錯誤事件(Error events)
+  + 當某個`EventEmitter`實例(instance)發生錯誤(error occurs)時,典型的動作(typical action)是發出(emitted)一個`error`事件(event)。而這些`error`事件(event)會在Node中被視為(treated as)特殊情況(special cases)
+  + 若一個`Eventemitter`實例(instance)之中,不存在至少(at least)一個用來註冊(registered)給`error`事件(event)的事件監聽器(listener)的話,同時也已經發出(emitted)了一個`error`事件(event),這時該`error`事件(event)就會被拋出(thrown),並且堆疊追蹤(stack trace)就會被打印(printed)出,最後Node的進程(process)就會退出(exits)
+    * ```javascript
+        const myEmitter = new MyEmitter();
+        myEmitter.emit('error', new Error('whoops!'));
+        // Throws and crashes Node.js
+      ```
+  + 為了防止(To guard against) Node的進程(process)崩潰(crashing),可以使用Node的[Domain](https://nodejs.org/api/domain.html#domain_domain)內建核心模組
+    * 請注意! `Domain`模組已棄置(deprecated)
+  + 作為最佳的實踐做法(As a best practice),事件監聽器(listeners)應該總是被新增到`error`事件(event)上
+    * ```javascript
+        const myEmitter = new MyEmitter();
+        myEmitter.on('error', (err) => {
+          console.error('whoops! there was an error');
+        });
+        myEmitter.emit('error', new Error('whoops!'));
+        // Prints: whoops! there was an error
+      ```
+  + 我們可以透過[events.errorMonitor](https://nodejs.org/api/events.html#events_events_errormonitor)符號(symbol)來安裝一個事件監聽器(listener),以用來監測`error`事件(event),而不用(without)消耗(consuming)發出的錯誤(emitted error)
+    * ```javascript
+        const { EventEmitter, errorMonitor } = require('events');
+
+        const myEmitter = new EventEmitter();
+        myEmitter.on(errorMonitor, (err) => {
+          MyMonitoringTool.log(err);
+        });
+        myEmitter.emit('error', new Error('whoops!'));
+        // Still throws and crashes Node.js
+      ```
+
+
+
+
 
 
 
