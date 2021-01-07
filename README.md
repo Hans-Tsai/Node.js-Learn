@@ -49,6 +49,7 @@ Node.js Learn<br>
       - [Making HTTP requests with Node.js](#making-http-requests-with-nodejs)
       - [Make an HTTP POST request using Node.js](#make-an-http-post-request-using-nodejs)
       - [Get HTTP request body data using Node.js](#get-http-request-body-data-using-nodejs)
+      - [Working with file descriptors in Node.js](#working-with-file-descriptors-in-nodejs)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -2445,6 +2446,35 @@ Node.js Learn<br>
             })
           })
         ```
+
+#### Working with file descriptors in Node.js
+> Node內建核心模組[File system](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_file_system)<br>
+
+- 在我們能夠代理(sits in)檔案系統(file system)來與檔案(file)互動(interact)之前,我們必須先獲得一個檔案描述符號(file descriptor)
+- 一個檔案描述符號(file descriptor)就是透過Node內建的`File system`核心模組中的[fs.open()](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_open_path_flags_mode_callback)方法來開啟檔案(opening the file)時,所回傳(returned)的東西
+  + ```javascript
+      const fs = require('fs')
+
+      fs.open('/Users/joe/test.txt', 'r', (err, fd) => {
+        //fd is our file descriptor
+      })
+      ```
+    * 注意到在`fs.open()`方法所使用的第2個參數,也就是`r`參數。這個旗幟(flag)意味著(means)我們是用讀取模式(reading)開啟(open)這個檔案(file),其它可能會常用到的旗幟(flags)會有以下幾種
+      * `r+`: 以讀取(reading)+寫入(writing)模式來開啟這個檔案
+      * `w+`: 以讀取(reading)+寫入(writing)模式來開啟這個檔案,並且將串流(stream)放在(positioning)檔案的**最前面**(beginning)。當該檔案不存在時,就會建立一份這個檔案
+      * `a`: 以寫入(writing)模式來開啟這個檔案,並且將串流(stream)放在(positioning)檔案的**最後面**(end)。當該檔案不存在時,就會建立一份這個檔案
+      * `a+`: 以讀取(reading)+寫入(writing)模式來開啟這個檔案,並且將串流(stream)放在(positioning)檔案的**最後面**(end)。當該檔案不存在時,就會建立一份這個檔案
+- 我們也可以透過[fs.openSync()](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_opensync_path_flags_mode)方法來開啟檔案,該方法會回傳(returns)一個檔案描述符號(file descriptor),而不是(instead of)提供(providing)一個回呼函式(callback)
+  + ```javascript
+      const fs = require('fs')
+
+      try {
+        const fd = fs.openSync('/Users/joe/test.txt', 'r')
+      } catch (err) {
+        console.error(err)
+      }
+      ```
+    * 一旦(once)獲得那個檔案描述符號(file descriptor),我們便能運用任何(whatever)我們選擇使用的方式(way)來完成(perform)所有(all)需要(require)檔案描述符號(file descriptor)的操作(operations),像是呼叫(calling)`fs.open()`方法,以及許多其它用來跟檔案系統(file system)互動(interact with)的操作
 
 
 ---
