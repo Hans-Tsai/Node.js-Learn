@@ -51,6 +51,7 @@ Node.js Learn<br>
       - [Get HTTP request body data using Node.js](#get-http-request-body-data-using-nodejs)
       - [Working with file descriptors in Node.js](#working-with-file-descriptors-in-nodejs)
       - [Node.js file stats](#nodejs-file-stats)
+      - [Node.js File Paths](#nodejs-file-paths)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -2521,6 +2522,60 @@ Node.js Learn<br>
             stats.size //1024000 //= 1MB
           })
         ```
+
+#### Node.js File Paths
+> Node內建核心模組[Path](https://nodejs.org/dist/latest-v15.x/docs/api/path.html#path_path)<br>
+
+- 系統(system)中的每個檔案(every file)都有一個路徑(path)
+- 在`Linux`或是`macOS`作業系統(Unix-like operating system)時,檔案路徑看起來會像是以下這樣
+  + `/users/joe/file.txt`
+- 然而,`Windows`作業系統卻是不同的,它的檔案路徑結構(structure)會像是
+  + `C:\users\joe\file.txt`
+- 因此,我們會需要注意(pay attention),當我們在應用程式(application)中使用路徑(paths)時,需要將這個路徑結構的差異(difference)考慮進去(taken into account)
+  + 我們可以將Node內建的`Path`這個核心模組,包括(include)到我們的檔案中,並且開始使用這個模組的相關方法(method)
+  + ```javascript
+      const path = require('path')
+    ```
+- 利用路徑來作為資訊(Getting information out of a path)
+  + 假如(Given)給定一個路徑(path),我們能透過這個這個路徑來提取(extract)資訊,可以利用以下的幾種方法來完成
+    * [path.dirname(path)](https://nodejs.org/dist/latest-v15.x/docs/api/path.html#path_path_dirname_path): 獲得(get)父目錄(parent folder)的檔案(file)
+    * [path.basename(path[, ext])](): 獲得(get)該檔案名稱(filename part)
+    * [path.extname(path)](https://nodejs.org/dist/latest-v15.x/docs/api/path.html#path_path_extname_path): 獲得(get)該檔案的副檔名(file extension)
+  + ```javascript
+      const notes = '/users/joe/notes.txt'
+
+      path.dirname(notes) // /users/joe
+      path.basename(notes) // notes.txt
+      path.extname(notes) // .txt
+      ```
+  + 如果我們想要得到**不包含**副檔名(file extension)的檔案名稱(filename)的話,可以利用`path.basename()`方法,並給定這個方法的第二個參數`ext`的值,以過濾掉其副檔名
+    * ```javascript
+        path.basename(notes, path.extname(notes)) //notes
+      ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ---
