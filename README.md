@@ -3561,6 +3561,105 @@ Node.js Learn<br>
       * `captureRejections`: (boolean)
         * 這個選項能夠自動地(automatic)捕抓(capturing)被拒絕(rejection)的`Promise`物件
         * 預設值: `false`
+  + > Event
+    * [newListener](https://nodejs.org/api/events.html#events_event_newlistener)
+      * args
+        * eventName: (string) | (symbol)
+          * 正在監聽的事件(event)的名稱
+        * listener: (Function)
+          * 事件處理器(event handler)函式(function)
+    * `EventEmitter`實例(instance)會在當有一個事件監聽器(listener)被加入到自身內部的(internal)事件監聽器們(listeners)陣列(array)之前,先發出(emit)一個自身(own)的`newListener`事件(event)
+    * 為了`newListener`事件(event)而註冊(registered)的事件監聽器們(listeners)將會傳遞(passed)事件名稱與要新增(being added)的事件監聽器(listener)的參考(reference)
+    * 事實上,在新增事件監聽器(listener)之前觸發(triggered)的事件中有一個微妙(subtle)卻很重要(important)的副作用(side effect)
+      * 任何用來註冊(registered)給同名(same `name`)的`newListener`回呼函式(callback)之內(within)的額外(additional)的事件監聽器們(listeners),都會在那些被新增(added)到進程中(process)的事件監聽器"之前"就會被插入
+      * ```javascript
+          class MyEmitter extends EventEmitter {}
+
+          const myEmitter = new MyEmitter();
+          // Only do this once so we don't loop forever
+          myEmitter.once('newListener', (event, listener) => {
+            if (event === 'event') {
+              // Insert a new listener in front
+              myEmitter.on('event', () => {
+                console.log('B');
+              });
+            }
+          });
+          myEmitter.on('event', () => {
+            console.log('A');
+          });
+          myEmitter.emit('event');
+          // Prints:
+          //   B
+          //   A
+        ```
+    * [removeListener](https://nodejs.org/api/events.html#events_event_removelistener)
+      * args
+        * eventName: (string) | (symbol)
+          * 事件(event)的名稱
+        * listener: (Function)
+          * 事件處理器(event handler)函式(function)
+      * 當事件監聽器(listener)被移除(removed)後,會發出(emitted)一個`removeListener`事件(event)
+  + [emitter.on(eventName, listener)](https://nodejs.org/api/events.html#events_emitter_on_eventname_listener)
+    * args
+      * eventName: (string) | (symbol)
+        * 事件(event)的名稱
+      * listener: (Function)
+        * 該事件監聽器要執行的回呼函式(callback function)
+      * Returns: (`EventEmitter`)類別(class)
+    * 在指定的事件(event, 也就是`eventName`參數的值)中的事件監聽器(listeners)陣列(array)的結尾(end)上新增一個事件監聽器函式(`listener` function, 也就是`listener`參數的值)
+      * 不會去檢查是否有該事件監聽器要執行的回呼函式(callback function)已經被新增了
+      * 若多次呼叫(Multiple calls)並傳遞相同的`eventName`與`listener`兩個參數值的組合(combination)的話,將導致(result in)此事件監聽器(listener)會被多次(multiple times)呼叫(called) & 新增(added)
+    * ```javascript
+        server.on('connection', (stream) => {
+          console.log('someone connected!');
+        });
+      ```
+      * 以上的範例程式碼可以看出來,`emitter.on()`方法將會回傳(returns)一個對`EventEmitter`類別(class)的參考(reference),以便讓這個呼叫(calls)可以被串連使用(chained)
+    * 預設情況下,事件監聽器(event listeners)們會依照它們被新增的順序(in the order they are added)呼叫(invoked)
+      * 另一個替代方案(alternative)是利用[emitter.prependListener(eventName, listener)](https://nodejs.org/api/events.html#events_emitter_prependlistener_eventname_listener)方法來將一個指定的事件監聽器(event listener)新增到整個事件監聽器陣列(the listeners array)的最前面(beginning)
+      * ```javascript
+          const myEE = new EventEmitter();
+          myEE.on('foo', () => console.log('a'));
+          myEE.prependListener('foo', () => console.log('b'));
+          myEE.emit('foo');
+          // Prints:
+          //   b
+          //   a
+        ```
+  + [emitter.emit(eventName[, ...args])](https://nodejs.org/api/events.html#events_emitter_emit_eventname_args)
+    * args
+      * eventName: (String) | (symbol)
+      * ...args: (any)
+      * Returns: (boolean)
+        * 當該指定的事件名稱(event, 也就是`eventName`參數的值)有事件監聽器(listeners)時,回傳`true`; 反之,則回傳`false`
+    * 同步地(Synchronously)呼叫(calls)被註冊(registered)給指定的事件(event, 也就是`eventName`參數的值)中的每一個(each of)事件監聽器(listeners),並依照它們被註冊(registered)的順序(in the order),傳遞(passing)給每個事件監聽器(to each)需要的參數(supplied arguments)
+  + [emitter.once(eventName, listener)](https://nodejs.org/api/events.html#events_emitter_once_eventname_listener)
+    * args
+      * eventName: (string) | (symbol)
+        * 事件(event)的名稱
+      * listener: (Function)
+        * 該事件監聽器要執行的回呼函式(callback function)
+      * Returns: (`EventEmitter`)類別(class)
+    * 新增一個**一次性(one-time)** 的事件監聽器函式(`listener` function, 也就是`listener`參數的值)給指定的事件(event, 也就是`eventName`參數的值)
+      * 當下一次該指定的`eventName`事件被觸發(triggered)時,這個**一次性(one-time)** 的事件監聽器函式(listener)就會被呼叫(invoked)並移除(removed)
+    * ```javascript
+        server.once('connection', (stream) => {
+          console.log('Ah, we have our first user!');
+        });
+      ```
+      * 以上的範例程式碼可以看出來,`emitter.on()`方法將會回傳(returns)一個對`EventEmitter`類別(class)的參考(reference),以便讓這個呼叫(calls)可以被串連使用(chained)
+    * 預設情況下,事件監聽器(event listeners)們會依照它們被新增的順序(in the order they are added)呼叫(invoked)
+      * 另一個替代方案(alternative)是利用[emitter.prependListener(eventName, listener)](https://nodejs.org/api/events.html#events_emitter_prependlistener_eventname_listener)方法來將一個指定的事件監聽器(event listener)新增到整個事件監聽器陣列(the listeners array)的最前面(beginning)
+      * ```javascript
+          const myEE = new EventEmitter();
+          myEE.once('foo', () => console.log('a'));
+          myEE.prependOnceListener('foo', () => console.log('b'));
+          myEE.emit('foo');
+          // Prints:
+          //   b
+          //   a
+        ```
 
 
 
