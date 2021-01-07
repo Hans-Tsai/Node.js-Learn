@@ -50,6 +50,7 @@ Node.js Learn<br>
       - [Make an HTTP POST request using Node.js](#make-an-http-post-request-using-nodejs)
       - [Get HTTP request body data using Node.js](#get-http-request-body-data-using-nodejs)
       - [Working with file descriptors in Node.js](#working-with-file-descriptors-in-nodejs)
+      - [Node.js file stats](#nodejs-file-stats)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -1280,7 +1281,7 @@ Node.js Learn<br>
           }
         }
       ```
-  + 以下是從`package-lock.json`檔案中,萃取(extract)出的片段。為了清楚起見,我們移除了巢狀相依套件的內容
+  + 以下是從`package-lock.json`檔案中,提取(extract)出的片段。為了清楚起見,我們移除了巢狀相依套件的內容
     * ```javascript
         {
           "requires": true,
@@ -2475,6 +2476,51 @@ Node.js Learn<br>
       }
       ```
     * 一旦(once)獲得那個檔案描述符號(file descriptor),我們便能運用任何(whatever)我們選擇使用的方式(way)來完成(perform)所有(all)需要(require)檔案描述符號(file descriptor)的操作(operations),像是呼叫(calling)`fs.open()`方法,以及許多其它用來跟檔案系統(file system)互動(interact with)的操作
+
+#### Node.js file stats
+- 每個檔案(file)都會帶有(comes with)一組細節(a set of details),可提供給Node用來檢查(inspect)它們所使用
+  + 特別是使用Node內建的`File system`核心模組中的[fs.stat(path[, options], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_stat_path_options_callback)方法。我們呼叫這個方法時,可以傳遞(pass)一個檔案路徑(file path)作為參數,之後一旦Node獲得(get)檔案資訊的細節(file details)後,該方法就會呼叫(call)我們指定的回呼函式(callback function, 也就是該方法的`callback`參數),並且再提供給這個回呼函式以下的2個參數(parameters)
+    * 一段錯誤訊息(an error message)
+    * 檔案狀態(the file states)
+  + ```javascript
+      const fs = require('fs')
+      fs.stat('/Users/joe/test.txt', (err, stats) => {
+        if (err) {
+          console.error(err)
+          return
+        }
+        //we have access to the file stats in `stats`
+      })
+    ```
+- Node也提供(provides)了一個同步地方法(sync method, 也就是[fs.statSync(path[, options])](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_statsync_path_options)方法),用來在直到(until)檔案狀態(file states)準備好(ready)之前,阻擋線程(block the thread)
+  + ```javascript
+      const fs = require('fs')
+      try {
+        const stats = fs.statSync('/Users/joe/test.txt')
+      } catch (err) {
+        console.error(err)
+      }
+      ```
+  + 檔案資訊(file information)就會被包括(included in)在上述範例程式碼中的`stats`這個變數(variable)中。那麼,我們能從這個`stats`這個變數中提取(extract)出哪些資訊(information)呢?
+    * 答案是非常多(a lot),包括(including)了
+      * 如果是一個資料夾或是檔案時,請使用[stats.isFile()](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_stats_isfile)方法 & [stats.isDirectory()](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_stats_isdirectory)方法
+      * 如果是一個符號連結(symbolic link)時,請使用[stats.isSymbolicLink](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_stats_issymboliclink)方法
+      * 如果是檔案大小(以`bytes`為單位)的話,請使用[stats.size](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_stats_size)屬性
+    * 其實還有許多進階方法(advanced method),但是大部分(the bulk of)我們在日常(day-to-day)程式開發(programming)中只會使用到這些而已
+      * ```javascript
+          const fs = require('fs')
+          fs.stat('/Users/joe/test.txt', (err, stats) => {
+            if (err) {
+              console.error(err)
+              return
+            }
+
+            stats.isFile() //true
+            stats.isDirectory() //false
+            stats.isSymbolicLink() //false
+            stats.size //1024000 //= 1MB
+          })
+        ```
 
 
 ---
