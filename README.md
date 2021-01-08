@@ -53,6 +53,7 @@ Node.js Learn<br>
       - [Node.js file stats](#nodejs-file-stats)
       - [Node.js File Paths](#nodejs-file-paths)
       - [Reading files with Node.js](#reading-files-with-nodejs)
+      - [Writing files with Node.js](#writing-files-with-nodejs)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -2608,7 +2609,42 @@ Node.js Learn<br>
   + 這也就意味(means)著,大檔案將會對我們的記憶體消耗(memory consumption)與程式的執行速度(speed of execution of the program)帶來重大的影響(major impact)
     * 在這種情況下(In this case),更好的選擇(better option)是透過串流(`streams`)來讀取檔案內容(read the file content)
 
+#### Writing files with Node.js
+> Node內建核心模組[File system](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_file_system)<br>
 
+- 在Node中,要寫入檔案的最簡單的方法就是使用[fs.writeFile(file, data[, options], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_writefile_file_data_options_callback)這個API
+  + ```javascript
+      const fs = require('fs')
+
+      const content = 'Some content!'
+
+      fs.writeFile('/Users/joe/test.txt', content, err => {
+        if (err) {
+          console.error(err)
+          return
+        }
+        //file written successfully
+      })
+    ```
+- 或者(Alternatively),我們也可以使用[fs.writeFileSync(file, data[, options])](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_writefilesync_file_data_options)這個同步化(synchronous)地寫入檔案的版本(version)
+  + ```javascript
+      const fs = require('fs')
+
+      const content = 'Some content!'
+
+      try {
+        const data = fs.writeFileSync('/Users/joe/test.txt', content)
+        //file written successfully
+      } catch (err) {
+        console.error(err)
+      }
+      ```
+  + 預設情況(By default),當給定的指定路徑下的檔案已經存在(already exist)時,這個API就會取代掉這個檔案的內容(replace the contents of the file),以下是我們可能會用到的旗幟(flags)
+    * `r+`: 以讀取(reading)+寫入(writing)模式來開啟這個檔案
+    * `w+`: 以讀取(reading)+寫入(writing)模式來開啟這個檔案,並且將串流(stream)放在(positioning)檔案的**最前面**(beginning)。當該檔案不存在時,就會建立一份這個檔案
+    * `a`: 以寫入(writing)模式來開啟這個檔案,並且將串流(stream)放在(positioning)檔案的**最後面**(end)。當該檔案不存在時,就會建立一份這個檔案
+    * `a+`: 以讀取(reading)+寫入(writing)模式來開啟這個檔案,並且將串流(stream)放在(positioning)檔案的**最後面**(end)。當該檔案不存在時,就會建立一份這個檔案
+    * 可參考[File system flags](https://nodejs.org/api/fs.html#fs_file_system_flags)
 
 
 
