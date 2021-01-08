@@ -52,6 +52,7 @@ Node.js Learn<br>
       - [Working with file descriptors in Node.js](#working-with-file-descriptors-in-nodejs)
       - [Node.js file stats](#nodejs-file-stats)
       - [Node.js File Paths](#nodejs-file-paths)
+      - [Reading files with Node.js](#reading-files-with-nodejs)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -2573,7 +2574,39 @@ Node.js Learn<br>
       ```
 - 提醒! `path.resolve([...paths])`方法與`path.normalize(path)`方法皆不會檢查其各自的`path`參數值是否存在。它們僅會(just)根據(based on)它們各自獲得的路徑參數資訊(information)來做計算(calculate)出一個路徑(path)的值而已
 
+#### Reading files with Node.js
+> Node內建核心模組[File system](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_file_system)<br>
 
+- 在Node中,要讀取一個檔案能使用的最簡單的方法是[fs.readFile(path[, options], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_readfile_path_options_callback)
+,並傳遞給這個方法
+  + 一個指定要讀取檔案的路徑位置(file path)
+  + 文字編碼規則(encoding)
+  + 一個將會與檔案資料(file data)一起被呼叫(called with)的回呼函式(callback function)與錯誤(`error`)
+  + ```javascript
+      const fs = require('fs')
+
+      fs.readFile('/Users/joe/test.txt', 'utf8' , (err, data) => {
+        if (err) {
+          console.error(err)
+          return
+        }
+        console.log(data)
+      })
+    ```
+- 或者(Alternatively),我們也可以使用[fs.readFileSync(path[, options])](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_readfilesync_path_options)這個同步化(synchronous)地讀取檔案的版本(version)
+  + ```javascript
+      const fs = require('fs')
+
+      try {
+        const data = fs.readFileSync('/Users/joe/test.txt', 'utf8')
+        console.log(data)
+      } catch (err) {
+        console.error(err)
+      }
+    ```
+- 以上的兩種讀取檔案的方法(`fs.readFile()`與`fs.readFileSync()`)都會在回傳資料(returning the data)之前,將整個檔案內容(full content of the file)讀取(read)到記憶體之中(in memory)
+  + 這也就意味(means)著,大檔案將會對我們的記憶體消耗(memory consumption)與程式的執行速度(speed of execution of the program)帶來重大的影響(major impact)
+    * 在這種情況下(In this case),更好的選擇(better option)是透過串流(`streams`)來讀取檔案內容(read the file content)
 
 
 
