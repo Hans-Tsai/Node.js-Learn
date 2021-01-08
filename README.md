@@ -2650,8 +2650,23 @@ Node.js Learn<br>
       * `a`: 以寫入(writing)模式來開啟這個檔案,並且將串流(stream)放在(positioning)檔案的**最後面**(end)。當該檔案不存在時,就會建立一份這個檔案
       * `a+`: 以讀取(reading)+寫入(writing)模式來開啟這個檔案,並且將串流(stream)放在(positioning)檔案的**最後面**(end)。當該檔案不存在時,就會建立一份這個檔案
       * 可參考[File system flags](https://nodejs.org/api/fs.html#fs_file_system_flags)
+- 附加到檔案中(Append to a file)
+  + 有一個便利(handy)的方法(method)能將內容(content)附加(append)到檔案(file)的最後面(end),就是利用[fs.appendFile(path, data[, options], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_appendfile_path_data_options_callback)以及它對應的[fs.appendFileSync(path, data[, options])](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_appendfilesync_path_data_options)這兩種方法,
+  + ```javascript
+      const content = 'Some content!'
 
-
+      fs.appendFile('file.log', content, err => {
+        if (err) {
+          console.error(err)
+          return
+        }
+        //done!
+      })
+    ```
+- 使用串流(Using streams)
+  + 所有的這些方法們(methods)皆會先將所有的內容(full content)寫入(wrtie)到檔案(file)中,然後再將控制權(control back)交還(returning)給程式(program)
+    * 在非同步化版本(async version, 也就是指`fs.writeFile()`與`fs.appendFile()`這兩種方法)的方法中,這意味(means)著執行(executing)回呼函式(callback)
+    * 在這種情況下(In this case),一個更好的選擇(better option)是透過**串流**(streams)來寫入(write)到檔案內容(file content)中
 
 
 
