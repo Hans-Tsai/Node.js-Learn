@@ -54,6 +54,7 @@ Node.js Learn<br>
       - [Node.js File Paths](#nodejs-file-paths)
       - [Reading files with Node.js](#reading-files-with-nodejs)
       - [Writing files with Node.js](#writing-files-with-nodejs)
+      - [Working with folders in Node.js](#working-with-folders-in-nodejs)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -2668,7 +2669,80 @@ Node.js Learn<br>
     * 在非同步化版本(async version, 也就是指`fs.writeFile()`與`fs.appendFile()`這兩種方法)的方法中,這意味(means)著執行(executing)回呼函式(callback)
     * 在這種情況下(In this case),一個更好的選擇(better option)是透過**串流**(streams)來寫入(write)到檔案內容(file content)中
 
+#### Working with folders in Node.js
+> Node內建核心模組[File system](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_file_system)<br>
 
+- Node內建核心(core)的`File system`模組(module)有提供(provides)了許多便利(handy)的方法(methods),讓我們可以處理檔案目錄(folders)
+- 檢查檔案目錄是否存在(Check if a folder exists)
+  + 可利用[fs.access(path[, mode], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_access_path_mode_callback)方法來檢查檔案目錄是否存在
+- 建立新的檔案目錄(Create a new folder)
+  + 可利用[fs.mkdir(path[, options], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_mkdir_path_options_callback)與[fs.mkdirSync(path[, options])](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_mkdirsync_path_options)兩種方法來建立新的檔案目錄
+  + ```javascript
+      const fs = require('fs')
+
+      const folderName = '/Users/joe/test'
+
+      try {
+        if (!fs.existsSync(folderName)) {
+          fs.mkdirSync(folderName)
+        }
+      } catch (err) {
+        console.error(err)
+      }
+    ```
+- 讀取檔案目錄的內容(Read the content of a directory)
+  + 可利用[fs.readdir(path[, options], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_readdir_path_options_callback)與[fs.readdirSync(path[, options])](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_readdirsync_path_options)兩種方法來讀取檔案目錄的內容
+  + 以下這段程式碼會讀取檔案目錄的內容(包含其中的所有檔案(files)與子目錄(subfolders))
+    * ```javascript
+        const fs = require('fs')
+        const path = require('path')
+
+        const folderPath = '/Users/joe'
+
+        fs.readdirSync(folderPath)
+      ```
+  + 我們也可以獲得完整(full)的絕對路徑(path)
+    * ```javascript
+        fs.readdirSync(folderPath).map(fileName => {
+          return path.join(folderPath, fileName)
+        })
+      ```
+  + 我們也可以將結果(results)做過濾(filter),僅回傳(return)檔案(files)而不(exclude)回傳檔案目錄(folders)
+    * ```javascript
+        const isFile = fileName => {
+          return fs.lstatSync(fileName).isFile()
+        }
+
+        fs.readdirSync(folderPath).map(fileName => {
+          return path.join(folderPath, fileName)
+        })
+        .filter(isFile)
+      ```
+- 將檔案目錄重新命名(Rename a folder)
+  + 可利用[fs.rename(oldPath, newPath, callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_rename_oldpath_newpath_callback)與[fs.renameSync(oldPath, newPath)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_renamesync_oldpath_newpath)兩種方法來將檔案目錄重新命名
+    * 這兩個方法的第1個參數(first parameter)是當前的路徑(current path),而第2個參數(second parameter)是新的路徑
+    * ```javascript
+        const fs = require('fs')
+
+        fs.rename('/Users/joe', '/Users/roger', err => {
+          if (err) {
+            console.error(err)
+            return
+          }
+          //done
+        })
+      ```
+  + `fs.renameSync()`方法是同步化(synchronous)方法的版本(version)
+    * ```javascript
+        const fs = require('fs')
+
+        try {
+          fs.renameSync('/Users/joe', '/Users/roger')
+        } catch (err) {
+          console.error(err)
+        }
+      ```
+- 刪除檔案目錄(Remove a folder)
 
 
 
