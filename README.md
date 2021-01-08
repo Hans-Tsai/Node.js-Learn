@@ -2552,6 +2552,26 @@ Node.js Learn<br>
     * ```javascript
         path.basename(notes, path.extname(notes)) //notes
       ```
+- 利用Node內建的`path`核心模組來完成工作(Working with paths)
+  + 我們可以利用[path.join([...paths])](https://nodejs.org/dist/latest-v15.x/docs/api/path.html#path_path_join_paths)方法來將兩個或是多個路徑片段(parts of a path)組合起來
+    * ```javascript
+        const name = 'joe'
+        path.join('/', 'users', name, 'notes.txt') //'/users/joe/notes.txt'
+      ```
+  + 我們可以利用[path.resolve([...paths])](https://nodejs.org/dist/latest-v15.x/docs/api/path.html#path_path_resolve_paths)方法來把相對路徑(relative path)計算(calculation)成為絕對路徑(absolute path)
+    * ```javascript
+        path.resolve('joe.txt') //'/Users/joe/joe.txt' if run from my home folder
+      ```
+    * 在這種情況下(In this case),Node會簡單地(simply)將`/joe.txt`這個檔案附加(append)到當前的工作目錄中(current working directory)。這時,如果我們指定了第2個目錄參數(second parameter folder),`path.resolve()`方法會將第1個目錄(first)參數作為基底(as a base)
+      * ```javascript
+          path.resolve('tmp', 'joe.txt') //'/Users/joe/tmp/joe.txt' if run from my home folder
+        ```
+    * 如果第1個參數是以斜線(slash, 也就是`/`)開頭(starts with)的話,那就代表該路徑是一個"絕對路徑"
+  + [path.normalize(path)](https://nodejs.org/dist/latest-v15.x/docs/api/path.html#path_path_normalize_path)方法是另一種有用(useful)的函式(function)。當`path.normalize(path)`方法中的`path`參數值包含了`.`or`..`or`//`...等等時,該方法就會嘗試(try)去計算(calculate)出真實的路徑位置(actual path)
+    * ```javascript
+        path.normalize('/users/joe/..//test.txt') //'/users/test.txt'
+      ```
+- 提醒! `path.resolve([...paths])`方法與`path.normalize(path)`方法皆不會檢查其各自的`path`參數值是否存在。它們僅會(just)根據(based on)它們各自獲得的路徑參數資訊(information)來做計算(calculate)出一個路徑(path)的值而已
 
 
 
