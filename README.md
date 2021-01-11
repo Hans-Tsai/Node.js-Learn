@@ -3014,15 +3014,70 @@ Node.js Learn<br>
         [3.68798828125, 4.00244140625, 11.1181640625]
       ```
     * **注意! `load average`這個值只對Linux/macOS作業系統才有用**
-  + []()
-  + []()
-  + []()
-  + []()
-  + []()
-
-
-
-
+  + [os.networkInterfaces()](https://nodejs.org/dist/latest-v15.x/docs/api/os.html#os_os_networkinterfaces)
+    * 該方法會回傳(returns)一個物件(object),包含此作業系統(system)中可用(available)的網路介面(network interfaces)的細節資訊(details)
+    * ```javascript
+        { lo0:
+          [ { address: '127.0.0.1',
+              netmask: '255.0.0.0',
+              family: 'IPv4',
+              mac: 'fe:82:00:00:00:00',
+              internal: true },
+            { address: '::1',
+              netmask: 'ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff',
+              family: 'IPv6',
+              mac: 'fe:82:00:00:00:00',
+              scopeid: 0,
+              internal: true },
+            { address: 'fe80::1',
+              netmask: 'ffff:ffff:ffff:ffff::',
+              family: 'IPv6',
+              mac: 'fe:82:00:00:00:00',
+              scopeid: 1,
+              internal: true } ],
+          en1:
+          [ { address: 'fe82::9b:8282:d7e6:496e',
+              netmask: 'ffff:ffff:ffff:ffff::',
+              family: 'IPv6',
+              mac: '06:00:00:02:0e:00',
+              scopeid: 5,
+              internal: false },
+            { address: '192.168.1.38',
+              netmask: '255.255.255.0',
+              family: 'IPv4',
+              mac: '06:00:00:02:0e:00',
+              internal: false } ],
+          utun0:
+          [ { address: 'fe80::2513:72bc:f405:61d0',
+              netmask: 'ffff:ffff:ffff:ffff::',
+              family: 'IPv6',
+              mac: 'fe:80:00:20:00:00',
+              scopeid: 8,
+              internal: false } ] }
+      ```
+  + [os.platform()](https://nodejs.org/dist/latest-v15.x/docs/api/os.html#os_os_platform)
+    * 該方法會回傳(return)一個字串(string)來表示(identifying)此作業系統(operating system)的被編譯(compiled for)的平台(platform)。以下是可能的回傳值
+    * `darwin`
+    * `freebsd`
+    * `linux`
+    * `openbsd`
+    * `win32`
+    * ...等等之類的
+  + [os.release()](https://nodejs.org/dist/latest-v15.x/docs/api/os.html#os_os_release)
+    * 該方法會回傳(return)一個字串(string)來表示(identifying)此作業系統(operating system)與其版本號(release number)
+  + [os.tmpdir()](https://nodejs.org/dist/latest-v15.x/docs/api/os.html#os_os_tmpdir)
+    * 該方法會回傳(return)一個字串(string)來表示(identifying)此作業系統的臨時檔案會存放在哪個檔案目錄(temp folder)
+  + [os.totalmem()](https://nodejs.org/dist/latest-v15.x/docs/api/os.html#os_os_totalmem)
+    * 該方法會回傳(return)一個整數(string)來代表(represent)此作業系統(operating system)中可用(available)的總記憶體量(total memory, => 以`bytes`為單位來表示)
+  + [os.type()](https://nodejs.org/dist/latest-v15.x/docs/api/os.html#os_os_type)
+    * 該方法會回傳(return)一個字串(string)來表示(identifying)目前所在的作業系統名稱(operating system name)是什麼。以下是最常見的3種作業系統分別對應的值
+    * `Linux`作業系統: Linux
+    * `macOS`作業系統: Darwin
+    * `Windows`作業系統: Windows_NT
+  + [os.uptime()](https://nodejs.org/dist/latest-v15.x/docs/api/os.html#os_os_uptime)
+    * 該方法會回傳(return)一個整數(integer)來表示自從(since)上次電腦重開機(last rebooted)到現在,已經運行(running)了多久(=> 以"秒"為單位)
+  + [os.userInfo([options])](https://nodejs.org/dist/latest-v15.x/docs/api/os.html#os_os_userinfo_options)
+    * 該方法會回傳(returns)一個物件(object)包含了當前的使用者名稱(username), 使用者ID(uid), 群組ID(gid), shell, 家目錄(homedir), ...等等之類的
 
 
 
