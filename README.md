@@ -2676,7 +2676,7 @@ Node.js Learn<br>
 - 檢查檔案目錄是否存在(Check if a folder exists)
   + 可利用[fs.access(path[, mode], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_access_path_mode_callback)方法來檢查檔案目錄是否存在
 - 建立新的檔案目錄(Create a new folder)
-  + 可利用[fs.mkdir(path[, options], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_mkdir_path_options_callback)與[fs.mkdirSync(path[, options])](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_mkdirsync_path_options)兩種方法來建立新的檔案目錄
+  + 可利用[fs.mkdir(path[, options], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_mkdir_path_options_callback)與[fs.mkdirSync(path[, options])](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_mkdirsync_path_options)2種方法來建立新的檔案目錄
   + ```javascript
       const fs = require('fs')
 
@@ -2691,7 +2691,7 @@ Node.js Learn<br>
       }
     ```
 - 讀取檔案目錄的內容(Read the content of a directory)
-  + 可利用[fs.readdir(path[, options], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_readdir_path_options_callback)與[fs.readdirSync(path[, options])](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_readdirsync_path_options)兩種方法來讀取檔案目錄的內容
+  + 可利用[fs.readdir(path[, options], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_readdir_path_options_callback)與[fs.readdirSync(path[, options])](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_readdirsync_path_options)2種方法來讀取檔案目錄的內容
   + 以下這段程式碼會讀取檔案目錄的內容(包含其中的所有檔案(files)與子目錄(subfolders))
     * ```javascript
         const fs = require('fs')
@@ -2719,8 +2719,8 @@ Node.js Learn<br>
         .filter(isFile)
       ```
 - 將檔案目錄重新命名(Rename a folder)
-  + 可利用[fs.rename(oldPath, newPath, callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_rename_oldpath_newpath_callback)與[fs.renameSync(oldPath, newPath)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_renamesync_oldpath_newpath)兩種方法來將檔案目錄重新命名
-    * 這兩個方法的第1個參數(first parameter)是當前的路徑(current path),而第2個參數(second parameter)是新的路徑
+  + 可利用[fs.rename(oldPath, newPath, callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_rename_oldpath_newpath_callback)與[fs.renameSync(oldPath, newPath)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_renamesync_oldpath_newpath)2種方法來將檔案目錄重新命名
+    * 這2個方法的第1個參數(first parameter)是當前的路徑(current path),而第2個參數(second parameter)是新的路徑
     * ```javascript
         const fs = require('fs')
 
@@ -2743,7 +2743,45 @@ Node.js Learn<br>
         }
       ```
 - 刪除檔案目錄(Remove a folder)
+  + 可利用[fs.rmdir(path[, options], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_rmdir_path_options_callback)與[fs.rmdirSync(path[, options])](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_rmdirsync_path_options)2種方法來刪除檔案目錄
+  + 因為刪除一個含有檔案的目錄(a folder that has content)可能比我們需要的複雜(complicated)
+  + 這時候,最佳的做法是安裝npm上的[fs-extra](https://www.npmjs.com/package/fs-extra)套件,它是一個非常熱門且維護良好的套件。`fs-extra`套件是一個可用來臨時替換(drop-in replacement)Node內建的`File system`模組的套件,它能基於`File system`模組之上(on top of it)來提供更多的功能(features)
+    * 以這次的範例來說,我們想要使用的功能就是`remove()`方法。這時候,我們需要先安裝`fs-extra`套件
+      * 安裝指令: $ `npm install fs-extra`
+      * 使用它的`remove()`方法
+        * ```javascript
+            const fs = require('fs-extra')
 
+            const folder = '/Users/joe'
+
+            fs.remove(folder, err => {
+              console.error(err)
+            })
+          ```
+      * 它也能與`Promise`物件一起使用
+        * ```javascript
+            fs.remove(folder)
+              .then(() => {
+                //done
+              })
+              .catch(err => {
+                console.error(err)
+              })
+          ```
+      * 或是搭配`async/await`語法來使用
+        * ```javascript
+            async function removeFolder(folder) {
+              try {
+                await fs.remove(folder)
+                //done
+              } catch (err) {
+                console.error(err)
+              }
+            }
+
+            const folder = '/Users/joe'
+            removeFolder(folder)
+          ```
 
 
 
