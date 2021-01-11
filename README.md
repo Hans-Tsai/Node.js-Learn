@@ -55,6 +55,7 @@ Node.js Learn<br>
       - [Reading files with Node.js](#reading-files-with-nodejs)
       - [Writing files with Node.js](#writing-files-with-nodejs)
       - [Working with folders in Node.js](#working-with-folders-in-nodejs)
+      - [The Node.js fs module](#the-nodejs-fs-module)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -2745,9 +2746,52 @@ Node.js Learn<br>
 - 刪除檔案目錄(Remove a folder)
 
 
+#### The Node.js fs module
+> Node內建核心模組[File system](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_file_system)<br>
 
-
-
+- `fs`模組提供(provides)了許多非常有用(useful)的功能(functionality)來存取(access) & 與檔案系統(file system)互動(interact)
+- 因為`fs`模組是Node本身內建的核心模組,因此我們不用事先安裝它,我們可以透過以下的方法來簡單地引用它
+  + ```javascript
+      const fs = require('fs')
+      ```
+  + 一旦(Once)這樣做,我們就可以開始存取(access)`fs`模組的其它方法(methods)
+    * [fs.access(path[, mode], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_access_path_mode_callback): 會檢查(check)該路徑內的檔案是否存在(exists),並且Node有權限(permissions)來存取(access)它
+    * [fs.appendFile(path, data[, options], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_appendfile_path_data_options_callback): 附加(append)資料(data)到檔案(file)中。若該路徑內的檔案不存在(exist)的話,就會建立(created)一個
+    * [fs.chmod(path, mode, callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_chmod_path_mode_callback): 更改(change)指定(specified)的檔案(file)的權限(permissions)設定(透過指定一個檔案名稱來完成的)
+      * [fs.lchmod(path, mode, callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_lchmod_path_mode_callback): 僅`macOS`作業系統可以使用此方法
+      * [fs.fchmod(fd, mode, callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_fchmod_fd_mode_callback)
+    * [fs.chown(path, uid, gid, callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_chown_path_uid_gid_callback): 更改(change)指定(specified)的檔案(file)的擁有者(owner) & 群組(group)設定(透過指定一個檔案名稱來完成的)
+      * [fs.lchown(path, uid, gid, callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_lchown_path_uid_gid_callback)
+      * [fs.fchown(fd, uid, gid, callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_fchown_fd_uid_gid_callback)
+    * [fs.close(fd, callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_close_fd_callback): 關閉一個檔案描述符號(file descriptor)
+    * [fs.copyFile(src, dest[, mode], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_copyfile_src_dest_mode_callback): 複製(copies)一個檔案(file)
+    * [fs.createReadStream(path[, options])](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_createreadstream_path_options): 建立(create)一個可讀取(readable)的檔案串流(file stream)
+    * [fs.createWriteStream(path[, options])](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_createwritestream_path_options): 建立(create)一個可寫入(writable)的檔案串流(file stream)
+    * [fs.link(existingPath, newPath, callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_link_existingpath_newpath_callback): 建立(create)一個硬連結(hard link)給一個指定的檔案(file)
+    * [fs.mkdir()](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_mkdir_path_options_callback): 建立(create)一個新的檔案目錄(folder)
+    * [fs.mkdtemp(prefix[, options], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_mkdtemp_prefix_options_callback): 建立(create)一個臨時(temporary)的檔案目錄(directory)
+    * [fs.open(path[, flags[, mode]], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_open_path_flags_mode_callback): 設定(set)檔案模式(file mode)
+    * [fs.readdir(path[, options], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_readdir_path_options_callback): 讀取(read)該檔案目錄(directory)的內容(contents)
+    * [fs.readFile()](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_readfile_path_options_callback): 讀取(read)該檔案(file)的內容(content)
+      * [fs.read(fd, buffer, offset, length, position, callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_read_fd_buffer_offset_length_position_callback)
+    * [fs.readlink(path[, options], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_readlink_path_options_callback): 讀取(read)符號連結(symbolic link)的值(value)
+    * [fs.realpath(path[, options], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_realpath_path_options_callback): 將相對(relative)的檔案路徑(file path)解析(resolve)為完整路徑(full path)=> 也就是將`./`, `../` 等等之類的處理掉
+    * [fs.rename(oldPath, newPath, callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_rename_oldpath_newpath_callback): 將檔案(file)或是檔案目錄(folder)重新命名(rename)
+    * [fs.rmdir(path[, options], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_rmdir_path_options_callback): 移除(remove)指定的檔案目錄(folder)
+    * [fs.stat(path[, options], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_stat_path_options_callback): 回傳(returns)檔案(file)的狀態(status)
+      * [fs.fstat(fd[, options], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_fstat_fd_options_callback)
+      * [fs.lstat(path[, options], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_lstat_path_options_callback)
+    * [fs.symlink(target, path[, type], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_symlink_target_path_type_callback): 建立(create)一個新的符號連結(symbolic link)給指定的檔案(file)
+    * [fs.truncate(path[, len], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_truncate_path_len_callback): 將指定的檔案名稱縮短為指定的長度( specified length)=> (透過指定一個檔案名稱來完成的)
+      * [fs.ftruncate(fd[, len], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_ftruncate_fd_len_callback)
+    * [fs.unlink(path, callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_unlink_path_callback): 移除一個檔案的符號連結(symbolic link)
+    * [fs.unwatchFile(filename[, listener])](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_unwatchfile_filename_listener): 停止(stop)查看(watching)一個檔案(file)的修改(changes)
+    * [fs.utimes(path, atime, mtime, callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_utimes_path_atime_mtime_callback): 更改(change)一個檔案的時間戳記=> (透過指定一個檔案名稱來完成的)(timestamp)
+      * [fs.futimes(fd, atime, mtime, callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_futimes_fd_atime_mtime_callback)
+    * [fs.watchFile(filename[, options], listener)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_watchfile_filename_options_listener): 開始(start)查看(watching)一個檔案(file)的修改(changes)
+      * [fs.watch(filename[, options][, listener])](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_watch_filename_options_listener)
+    * [fs.writeFile(file, data[, options], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_writefile_file_data_options_callback): 將資料(data)寫入(write)檔案(file)中
+      * [fs.write(fd, buffer[, offset[, length[, position]]], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_write_fd_buffer_offset_length_position_callback)
 
 
 
