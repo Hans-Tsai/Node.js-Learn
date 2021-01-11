@@ -57,6 +57,7 @@ Node.js Learn<br>
       - [Working with folders in Node.js](#working-with-folders-in-nodejs)
       - [The Node.js fs module](#the-nodejs-fs-module)
       - [The Node.js path module](#the-nodejs-path-module)
+      - [The Node.js os module](#the-nodejs-os-module)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -2912,6 +2913,74 @@ Node.js Learn<br>
             path.resolve('/etc', 'joe.txt') //'/etc/joe.txt'
          ```
 
+#### The Node.js os module
+> Node內建核心模組[OS](https://nodejs.org/api/os.html#os_os)<br>
+
+- 這個模組會提供(provides)許多功能(functions)讓我們能夠跟底層作業系統(underlying operating system) & 該程式運行時所在的電腦(the computer the program runs on)做互動(interact)並檢索其資訊(retrieve information)
+  + ```javascript
+      const os = require('os')
+      ```
+  + 在`os`模組之中,有一些有用(useful)的屬性(properties)能告訴我們一些與處理檔案(handling files)有關的(related to)重要的事情(key things),像是以下屬性們
+    * [os.EOL](https://nodejs.org/api/os.html#os_os_eol)
+      * 該屬性會給出(gives)定界符(delimiter)序列(sequence)。在Linux/macOS作業系統中就是`\n`,而在Windows作業系統中會是`\r\n`
+    * [os.constants.signal](https://nodejs.org/api/os.html#os_signal_constants)
+      * 該屬性會告訴我們所有跟處理(handling)進程(process)信號(signals)有關(releated to)的常數(constants),像是`SIGHUP`, `SIGKILL`, ...等等之類的
+    * [os.constants.errorno](https://nodejs.org/api/os.html#os_error_constants)
+      * 該屬性會設定(sets)錯誤報告(error reporting)的常數(constants),像是`EADDRINUSE`, `EOVERFLOW`, ...等等之類的
+- 接下來,我們來看看`os`模組中主要會用到的方法(methods)
+  + [os.arch()](https://nodejs.org/api/os.html#os_os_arch)
+    * 該方法會回傳(return)一個字串(string)來表示(identifies)此底層作業系統( underlying)的架構(architecture),像是`arm`, `x64`, `arm64`
+  + [os.cpus()](https://nodejs.org/api/os.html#os_os_cpus)
+    * 該方法會回傳(return)一個陣列(array)來表示我們的作業系統(system)上有多少可用(available)的中央處理器們(CPUs)的資源的資訊(information)
+    * ```javascript
+        [
+          {
+            model: 'Intel(R) Core(TM)2 Duo CPU     P8600  @ 2.40GHz',
+            speed: 2400,
+            times: {
+              user: 281685380,
+              nice: 0,
+              sys: 187986530,
+              idle: 685833750,
+              irq: 0
+            }
+          },
+          {
+            model: 'Intel(R) Core(TM)2 Duo CPU     P8600  @ 2.40GHz',
+            speed: 2400,
+            times: {
+              user: 282348700,
+              nice: 0,
+              sys: 161800480,
+              idle: 703509470,
+              irq: 0
+            }
+          }
+        ]
+      ```
+  + [os.endianness()](https://nodejs.org/api/os.html#os_os_endianness)
+    * 該方法會回傳(return)一個字串(string)來表示(identifying)此作業系統的中央處理器(CPU)資源的字節序(endianness),僅會回傳`BE`或是`LE`
+    * 可參考維基百科的[Big Endian or Little Endian](https://en.wikipedia.org/wiki/Endianness)
+  + [os.freemem](https://nodejs.org/api/os.html#os_os_freemem)
+    * 該方法會回傳(return)一個整數(integer, => 以`bytes`為單位)來代表(represent)此作業系統的記憶體(memory)資源
+  + [os.homedir()](https://nodejs.org/api/os.html#os_os_homedir)
+    * 該方法會回傳(return)一個字串(string)來表示當前(current)使用者(user)的家目錄(home directory)
+    * ```bash
+        '/Users/joe'
+      ```
+  + [os.hostname()](https://nodejs.org/api/os.html#os_os_hostname)
+    * 該方法會回傳(return)一個字串(string)來表示該作業系統(operating system)的主機名稱(host name)
+  + [os.loadavg()](https://nodejs.org/api/os.html#os_os_loadavg)
+    * 該方法會回傳(return)一個陣列(array)來表示該作業系統(operating system)於第`1`, `5`, `15`分鐘(這三個時段的時候),計算(calculation)出載入(load)所花費的平均時間(average)
+    * ```javascript
+        [3.68798828125, 4.00244140625, 11.1181640625]
+      ```
+    * **注意! `load average`這個值只對Linux/macOS作業系統才有用**
+  + []()
+  + []()
+  + []()
+  + []()
+  + []()
 
 
 
