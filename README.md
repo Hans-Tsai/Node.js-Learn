@@ -56,6 +56,7 @@ Node.js Learn<br>
       - [Writing files with Node.js](#writing-files-with-nodejs)
       - [Working with folders in Node.js](#working-with-folders-in-nodejs)
       - [The Node.js fs module](#the-nodejs-fs-module)
+      - [The Node.js path module](#the-nodejs-path-module)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -2745,7 +2746,6 @@ Node.js Learn<br>
       ```
 - 刪除檔案目錄(Remove a folder)
 
-
 #### The Node.js fs module
 > Node內建核心模組[File system](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_file_system)<br>
 
@@ -2825,7 +2825,92 @@ Node.js Learn<br>
         ```
     * 以上這兩種範例的主要(key)差別(difference)是,**第2個範例**腳本(script)的**執行(execution)將會被阻塞(block)**,直到檔案(file)操作(operation)成功(succeeded)
 
+#### The Node.js path module
+> Node內建核心模組[Path](https://nodejs.org/api/path.html#path_path)<br>
 
+- Node的[Path](https://nodejs.org/api/path.html#path_path)內建核心模組,提供(provides)了許多非常有用(useful)的功能(functionality),來存取(access) & 與檔案系統(file system)互動(interact)
+  + `path`模組"不需要"(no need to)事先安裝(install it),才能使用。因為它本身已經是Node的核心模組(core)的一部分(part of)了,它能夠簡單地(simply)透過引用(=> `require`語法)來使用`path`模組
+  + ```javascript
+      const path = require('path')
+      ```
+  + `path`模組有提供[path.sep](https://nodejs.org/api/path.html#path_path_sep)屬性,來作為路徑的分隔符號(path segment separator)
+    * 也就是說,在Windows作業系統會是`\`; 而在Linux/macOS作業系統會是`/`
+  + `path`模組有提供[path.delimiter](https://nodejs.org/api/path.html#path_path_delimiter)屬性,來作為路徑的定界符(path delimiter)
+    * 也就是說,在Windows作業系統會是`;`; 而在Linux/macOS作業系統會是`:`
+- 以下是`path`模組常會用到的方法(methods)
+  + [path.basename(path[, ext])](https://nodejs.org/api/path.html#path_path_basename_path_ext)
+    * 該方法會回傳(return)整個路徑(path)的最後一個(last)部分(portion); 而該方法的第2個參數(parameter)可以用來過濾掉(filter out)副檔名(file extension)
+    * ```javascript
+        require('path').basename('/test/something') //something
+        require('path').basename('/test/something.txt') //something.txt
+        require('path').basename('/test/something.txt', '.txt') //something
+      ```
+  + [path.dirname(path)](https://nodejs.org/api/path.html#path_path_dirname_path)
+    * 該方法會回傳(return)其檔案路徑(path)參數(parameter)的檔案目錄(directory)的部分(part)
+    * ```javascript
+        require('path').dirname('/test/something') // /test
+        require('path').dirname('/test/something/file.txt') // /test/something
+      ```
+  + [path.extname(path)](https://nodejs.org/api/path.html#path_path_extname_path)
+    * 該方法會回傳(return)其檔案路徑(path)參數(parameter)的副檔名(file extension)的部分(part)
+    * ```javascript
+        require('path').extname('/test/something') // ''
+        require('path').extname('/test/something/file.txt') // '.txt'
+      ```
+  + [path.isAbsolute(path)](https://nodejs.org/api/path.html#path_path_isabsolute_path)
+    * 該方法會回傳(return)其檔案路徑(path)參數(parameter)是否為一種"絕對路徑"的形式
+    * ```javascript
+        require('path').isAbsolute('/test/something') // true
+        require('path').isAbsolute('./test/something') // false
+      ```
+  + [path.join([...paths])](https://nodejs.org/api/path.html#path_path_join_paths)
+    * 該方法會結合路徑(path)的2個or多個部分(part)
+    * ```javascript
+        const name = 'joe'
+        require('path').join('/', 'users', name, 'notes.txt') //'/users/joe/notes.txt'
+      ```
+  + [path.normalize(path)](https://nodejs.org/api/path.html#path_path_normalize_path)
+    * 該方法會嘗試(tries to)去計算(calculate)其檔案路徑(path)參數(parameter)的真實路徑(actual path) (=> 當這個檔案路徑參數(`path`)有包含(contains)了`.` or `..` or `//`... 等等之類的相對說明符(relative specifiers))
+  + [path.parse(path)](https://nodejs.org/api/path.html#path_path_parse_path)
+    * 該方法會以一個物件(object)的形式,將其檔案路徑(path)參數(parameter)解析(parses)為多個重要片段(segments),來組成(compose)出這個路徑物件
+    * 範例程式碼
+    * ```javascript
+        require('path').parse('/users/test.txt')
+      ```
+    * 上述的範例程式碼,將會回傳
+    * ```javascript
+        {
+          root: '/',
+          dir: '/users',
+          base: 'test.txt',
+          ext: '.txt',
+          name: 'test'
+        }
+      ```
+      * `root`: 根目錄(root)
+      * `dir`: 從根目錄(root)開始(starting from)的檔案目錄的路徑(folder path)
+      * `base`: 檔案名稱(file name)+副檔名(file extension)
+      * `name`: 檔案名稱(file name)
+      * `ext`: 檔案的副檔名(file extension)
+  + [path.relative(from, to)](https://nodejs.org/api/path.html#path_path_relative_from_to)
+    * 該方法會接受(accepts)2個檔案路徑(paths)作為參數(arguments),並以(based on)當前(current)工作目錄(working directory)的位置的角度,回傳(returns)一個從第1個參數(=> `from`)到第2個參數(=> `to`)的相對路徑(relative path)
+    * ```javascript
+        require('path').relative('/Users/joe', '/Users/joe/test.txt') //'test.txt'
+        require('path').relative('/Users/joe', '/Users/joe/something/test.txt') //'something/test.txt'
+      ```
+  + [path.resolve([...paths])](https://nodejs.org/api/path.html#path_path_resolve_paths)
+    * 我們利用此方法,來將相對路徑(relative path)計算(calculation)出絕對路徑(absolute path)
+      * ```javascript
+          path.resolve('joe.txt') //'/Users/joe/joe.txt' if run from my home folder
+        ```
+    * 透過指定第2個參數(parameter),`path.resolve()`方法會使用第1個參數為基礎來解析(resolve)第2個參數
+      * ```javascript
+          path.resolve('tmp', 'joe.txt') //'/Users/joe/tmp/joe.txt' if run from my home folder
+        ```
+    *  如果第一個參數(parameter)是以斜線(slash)開頭(starts with)的話,就表示(means)這是一個絕對路徑(absolute path)
+       * ```javascript
+            path.resolve('/etc', 'joe.txt') //'/etc/joe.txt'
+         ```
 
 
 
