@@ -55,6 +55,9 @@ Node.js Learn<br>
       - [Reading files with Node.js](#reading-files-with-nodejs)
       - [Writing files with Node.js](#writing-files-with-nodejs)
       - [Working with folders in Node.js](#working-with-folders-in-nodejs)
+      - [The Node.js fs module](#the-nodejs-fs-module)
+      - [The Node.js path module](#the-nodejs-path-module)
+      - [The Node.js os module](#the-nodejs-os-module)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -2782,15 +2785,240 @@ Node.js Learn<br>
             const folder = '/Users/joe'
             removeFolder(folder)
           ```
+#### The Node.js fs module
+> Node內建核心模組[File system](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_file_system)<br>
 
+- `fs`模組提供(provides)了許多非常有用(useful)的功能(functionality)來存取(access) & 與檔案系統(file system)互動(interact)
+- 因為`fs`模組是Node本身內建的核心模組,因此我們不用事先安裝它,我們可以透過以下的方法來簡單地引用它
+  + ```javascript
+      const fs = require('fs')
+      ```
+  + 一旦(Once)這樣做,我們就可以開始存取(access)`fs`模組的其它方法(methods)
+    * [fs.access(path[, mode], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_access_path_mode_callback): 會檢查(check)該路徑內的檔案是否存在(exists),並且Node有權限(permissions)來存取(access)它
+    * [fs.appendFile(path, data[, options], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_appendfile_path_data_options_callback): 附加(append)資料(data)到檔案(file)中。若該路徑內的檔案不存在(exist)的話,就會建立(created)一個
+    * [fs.chmod(path, mode, callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_chmod_path_mode_callback): 更改(change)指定(specified)的檔案(file)的權限(permissions)設定(透過指定一個檔案名稱來完成的)
+      * [fs.lchmod(path, mode, callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_lchmod_path_mode_callback): 僅`macOS`作業系統可以使用此方法
+      * [fs.fchmod(fd, mode, callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_fchmod_fd_mode_callback)
+    * [fs.chown(path, uid, gid, callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_chown_path_uid_gid_callback): 更改(change)指定(specified)的檔案(file)的擁有者(owner) & 群組(group)設定(透過指定一個檔案名稱來完成的)
+      * [fs.lchown(path, uid, gid, callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_lchown_path_uid_gid_callback)
+      * [fs.fchown(fd, uid, gid, callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_fchown_fd_uid_gid_callback)
+    * [fs.close(fd, callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_close_fd_callback): 關閉一個檔案描述符號(file descriptor)
+    * [fs.copyFile(src, dest[, mode], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_copyfile_src_dest_mode_callback): 複製(copies)一個檔案(file)
+    * [fs.createReadStream(path[, options])](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_createreadstream_path_options): 建立(create)一個可讀取(readable)的檔案串流(file stream)
+    * [fs.createWriteStream(path[, options])](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_createwritestream_path_options): 建立(create)一個可寫入(writable)的檔案串流(file stream)
+    * [fs.link(existingPath, newPath, callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_link_existingpath_newpath_callback): 建立(create)一個硬連結(hard link)給一個指定的檔案(file)
+    * [fs.mkdir()](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_mkdir_path_options_callback): 建立(create)一個新的檔案目錄(folder)
+    * [fs.mkdtemp(prefix[, options], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_mkdtemp_prefix_options_callback): 建立(create)一個臨時(temporary)的檔案目錄(directory)
+    * [fs.open(path[, flags[, mode]], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_open_path_flags_mode_callback): 設定(set)檔案模式(file mode)
+    * [fs.readdir(path[, options], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_readdir_path_options_callback): 讀取(read)該檔案目錄(directory)的內容(contents)
+    * [fs.readFile()](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_readfile_path_options_callback): 讀取(read)該檔案(file)的內容(content)
+      * [fs.read(fd, buffer, offset, length, position, callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_read_fd_buffer_offset_length_position_callback)
+    * [fs.readlink(path[, options], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_readlink_path_options_callback): 讀取(read)符號連結(symbolic link)的值(value)
+    * [fs.realpath(path[, options], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_realpath_path_options_callback): 將相對(relative)的檔案路徑(file path)解析(resolve)為完整路徑(full path)=> 也就是將`./`, `../` 等等之類的處理掉
+    * [fs.rename(oldPath, newPath, callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_rename_oldpath_newpath_callback): 將檔案(file)或是檔案目錄(folder)重新命名(rename)
+    * [fs.rmdir(path[, options], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_rmdir_path_options_callback): 移除(remove)指定的檔案目錄(folder)
+    * [fs.stat(path[, options], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_stat_path_options_callback): 回傳(returns)檔案(file)的狀態(status)
+      * [fs.fstat(fd[, options], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_fstat_fd_options_callback)
+      * [fs.lstat(path[, options], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_lstat_path_options_callback)
+    * [fs.symlink(target, path[, type], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_symlink_target_path_type_callback): 建立(create)一個新的符號連結(symbolic link)給指定的檔案(file)
+    * [fs.truncate(path[, len], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_truncate_path_len_callback): 將指定的檔案名稱縮短為指定的長度( specified length)=> (透過指定一個檔案名稱來完成的)
+      * [fs.ftruncate(fd[, len], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_ftruncate_fd_len_callback)
+    * [fs.unlink(path, callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_unlink_path_callback): 移除一個檔案的符號連結(symbolic link)
+    * [fs.unwatchFile(filename[, listener])](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_unwatchfile_filename_listener): 停止(stop)查看(watching)一個檔案(file)的修改(changes)
+    * [fs.utimes(path, atime, mtime, callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_utimes_path_atime_mtime_callback): 更改(change)一個檔案的時間戳記=> (透過指定一個檔案名稱來完成的)(timestamp)
+      * [fs.futimes(fd, atime, mtime, callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_futimes_fd_atime_mtime_callback)
+    * [fs.watchFile(filename[, options], listener)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_watchfile_filename_options_listener): 開始(start)查看(watching)一個檔案(file)的修改(changes)
+      * [fs.watch(filename[, options][, listener])](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_watch_filename_options_listener)
+    * [fs.writeFile(file, data[, options], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_writefile_file_data_options_callback): 將資料(data)寫入(write)檔案(file)中
+      * [fs.write(fd, buffer[, offset[, length[, position]]], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_write_fd_buffer_offset_length_position_callback)
+- 關於`fs`模組有一件奇怪的事情是所有方法**預設**都是**非同步的**(asynchronous),然而這些方法也都能同步化地(synchronously)使用(=> 只要在各方法後面加上`Sync`語法就可以了)
+  + 以下範例說明
+  + `fs.rename()`
+    * `fs.renameSync()`
+  + `fs.write()`
+    * `fs.writeSync()`
+  + 這麼做會造成(makes)我們的應用程式(application)的工作流(flow)有極大(huge)的差異(difference)
+    > Node `v10.0.0`開始,`fs`模組開始引入了[fs Promises API](https://nodejs.org/api/fs.html#fs_fs_promises_api)
+    * 舉例來說,我們來檢查(check)一下`fs.rename()`方法,利用回呼函式(callback)的方法來使用非同步化(asynchronous)的API
+      * ```javascript
+          const fs = require('fs')
 
+          fs.rename('before.json', 'after.json', err => {
+            if (err) {
+              return console.error(err)
+            }
 
+            //done
+          })
+        ```
+    * 同步化(synchronous)的API可以這樣來使用,並搭配`try/catch`區塊(block)來處理(handle)錯誤(error)
+      * ```javascript
+          const fs = require('fs')
 
+          try {
+            fs.renameSync('before.json', 'after.json')
+            //done
+          } catch (err) {
+            console.error(err)
+          }
+        ```
+    * 以上這兩種範例的主要(key)差別(difference)是,**第2個範例**腳本(script)的**執行(execution)將會被阻塞(block)**,直到檔案(file)操作(operation)成功(succeeded)
 
+#### The Node.js path module
+> Node內建核心模組[Path](https://nodejs.org/api/path.html#path_path)<br>
 
+- Node的[Path](https://nodejs.org/api/path.html#path_path)內建核心模組,提供(provides)了許多非常有用(useful)的功能(functionality),來存取(access) & 與檔案系統(file system)互動(interact)
+  + `path`模組"不需要"(no need to)事先安裝(install it),才能使用。因為它本身已經是Node的核心模組(core)的一部分(part of)了,它能夠簡單地(simply)透過引用(=> `require`語法)來使用`path`模組
+  + ```javascript
+      const path = require('path')
+      ```
+  + `path`模組有提供[path.sep](https://nodejs.org/api/path.html#path_path_sep)屬性,來作為路徑的分隔符號(path segment separator)
+    * 也就是說,在Windows作業系統會是`\`; 而在Linux/macOS作業系統會是`/`
+  + `path`模組有提供[path.delimiter](https://nodejs.org/api/path.html#path_path_delimiter)屬性,來作為路徑的定界符(path delimiter)
+    * 也就是說,在Windows作業系統會是`;`; 而在Linux/macOS作業系統會是`:`
+- 以下是`path`模組常會用到的方法(methods)
+  + [path.basename(path[, ext])](https://nodejs.org/api/path.html#path_path_basename_path_ext)
+    * 該方法會回傳(return)整個路徑(path)的最後一個(last)部分(portion); 而該方法的第2個參數(parameter)可以用來過濾掉(filter out)副檔名(file extension)
+    * ```javascript
+        require('path').basename('/test/something') //something
+        require('path').basename('/test/something.txt') //something.txt
+        require('path').basename('/test/something.txt', '.txt') //something
+      ```
+  + [path.dirname(path)](https://nodejs.org/api/path.html#path_path_dirname_path)
+    * 該方法會回傳(return)其檔案路徑(path)參數(parameter)的檔案目錄(directory)的部分(part)
+    * ```javascript
+        require('path').dirname('/test/something') // /test
+        require('path').dirname('/test/something/file.txt') // /test/something
+      ```
+  + [path.extname(path)](https://nodejs.org/api/path.html#path_path_extname_path)
+    * 該方法會回傳(return)其檔案路徑(path)參數(parameter)的副檔名(file extension)的部分(part)
+    * ```javascript
+        require('path').extname('/test/something') // ''
+        require('path').extname('/test/something/file.txt') // '.txt'
+      ```
+  + [path.isAbsolute(path)](https://nodejs.org/api/path.html#path_path_isabsolute_path)
+    * 該方法會回傳(return)其檔案路徑(path)參數(parameter)是否為一種"絕對路徑"的形式
+    * ```javascript
+        require('path').isAbsolute('/test/something') // true
+        require('path').isAbsolute('./test/something') // false
+      ```
+  + [path.join([...paths])](https://nodejs.org/api/path.html#path_path_join_paths)
+    * 該方法會結合路徑(path)的2個or多個部分(part)
+    * ```javascript
+        const name = 'joe'
+        require('path').join('/', 'users', name, 'notes.txt') //'/users/joe/notes.txt'
+      ```
+  + [path.normalize(path)](https://nodejs.org/api/path.html#path_path_normalize_path)
+    * 該方法會嘗試(tries to)去計算(calculate)其檔案路徑(path)參數(parameter)的真實路徑(actual path) (=> 當這個檔案路徑參數(`path`)有包含(contains)了`.` or `..` or `//`... 等等之類的相對說明符(relative specifiers))
+  + [path.parse(path)](https://nodejs.org/api/path.html#path_path_parse_path)
+    * 該方法會以一個物件(object)的形式,將其檔案路徑(path)參數(parameter)解析(parses)為多個重要片段(segments),來組成(compose)出這個路徑物件
+    * 範例程式碼
+    * ```javascript
+        require('path').parse('/users/test.txt')
+      ```
+    * 上述的範例程式碼,將會回傳
+    * ```javascript
+        {
+          root: '/',
+          dir: '/users',
+          base: 'test.txt',
+          ext: '.txt',
+          name: 'test'
+        }
+      ```
+      * `root`: 根目錄(root)
+      * `dir`: 從根目錄(root)開始(starting from)的檔案目錄的路徑(folder path)
+      * `base`: 檔案名稱(file name)+副檔名(file extension)
+      * `name`: 檔案名稱(file name)
+      * `ext`: 檔案的副檔名(file extension)
+  + [path.relative(from, to)](https://nodejs.org/api/path.html#path_path_relative_from_to)
+    * 該方法會接受(accepts)2個檔案路徑(paths)作為參數(arguments),並以(based on)當前(current)工作目錄(working directory)的位置的角度,回傳(returns)一個從第1個參數(=> `from`)到第2個參數(=> `to`)的相對路徑(relative path)
+    * ```javascript
+        require('path').relative('/Users/joe', '/Users/joe/test.txt') //'test.txt'
+        require('path').relative('/Users/joe', '/Users/joe/something/test.txt') //'something/test.txt'
+      ```
+  + [path.resolve([...paths])](https://nodejs.org/api/path.html#path_path_resolve_paths)
+    * 我們利用此方法,來將相對路徑(relative path)計算(calculation)出絕對路徑(absolute path)
+      * ```javascript
+          path.resolve('joe.txt') //'/Users/joe/joe.txt' if run from my home folder
+        ```
+    * 透過指定第2個參數(parameter),`path.resolve()`方法會使用第1個參數為基礎來解析(resolve)第2個參數
+      * ```javascript
+          path.resolve('tmp', 'joe.txt') //'/Users/joe/tmp/joe.txt' if run from my home folder
+        ```
+    *  如果第一個參數(parameter)是以斜線(slash)開頭(starts with)的話,就表示(means)這是一個絕對路徑(absolute path)
+       * ```javascript
+            path.resolve('/etc', 'joe.txt') //'/etc/joe.txt'
+         ```
 
+#### The Node.js os module
+> Node內建核心模組[OS](https://nodejs.org/api/os.html#os_os)<br>
 
-
+- 這個模組會提供(provides)許多功能(functions)讓我們能夠跟底層作業系統(underlying operating system) & 該程式運行時所在的電腦(the computer the program runs on)做互動(interact)並檢索其資訊(retrieve information)
+  + ```javascript
+      const os = require('os')
+      ```
+  + 在`os`模組之中,有一些有用(useful)的屬性(properties)能告訴我們一些與處理檔案(handling files)有關的(related to)重要的事情(key things),像是以下屬性們
+    * [os.EOL](https://nodejs.org/api/os.html#os_os_eol)
+      * 該屬性會給出(gives)定界符(delimiter)序列(sequence)。在Linux/macOS作業系統中就是`\n`,而在Windows作業系統中會是`\r\n`
+    * [os.constants.signal](https://nodejs.org/api/os.html#os_signal_constants)
+      * 該屬性會告訴我們所有跟處理(handling)進程(process)信號(signals)有關(releated to)的常數(constants),像是`SIGHUP`, `SIGKILL`, ...等等之類的
+    * [os.constants.errorno](https://nodejs.org/api/os.html#os_error_constants)
+      * 該屬性會設定(sets)錯誤報告(error reporting)的常數(constants),像是`EADDRINUSE`, `EOVERFLOW`, ...等等之類的
+- 接下來,我們來看看`os`模組中主要會用到的方法(methods)
+  + [os.arch()](https://nodejs.org/api/os.html#os_os_arch)
+    * 該方法會回傳(return)一個字串(string)來表示(identifies)此底層作業系統( underlying)的架構(architecture),像是`arm`, `x64`, `arm64`
+  + [os.cpus()](https://nodejs.org/api/os.html#os_os_cpus)
+    * 該方法會回傳(return)一個陣列(array)來表示我們的作業系統(system)上有多少可用(available)的中央處理器們(CPUs)的資源的資訊(information)
+    * ```javascript
+        [
+          {
+            model: 'Intel(R) Core(TM)2 Duo CPU     P8600  @ 2.40GHz',
+            speed: 2400,
+            times: {
+              user: 281685380,
+              nice: 0,
+              sys: 187986530,
+              idle: 685833750,
+              irq: 0
+            }
+          },
+          {
+            model: 'Intel(R) Core(TM)2 Duo CPU     P8600  @ 2.40GHz',
+            speed: 2400,
+            times: {
+              user: 282348700,
+              nice: 0,
+              sys: 161800480,
+              idle: 703509470,
+              irq: 0
+            }
+          }
+        ]
+      ```
+  + [os.endianness()](https://nodejs.org/api/os.html#os_os_endianness)
+    * 該方法會回傳(return)一個字串(string)來表示(identifying)此作業系統的中央處理器(CPU)資源的字節序(endianness),僅會回傳`BE`或是`LE`
+    * 可參考維基百科的[Big Endian or Little Endian](https://en.wikipedia.org/wiki/Endianness)
+  + [os.freemem](https://nodejs.org/api/os.html#os_os_freemem)
+    * 該方法會回傳(return)一個整數(integer, => 以`bytes`為單位)來代表(represent)此作業系統的記憶體(memory)資源
+  + [os.homedir()](https://nodejs.org/api/os.html#os_os_homedir)
+    * 該方法會回傳(return)一個字串(string)來表示當前(current)使用者(user)的家目錄(home directory)
+    * ```bash
+        '/Users/joe'
+      ```
+  + [os.hostname()](https://nodejs.org/api/os.html#os_os_hostname)
+    * 該方法會回傳(return)一個字串(string)來表示該作業系統(operating system)的主機名稱(host name)
+  + [os.loadavg()](https://nodejs.org/api/os.html#os_os_loadavg)
+    * 該方法會回傳(return)一個陣列(array)來表示該作業系統(operating system)於第`1`, `5`, `15`分鐘(這三個時段的時候),計算(calculation)出載入(load)所花費的平均時間(average)
+    * ```javascript
+        [3.68798828125, 4.00244140625, 11.1181640625]
+      ```
+    * **注意! `load average`這個值只對Linux/macOS作業系統才有用**
+  + []()
+  + []()
+  + []()
+  + []()
+  + []()
 
 
 
