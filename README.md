@@ -2792,8 +2792,38 @@ Node.js Learn<br>
       * [fs.watch(filename[, options][, listener])](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_watch_filename_options_listener)
     * [fs.writeFile(file, data[, options], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_writefile_file_data_options_callback): 將資料(data)寫入(write)檔案(file)中
       * [fs.write(fd, buffer[, offset[, length[, position]]], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_write_fd_buffer_offset_length_position_callback)
+- 關於`fs`模組有一件奇怪的事情是所有方法**預設**都是**非同步的**(asynchronous),然而這些方法也都能同步化地(synchronously)使用(=> 只要在各方法後面加上`Sync`語法就可以了)
+  + 以下範例說明
+  + `fs.rename()`
+    * `fs.renameSync()`
+  + `fs.write()`
+    * `fs.writeSync()`
+  + 這麼做會造成(makes)我們的應用程式(application)的工作流(flow)有極大(huge)的差異(difference)
+    > Node `v10.0.0`開始,`fs`模組開始引入了[fs Promises API](https://nodejs.org/api/fs.html#fs_fs_promises_api)
+    * 舉例來說,我們來檢查(check)一下`fs.rename()`方法,利用回呼函式(callback)的方法來使用非同步化(asynchronous)的API
+      * ```javascript
+          const fs = require('fs')
 
+          fs.rename('before.json', 'after.json', err => {
+            if (err) {
+              return console.error(err)
+            }
 
+            //done
+          })
+        ```
+    * 同步化(synchronous)的API可以這樣來使用,並搭配`try/catch`區塊(block)來處理(handle)錯誤(error)
+      * ```javascript
+          const fs = require('fs')
+
+          try {
+            fs.renameSync('before.json', 'after.json')
+            //done
+          } catch (err) {
+            console.error(err)
+          }
+        ```
+    * 以上這兩種範例的主要(key)差別(difference)是,**第2個範例**腳本(script)的**執行(execution)將會被阻塞(block)**,直到檔案(file)操作(operation)成功(succeeded)
 
 
 
