@@ -58,6 +58,7 @@ Node.js Learn<br>
       - [The Node.js fs module](#the-nodejs-fs-module)
       - [The Node.js path module](#the-nodejs-path-module)
       - [The Node.js os module](#the-nodejs-os-module)
+      - [The Node.js events module](#the-nodejs-events-module)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -3078,6 +3079,86 @@ Node.js Learn<br>
     * 該方法會回傳(return)一個整數(integer)來表示自從(since)上次電腦重開機(last rebooted)到現在,已經運行(running)了多久(=> 以"秒"為單位)
   + [os.userInfo([options])](https://nodejs.org/dist/latest-v15.x/docs/api/os.html#os_os_userinfo_options)
     * 該方法會回傳(returns)一個物件(object)包含了當前的使用者名稱(username), 使用者ID(uid), 群組ID(gid), shell, 家目錄(homedir), ...等等之類的
+
+#### The Node.js events module
+> Node內建核心模組[Events](https://nodejs.org/dist/latest-v15.x/docs/api/events.html#events_events)<br>
+
+- **`event`模組(module)會提供(provides)我們EventEmitter類別(class),這是在Node中處理事件們(events)的關鍵(key)**
+  + ```javascript
+      const EventEmitter = require('events')
+      const door = new EventEmitter()
+      ```
+  + 事件監聽器(Event listener)會吃(eats)它自己(its own)的狗食(dog food),並使用(uses)以下的事件(events)
+    * `newListener`: 當事件監聽器(event listener)被新增(added)時
+    * `removeListener`: 當事件監聽器(event listener)被移除(removed)時
+- 以下是`event`模組(module)中常用的方法(methods)
+  + [emitter.addListener(eventName, listener)](https://nodejs.org/dist/latest-v15.x/docs/api/events.html#events_emitter_addlistener_eventname_listener)
+    * 該方法會新增(adds)一個事件監聽器函式(`listener` function)到事件監聽器陣列(`listeners` array)的最後面(end)
+    * 等同於[emitter.on(eventName, listener)](https://nodejs.org/dist/latest-v15.x/docs/api/events.html#events_emitter_on_eventname_listener)
+  + [emitter.emit(eventName[, ...args])](https://nodejs.org/dist/latest-v15.x/docs/api/events.html#events_emitter_emit_eventname_args)
+    * 發出(Emits)一個事件(event)。該方法會**同步地**(synchronously)依照被註冊(registered)的順序(in the order)來**呼叫**(calls)**每一個**(every)**事件監聽器**(event listener)
+    * ```javascript
+        door.emit("slam") // emitting the event "slam"
+      ```
+  + [emitter.eventNames()](https://nodejs.org/dist/latest-v15.x/docs/api/events.html#events_emitter_eventnames)
+    * 該方法會回傳(return)一個陣列(array)來代表(represent)有註冊(registered)在目前(current)的`EventEmitter`物件(object)上的事件們(events)
+    * ```javascript
+        door.eventNames()
+      ```
+  + [emitter.getMaxListeners()](https://nodejs.org/dist/latest-v15.x/docs/api/events.html#events_emitter_getmaxlisteners)
+    * 該方法會回傳(returns)一個整數(integer)來代表當前的`EventEmitter`物件(object)"最多"(maximum)能被新增(add)幾個事件監聽器(listeners)在其上面
+    * 預設值(default): `10`
+    * 並可以透過[emitter.setMaxListeners(n)](https://nodejs.org/dist/latest-v15.x/docs/api/events.html#events_emitter_setmaxlisteners_n)方法來設定指定的`EventEmitter`物件(object)"最多"(maximum)能被新增(add)幾個事件監聽器(listeners)到其上面
+  + [emitter.listenerCount(eventName)](https://nodejs.org/dist/latest-v15.x/docs/api/events.html#events_emitter_listenercount_eventname)
+    * 該方法會回傳(returns)一個整數(integer)來代表當前的`EventEmitter`物件(object)"上有幾個事件監聽器(listeners)
+    * ```javascript
+        door.listenerCount('open')
+      ```
+  + [emitter.listeners(eventName)](https://nodejs.org/dist/latest-v15.x/docs/api/events.html#events_emitter_listeners_eventname)
+    * 該方法會回傳(returns)一個陣列(array)來代表當前的`EventEmitter`物件(object)"上有哪些事件監聽器(listeners)
+    * ```javascript
+        door.listeners('open')
+      ```
+  + [emitter.removeListener(eventName, listener)](https://nodejs.org/dist/latest-v15.x/docs/api/events.html#events_emitter_removelistener_eventname_listener)
+    * 該方法會從事件監聽器陣列(`listener` array)上移除(removes)指定(specified)的事件監聽器(`listener`)
+    * 從Node `v10.0.0`版本開始,等同於[emitter.off(eventName, listener)](https://nodejs.org/dist/latest-v15.x/docs/api/events.html#events_emitter_off_eventname_listener)
+  + [emitter.on(eventName, listener)](https://nodejs.org/dist/latest-v15.x/docs/api/events.html#events_emitter_on_eventname_listener)
+    * 該方法會新增(adds)一個回呼函式(callback function)給當前被發出(emitted)的事件(event)
+    * ```javascript
+        door.on('open', () => {
+          console.log('Door was opened')
+        })
+      ```
+  + [emitter.once(eventName, listener)](https://nodejs.org/dist/latest-v15.x/docs/api/events.html#events_emitter_once_eventname_listener)
+    * 該方法會新增(adds)一個回呼函式(callback function)在被註冊(registered)以後(after),而第1次(first)被發出(emitted)的的事件(event)。這個方法只會被呼叫(called)一次(once),不會(never)再被呼叫一次(again)
+    * ```javascript
+        const EventEmitter = require('events')
+        const ee = new EventEmitter()
+
+        ee.once('my-event', () => {
+          //call callback function once
+        })
+      ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
