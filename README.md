@@ -3139,9 +3139,27 @@ Node.js Learn<br>
           //call callback function once
         })
       ```
-
-
-
+  + [emitter.prependListener(eventName, listener)](https://nodejs.org/api/events.html#events_emitter_prependlistener_eventname_listener)
+    * 當我們使用`emitter.on()`或是`emitter.addListener()`這2種方法來新增(add)事件監聽器(listener)時,它們會把事件監聽器新增到整個監聽器(listeners)隊列(queue)的最後面(last),並且最後(last)一個呼叫(called)。此時,如果我們想要新增事件監聽器到整個監聽器隊列的最前面(before)時,就可以透過`emitter.prependListener()`方法來達成,並且第1個呼叫(called)其新增的事件監聽器
+  + [emitter.prependOnceListener(eventName, listener)](https://nodejs.org/api/events.html#events_emitter_prependoncelistener_eventname_listener)
+    * 當我們使用`emitter.once()`方法來新增事件監聽器時,它會把事件監聽器新增到整個監聽器(listeners)隊列(queue)的最後面(last),並且最後(last)一個呼叫(called)。此時,如果我們想要新增事件監聽器到整個監聽器隊列的最前面(before)時,就可以透過`emitter.prependOnceListener()`方法來達成,並且第1個呼叫(called)其新增的事件監聽器
+  + [emitter.removeAllListeners([eventName])](https://nodejs.org/api/events.html#events_emitter_removealllisteners_eventname)
+    * 該方法會從`EventEmitter`物件(object)中移除(removes)**指定事件(specific event)中**所有(all)的事件監聽器(listeners)
+    * ```javascript
+        door.removeAllListeners('open')
+      ```
+  + [emitter.removeListener(eventName, listener)](https://nodejs.org/api/events.html#events_emitter_removelistener_eventname_listener)
+    * 該方法會**移除(remove)一個指定(specific)的事件監聽器(listener)**。我們可以將該方法的回呼函式(callback function)參數儲存(saving)為一個變數(variable),以讓之後(later)當我們需要參考(reference)時,可以透過此變數來呼叫`emitter.removeListener()`方法
+    * ```javascript
+        const doSomething = () => {}
+        door.on('open', doSomething)
+        door.removeListener('open', doSomething)
+      ```
+  + [emitter.setMaxListeners(n)](https://nodejs.org/api/events.html#events_emitter_setmaxlisteners_n)
+    * 該方法可以設定(set)**最多(maximum)**能新增幾個事件監聽器(listeners)到`EventEmitter`物件(object)上面。預設值(defaults)為`10`個事件監聽器,但能設定要增加(increased) or 減少(lowered)
+    * ```javascript
+        door.setMaxListeners(50)
+      ```
 
 
 
