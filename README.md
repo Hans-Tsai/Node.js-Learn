@@ -61,6 +61,7 @@ Node.js Learn<br>
       - [The Node.js events module](#the-nodejs-events-module)
       - [The Node.js http module](#the-nodejs-http-module)
       - [Node.js Buffers](#nodejs-buffers)
+      - [Node.js Streams](#nodejs-streams)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -3454,7 +3455,12 @@ Node.js Learn<br>
           console.log(slice.toString()) //Ho
         ```
 
+#### Node.js Streams
+> Node內建核心模組[Stream](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_stream)<br>
 
+- 什麼是`streams`(串流)? (What are streams?)
+  + `streams`(串流)是其中一個為Node應用程式(applications)提供動力(power)的基本(fundamental)觀念(concept)之一
+  + 
 
 
 
