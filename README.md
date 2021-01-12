@@ -59,6 +59,7 @@ Node.js Learn<br>
       - [The Node.js path module](#the-nodejs-path-module)
       - [The Node.js os module](#the-nodejs-os-module)
       - [The Node.js events module](#the-nodejs-events-module)
+      - [The Node.js http module](#the-nodejs-http-module)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -3161,8 +3162,125 @@ Node.js Learn<br>
         door.setMaxListeners(50)
       ```
 
+#### The Node.js http module
+> Node內建核心模組[HTTP](https://nodejs.org/api/http.html#http_http)<br>
 
-
+- `HTTP`核心模組(core module)是Node網路(networking)的關鍵模組(key module)
+- `HTTP`模組可以透過引用(require)來使用
+  + ```javascript
+      const http = require('http')
+      ```
+  + 該模組會提供一些屬性(properties), 方法(methods), 和一些類別(classes)
+- 屬性(Properties)
+  + [http.METHODS](https://nodejs.org/api/http.html#http_http_methods)
+    * 該屬性會列出(lists)所有能支援(supported)的HTTP方法(methods)
+    * ```javascript
+        > require('http').METHODS
+        [ 'ACL',
+          'BIND',
+          'CHECKOUT',
+          'CONNECT',
+          'COPY',
+          'DELETE',
+          'GET',
+          'HEAD',
+          'LINK',
+          'LOCK',
+          'M-SEARCH',
+          'MERGE',
+          'MKACTIVITY',
+          'MKCALENDAR',
+          'MKCOL',
+          'MOVE',
+          'NOTIFY',
+          'OPTIONS',
+          'PATCH',
+          'POST',
+          'PROPFIND',
+          'PROPPATCH',
+          'PURGE',
+          'PUT',
+          'REBIND',
+          'REPORT',
+          'SEARCH',
+          'SUBSCRIBE',
+          'TRACE',
+          'UNBIND',
+          'UNLINK',
+          'UNLOCK',
+          'UNSUBSCRIBE' ]
+      ```
+  + [http.STATUS_CODES](https://nodejs.org/api/http.html#http_http_status_codes)
+    * 該屬性會列出(lists)所有的HTTP狀態碼(status code)以及它們分別的描述(description)
+    * ```javascript
+        > require('http').STATUS_CODES
+        { '100': 'Continue',
+          '101': 'Switching Protocols',
+          '102': 'Processing',
+          '200': 'OK',
+          '201': 'Created',
+          '202': 'Accepted',
+          '203': 'Non-Authoritative Information',
+          '204': 'No Content',
+          '205': 'Reset Content',
+          '206': 'Partial Content',
+          '207': 'Multi-Status',
+          '208': 'Already Reported',
+          '226': 'IM Used',
+          '300': 'Multiple Choices',
+          '301': 'Moved Permanently',
+          '302': 'Found',
+          '303': 'See Other',
+          '304': 'Not Modified',
+          '305': 'Use Proxy',
+          '307': 'Temporary Redirect',
+          '308': 'Permanent Redirect',
+          '400': 'Bad Request',
+          '401': 'Unauthorized',
+          '402': 'Payment Required',
+          '403': 'Forbidden',
+          '404': 'Not Found',
+          '405': 'Method Not Allowed',
+          '406': 'Not Acceptable',
+          '407': 'Proxy Authentication Required',
+          '408': 'Request Timeout',
+          '409': 'Conflict',
+          '410': 'Gone',
+          '411': 'Length Required',
+          '412': 'Precondition Failed',
+          '413': 'Payload Too Large',
+          '414': 'URI Too Long',
+          '415': 'Unsupported Media Type',
+          '416': 'Range Not Satisfiable',
+          '417': 'Expectation Failed',
+          '418': 'I\'m a teapot',
+          '421': 'Misdirected Request',
+          '422': 'Unprocessable Entity',
+          '423': 'Locked',
+          '424': 'Failed Dependency',
+          '425': 'Unordered Collection',
+          '426': 'Upgrade Required',
+          '428': 'Precondition Required',
+          '429': 'Too Many Requests',
+          '431': 'Request Header Fields Too Large',
+          '451': 'Unavailable For Legal Reasons',
+          '500': 'Internal Server Error',
+          '501': 'Not Implemented',
+          '502': 'Bad Gateway',
+          '503': 'Service Unavailable',
+          '504': 'Gateway Timeout',
+          '505': 'HTTP Version Not Supported',
+          '506': 'Variant Also Negotiates',
+          '507': 'Insufficient Storage',
+          '508': 'Loop Detected',
+          '509': 'Bandwidth Limit Exceeded',
+          '510': 'Not Extended',
+          '511': 'Network Authentication Required' }
+      ```
+  + [http.globalAgent](https://nodejs.org/api/http.html#http_http_globalagent)
+    * 該屬性會指向(points to)全域的代理器(`Agent`)物件(object)的實例(instance),也就是[http.Agent](https://nodejs.org/api/http.html#http_class_http_agent)類別(class)的實例(instance)
+    * 該屬性被用來管理(manage)與`HTTP`客戶端(clients)的連接(connections)持久性(persistence) & 重用(reuse)。因此該屬性是Node的`HTTP`網路(networking)的關鍵元件(key component)
+    * 關於`http.Agent`類別(class),在稍後(later on)的描述(description)中會有更多介紹
 
 
 
