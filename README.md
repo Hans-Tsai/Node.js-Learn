@@ -3281,22 +3281,79 @@ Node.js Learn<br>
     * 該屬性會指向(points to)全域的代理器(`Agent`)物件(object)的實例(instance),也就是[http.Agent](https://nodejs.org/api/http.html#http_class_http_agent)類別(class)的實例(instance)
     * 該屬性被用來管理(manage)與`HTTP`客戶端(clients)的連接(connections)持久性(persistence) & 重用(reuse)。因此該屬性是Node的`HTTP`網路(networking)的關鍵元件(key component)
     * 關於`http.Agent`類別(class),在稍後(later on)的描述(description)中會有更多介紹
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+- 方法(Methods)
+  + [http.createServer([options][, requestListener])](https://nodejs.org/api/http.html#http_http_createserver_options_requestlistener)
+    * 該方法會回傳(return)一個新的[http.Server](https://nodejs.org/api/http.html#http_class_http_server)類別(class)的實例(instance)
+    * ```javascript
+        const server = http.createServer((req, res) => {
+          //handle every single request with this callback
+        })
+      ```
+  + [http.request(url[, options][, callback])](https://nodejs.org/api/http.html#http_http_request_options_callback)
+    * 該方法會向伺服器端發出`HTTP`的請求(`request`),並建立(creating)一個[http.ClientRequest](https://nodejs.org/api/http.html#http_class_http_clientrequest)類別(class)的實例(instance)
+  + [http.get(url[, options][, callback])](https://nodejs.org/api/http.html#http_http_get_options_callback)
+    * 與`http.request()`方法類似(similar),但會自動地(automatically)設定(sets)`HTTP`的請求(`request`)方法為`GET`方法,並且會自動呼叫[request.end([data[, encoding]][, callback])](https://nodejs.org/api/http.html#http_request_end_data_encoding_callback)方法
+- 類別(Classes)
+  + `HTTP`模組(module)會提供以下5種類別(classes)
+    * `http.Agent`
+    * `http.ClientRequest`
+    * `http.Server`
+    * `http.ServerResponse`
+    * `http.IncomingMessage`
+  + [http.Agent](https://nodejs.org/api/http.html#http_class_http_agent)
+    * Node會建立一個全域的代理器(`Agent`)類別(class)的實例(instance),以用來管理(manage)與`HTTP`客戶端(clients)的連接(connections)持久性(persistence) & 重用(reuse)。因此`http.Agent`類別(class)是Node的`HTTP`網路(networking)的關鍵元件(key component)
+    * 這個物件會確保(make sure)對於伺服器端(server)的每個請求(every request)都是排隊(queued)的,並且任何單一(single)插座(socket)都是有被重複使用(reused)的
+    * **此類別(class)也會維護(maintains)插座池(a pool of sockets)。這也就是Node效能(performance)好的關鍵(key)原因(reason)之一**
+  + [http.ClientRequest](https://nodejs.org/api/http.html#http_class_http_clientrequest)
+    * 當呼叫(called)[http.request](https://nodejs.org/api/http.html#http_http_request_options_callback)或是[http.get()](https://nodejs.org/api/http.html#http_http_get_options_callback)這2種方法之一時,皆會建立(created)一個`http.ClientRequest`物件(object)
+    * 當收到(received)回應(response)時,將會以一個`http.IncomingMessage`實例(instance)作為參數(argument),來呼叫`response`事件(event)來作為回應(response)
+    * 該類別(class)所回傳(returned)的回應資料(data of a response),可以透過以下2種方式來讀取
+      * 我們可以呼叫`response.read()`方法
+      * 在`response`事件處理器(event handler)中,我們可以設定(setup)一個事件監聽器(event listener)給`data`事件(event),因此我們就能監聽(listen)串流進去(streamed into)的資料流(data)
+  + [http.Server](https://nodejs.org/api/http.html#http_class_http_server)
+    * 當透過`http.createServer()`方法(method)來建立(creating)一個新的伺服器(new server)時,通常(commonly)會實例化(instantiated)並且回傳(returned)此類別(=> 也就是`http.Server`類別(class))
+    * 一旦(Once)我們擁有(have)一個伺服器物件(server object)時,我們可以透過以下2種方法(methods)來存取(access)這個伺服器物件
+      * [server.close([callback])](https://nodejs.org/api/http.html#http_server_close_callback): 阻止(stop)伺服器(server)繼續接受(accepting)新的連接(new connections)
+      * [server.listen()](https://nodejs.org/api/http.html#http_server_listen): 啟動(starts)HTTP伺服器(server),並監聽(listens)連接(connections)
+  + [http.ServerResponse](https://nodejs.org/api/http.html#http_class_http_serverresponse)
+    * 此類別是透過`http.Server`類別(class)所建立的,並傳遞(passed)給作為觸發(fires)`request`事件(event)的第2個參數(parameter)
+    * **常見(Commonly)且知名(known)的做法是在程式碼中用作`res`**
+      * ```javascript
+          const server = http.createServer((req, res) => {
+            //res is an http.ServerResponse object
+          })
+          ```
+      * 在事件處理器(handler)中,我們常會呼叫(call)的會是[response.end([data[, encoding]][, callback])](https://nodejs.org/api/http.html#http_response_end_data_encoding_callback)方法(method),`response.end()`方法會關閉(close)`response`物件,同時訊息(message)已經完成(complete)了,伺服器(server)也能將此訊息發送(send)給客戶端(client)。`response.end()`方法將會在每次回應(each response)時,都會被呼叫(called)到
+    * 以下的方法(methods)們將會被用來與HTTP標頭(headers)做互動(interact)
+      * [response.getHeaderNames()](https://nodejs.org/api/http.html#http_response_getheadernames)
+        * 此方法會得到(get)一個已經(already)設定(set)好的HTTP標頭(headers)的名稱清單(the list of names)
+      * [response.getHeaders()](https://nodejs.org/api/http.html#http_response_getheaders)
+        * 此方法會得到(get)一個已經(already)設定(set)好的HTTP標頭(headers)的拷貝(copy, => 會以物件(object)的形式來展示)
+      * [response.setHeader('headername', value)](https://nodejs.org/api/http.html#http_response_setheader_name_value)
+        * 此方法會設定一個(set)HTTP標頭(header)的值(value)
+      * [response.getHeader('headername')](https://nodejs.org/api/http.html#http_response_getheaders)
+        * 此方法會得到(get)一個已經(already)設定(set)好的HTTP標頭(header)的值(value)
+      * [response.removeHeader('headername')](https://nodejs.org/api/http.html#http_response_removeheader_name)
+        * 此方法會移除(remove)一個已經(already)設定(set)好的HTTP標頭(header)
+      * [response.hasHeader('headername')](https://nodejs.org/api/http.html#http_response_hasheader_name)
+        * 當指定的HTTP標頭(header)已經(already)有設定(set)過的值時候,就會回傳`true`
+      * [response.headersSent](https://nodejs.org/api/http.html#http_response_headerssent)
+        * 當指定的HTTP標頭(header)已經(already)傳送(sent)給客戶端(client)的時候,就會回傳`true`
+    * 在處理完HTTP標頭(header)以後,我們就可以透過[response.writeHead(statusCode[, statusMessage][, headers])](https://nodejs.org/api/http.html#http_response_writehead_statuscode_statusmessage_headers)方法來將HTTP標頭(header)傳送給客戶端(client)。`response.writeHead()`方法會接受狀態碼(statusCode)作為第1個參數(parameter),接著是選擇性(optional)的參數(=> 狀態訊息(status message)),最後是HTTP標頭(headers)物件(object)
+    * 若想要將資料(data)傳送(send)給客戶端(client)的內文(`response body`)的話,我們會需要透過[response.write(chunk[, encoding][, callback])](https://nodejs.org/api/http.html#http_response_write_chunk_encoding_callback)方法,而`response.write()`方法將會傳送(send)緩存資料(buffered data)給HTTP回應串流(response stream)
+    * 如果尚未(not yet)先使用`response.writeHead()`方法來傳送(sent)HTTP標頭(header)出去的話,它將會先(first)傳送(send)依照傳過來的HTTP請求(`response`)的狀態碼(status code) & 狀態訊息(status message)來傳送回去HTTP標頭(header)給客戶端(client)。我們也可以透過[response.statusCode](https://nodejs.org/api/http.html#http_response_statuscode)與[response.statusMessage](https://nodejs.org/api/http.html#http_response_statusmessage)這2種屬性(properties)來設定要回傳給客戶端的HTTP標頭(header)的狀態碼(status code) & 狀態訊息(status message)
+  + [http.IncomingMessage](https://nodejs.org/api/http.html#http_class_http_incomingmessage)
+    * 此一物件(object)可透過以下2種方式來建立(created)出來
+      * 當`http.Server`物件在監聽(listening)`request`事件(event)時
+      * 當`http.ClientRequest`物件在監聽(listening)`response`事件(event)時
+    * `http.IncomingMessage`物件可以被用來存取回應物件(`response`)
+      * 利用它自己的[message.statusCode](https://nodejs.org/api/http.html#http_message_statuscode)與[message.statusMessage](https://nodejs.org/api/http.html#http_message_statusmessage)這2種屬性
+      * 利用他自己的HTTP標頭(headers)方法或是[message.rawHeaders](https://nodejs.org/api/http.html#http_message_rawheaders)屬性
+      * HTTP方法(method)可以利用它自己的[message.method](https://nodejs.org/api/http.html#http_message_method)屬性
+      * HTTP版本(version)可以利用它自己的[message.httpVersion](https://nodejs.org/api/http.html#http_message_httpversion)屬性
+      * `URL`可以利用它自己的[message.url](https://nodejs.org/api/http.html#http_message_url)屬性
+      * 底層插座(underlying socket)可以利用它自己的[message.socket](https://nodejs.org/api/http.html#http_message_socket)屬性
+    * 由於(since)`http.IncomingMessage`物件實現(implements)了可讀取(readable)串流(stream)介面(interface),因此可透過串流(streams)來存取(accessed)資料(data)
 
 
 ---
