@@ -60,6 +60,7 @@ Node.js Learn<br>
       - [The Node.js os module](#the-nodejs-os-module)
       - [The Node.js events module](#the-nodejs-events-module)
       - [The Node.js http module](#the-nodejs-http-module)
+      - [Node.js Buffers](#nodejs-buffers)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -3354,6 +3355,126 @@ Node.js Learn<br>
       * `URL`可以利用它自己的[message.url](https://nodejs.org/api/http.html#http_message_url)屬性
       * 底層插座(underlying socket)可以利用它自己的[message.socket](https://nodejs.org/api/http.html#http_message_socket)屬性
     * 由於(since)`http.IncomingMessage`物件實現(implements)了可讀取(readable)串流(stream)介面(interface),因此可透過串流(streams)來存取(accessed)資料(data)
+
+#### Node.js Buffers
+> Node內建核心模組[Buffer](https://nodejs.org/dist/latest-v15.x/docs/api/buffer.html#buffer_buffer)<br>
+
+- `Buffer`是什麼? (What is a buffer?)
+  + `buffer`(緩存)是記憶體(memory)的一個區域(area)。Javascript的開發者(developers)可能會不太熟悉這個觀念,而不像是使用其他`C`, `C++`, `Go`程式語言(或是其他也在使用系統程式語言(system programming language)的人),每天需要與記憶體互動(interact)的開發者,來得熟悉
+  + `buffer`(緩存)代表一個從`V8`這個Javascript引擎(engine)所分配(allocated)出來的固定大小(a fixed-size chunk)的記憶體(memory),並且不能再被調整大小(resized)
+  + 我們可以把`buffer`(緩存)想像(think of)成是一個類似正整數陣列(an array of integer),其中的每個(each)數字都代表(represent)資料的一個位元(a byte of data)
+  + `buffer`(緩存)是透過Node的[Buffer](https://nodejs.org/api/buffer.html#buffer_buffer)類別(class)來實作(implemented)的
+- 我們為什麼會需要`buffer`(緩存)? (Why do we need buffer?)
+  + 相比於傳統上僅處理字串(string)而不是二進制數據(binaries)的生態圈(ecosystem),Node的`Buffer`類別(class)是被引進(introduced)來幫助開發者處理(dealt with)二進制的資料(binary data)
+  + `Buffer`(緩存)與`Stream`(串流)是緊密相連(deeply linked)的。當串流處理器(stream processor)收到(receives)資料(data)的速度比起它能消化(digest)的速度快(faster)時,串流處理器就會將資料放到`buffer`
+  + 對於`buffer`(緩存)的一個簡單視覺化(visualization)的方式就是當我們在觀看YouTube影片時,紅線(red line)會超過(beyond)我們的觀看點(visualization point)---這就代表YoutTube下載資料(downloading data)的速度比我們觀看(viewing)影片的速度來得快(faster),並且由我們的瀏覽器(browser)負責處理`buffer`(緩存)
+- 如何建立`buffer`(緩存)? (How to create a buffer)
+  + `buffer`(緩存)是透過[Buffer.from(), Buffer.alloc(), and Buffer.allocUnsafe()](https://nodejs.org/api/buffer.html#buffer_buffer_from_buffer_alloc_and_buffer_allocunsafe)方法們來建立(created)的
+    * ```javascript
+        const buf = Buffer.from('Hey!')
+      ```
+    * [Buffer.from(array)](https://nodejs.org/api/buffer.html#buffer_static_method_buffer_from_array)
+    * [Buffer.from(arrayBuffer[, byteOffset[, length]])](https://nodejs.org/api/buffer.html#buffer_static_method_buffer_from_arraybuffer_byteoffset_length)
+    * [Buffer.from(buffer)](https://nodejs.org/api/buffer.html#buffer_static_method_buffer_from_buffer)
+    * [Buffer.from(string[, encoding])](https://nodejs.org/api/buffer.html#buffer_static_method_buffer_from_string_encoding)
+  + 我們也可以僅傳遞(passing)一個大小(size)來初始化(initialize)一個`buffer`(緩存)。以下的範例會建立一個1`KB`大小的`buffer`
+    * ```javascript
+        const buf = Buffer.alloc(1024)
+        //or
+        const buf = Buffer.allocUnsafe(1024)
+      ```
+      * 儘管(While)以上的2種方法(=> 也就是[Buffer.alloc()](https://nodejs.org/api/buffer.html#buffer_static_method_buffer_alloc_size_fill_encoding)與[Buffer.allocUnsafe()](https://nodejs.org/api/buffer.html#buffer_static_method_buffer_allocunsafe_size))皆分配給`buffer`(緩存)一個指定(specified)大小(size)的位元(bytes),但是由`Buffer.alloc()`方法所建立的`buffer`會被初始化(initialized)為`0`,而由`Buffer.allocUnsafe()`方法所建立的`buffer`將"不會"被初始化(uninitialized)。這也意味著儘管由`Buffer.allocUnsafe()`方法所建立的`buffer`將會比由`Buffer.alloc()`方法所建立的`buffer`來得快很多(quite fast),但是由`Buffer.allocUnsafe()`方法所建立的`buffer`被分配(allocated)到的記憶體(memory)片段(segment)可能會包含(contain)舊資料(old data),而這些舊資料將有可能是敏感性(sensitive)資料
+      * 當記憶體(memory)中存在舊資料(older data),就可以在`buffer`(緩存)記憶體被讀取(read) or 洩漏(leaked)時可以被存取(accessed)。正也因為這樣,`Buffer.allocUnsafe()`方法才會被命名為不安全(unsafe)的,並且在使用此方法時需要更加注意(extra care)
+- 使用`buffer`(緩存) (Using a buffer)
+  + 存取`buffer`(緩存)的內容 (Access the content of a buffer)
+    * `buffer`(緩存)是一個由二進制資料(bytes)組成的陣列(array),可以用如同陣列(array)一樣的方式來存取(accessed)
+      * ```javascript
+          const buf = Buffer.from('Hey!')
+          console.log(buf[0]) //72
+          console.log(buf[1]) //101
+          console.log(buf[2]) //121
+          ```
+        * 以上的數字是萬國碼(Unicode Code),表示字元(character)在緩衝區(`buffer`)的位置(position)。`H`=> 72, `e`=> 101, `y`=> 121
+      * 我們也可以使用[buf.toString()](https://nodejs.org/api/buffer.html#buffer_buf_tostring_encoding_start_end)方法來將`buffer`(緩存)的完整內容(full content)打印(print)出來
+        * ```javascript
+            console.log(buf.toString())
+          ```
+      * 當我們在初始化(initialize)一個`buffer`(緩存)時,有設定(sets)好它的大小(size)的話,則我們將能存取會包含(contain)隨機數據(random data)而不是空(empty)的`buffer`(緩存)的預初始化記憶體(pre-initialized memory)
+  + 取得`buffer`(緩存)的長度 (Get the length of a buffer)
+    * 可利用[buf.length](https://nodejs.org/api/buffer.html#buffer_buf_length)屬性
+    * ```javascript
+        const buf = Buffer.from('Hey!')
+        console.log(buf.length)
+      ```
+  + 遍歷`buffer`(緩存)的內容 (Iterate over the contents of a buffer)
+    * ```javascript
+        const buf = Buffer.from('Hey!')
+        for (const item of buf) {
+          console.log(item) //72 101 121 33
+        }
+      ```
+  + 更改`buffer`(緩存)的內容 (Changing the content of a buffer)
+    * 可利用[buf.write(string[, offset[, length]][, encoding])](https://nodejs.org/api/buffer.html#buffer_buf_write_string_offset_length_encoding)方法來整個(whole)資料字串(string of data)寫入(write)到`buffer`(緩存)之中
+      * ```javascript
+          const buf = Buffer.alloc(4)
+          buf.write('Hey!')
+        ```
+    * 就如同我們也可以使用陣列(array)語法(syntax)來存取(access)`buffer`(緩存),我們也能利用同樣的方式(in the same way)來設定(set)`buffer`(緩存)的內容(contents)
+      * ```javascript
+          const buf = Buffer.from('Hey!')
+          buf[1] = 111 //o
+          console.log(buf.toString()) //Hoy!
+        ```
+  + 複製一個`buffer`(緩存) (Copy a buffer)
+    * 可利用[buf.copy(target[, targetStart[, sourceStart[, sourceEnd]]])](https://nodejs.org/api/buffer.html#buffer_buf_copy_target_targetstart_sourcestart_sourceend)方法來複製一個`buffer`(緩存)
+      * ```javascript
+          const buf = Buffer.from('Hey!')
+          let bufcopy = Buffer.alloc(4) //allocate 4 bytes
+          buf.copy(bufcopy)
+        ```
+    * 在預設的情況下,我們將複製整個`buffer`(緩存)。`buffer.copy()`方法內的3個參數(parameters)可以讓我們定義(define)
+      * 起始位置(starting position)
+      * 結束位置(ending position)
+      * 新的`buffer`長度(the new buffer length)
+      * ```javascript
+          const buf = Buffer.from('Hey!')
+          let bufcopy = Buffer.alloc(2) //allocate 2 bytes
+          buf.copy(bufcopy, 0, 0, 2)
+          bufcopy.toString() //'He'
+        ```
+  + 將`buffer`(緩存)切片 (Slice a buffer)
+    * 如果我們想建立(create)一個部分(partial)可視化(visualization)的`buffer`(緩存),我們可以建立一個切片(slice)。**切片(slice)"並不是"複製(copy): 原始(original)`buffer`(緩存)仍然是事實來源(the source of truth),但如果原始緩存被改變時,我們所建立的`buffer`切片(slice)也會被改變**
+    * 可利用[buf.slice([start[, end]])](https://nodejs.org/api/buffer.html#buffer_buf_slice_start_end)方法來建立一個`buffer`(緩存)切片,此方法的第1個參數(parameter)代表起始位置(starting position),以及可指定(specify)第2個選擇性(optional)的參數(parameter)作為結束位置(ending position)
+      * ```javascript
+          const buf = Buffer.from('Hey!')
+          buf.slice(0).toString() //Hey!
+          const slice = buf.slice(0, 2)
+          console.log(slice.toString()) //He
+          buf[1] = 111 //o
+          console.log(slice.toString()) //Ho
+        ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ---
