@@ -3466,14 +3466,165 @@ Node.js Learn<br>
   + 透過`streams`(串流)來將檔案內容一部分一部分(piece by piece)地讀取(read),而不用在處理該檔案內容時,需要先把整個(all)檔案內容事先讀取到記憶體(memory)中
   + Node的[Stream](https://nodejs.org/api/stream.html#stream_stream)內建核心模組提供(provides)了能建構(built)出所有`streams`(串流)API的基礎(foundation)
   + 所有的`streams`(串流)都是[EventEmitter](https://nodejs.org/api/events.html#events_class_eventemitter)類別(class)的實例(instances)
+- 為什麼要使用`streams`(串流)? (Why streams?)
+  + 在資料處理(data handling)的方法(methods)這方面,`Streams`(串流)基本上提供了以下2個主要(major)的優點(advantages)
+    * 記憶體效率(Memory efficiency): 當我們處理(process)資料時,不需要事先(before)將大量的資料(large amounts of data)讀取(load)到記憶體中(in memory)
+    * 時間效率(Time efficiency): 開始處理(processing)資料(data)的前置時間縮短(less time)。從(since)我們擁有資料後,我們就可以直接進行處理,而不是(rather than)等待整個資料負載(data payload)為可用(available)的時候才能開始處理
+- 一個`streams`(串流)的範例 (An example of stream)
+  + 有一個典型的範例就是從硬碟(disk)讀取資料(reading file)
+  + 利用Node的`fs`模組,我們可以讀取一個檔案,並在當有新被建立(established)的連線(connection)與我們的HTTP伺服器(server)連線時,提供文件(serve it)
+    * ```javascript
+        const http = require('http')
+        const fs = require('fs')
 
+        const server = http.createServer(function(req, res) {
+          fs.readFile(__dirname + '/data.txt', (err, data) => {
+            res.end(data)
+          })
+        })
+        server.listen(3000)
+      ```
+      * [fs.readFile(path[, options], callback)](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_readfile_path_options_callback): 此方法會讀取(reads)整個檔案內容(full contents of the file),當此方法完成時,會呼叫(invokes)回呼函式(callback)
+      * [response.end([data[, encoding]][, callback])](https://nodejs.org/dist/latest-v15.x/docs/api/http.html#http_response_end_data_encoding_callback): 此方法會回傳(return)整個檔案內容(full contents)給HTTP客戶端(client)
+      * 如果這個檔案很大的話,此操作會將花費大量的時間
+  + 以下的範例程式碼是用`streams`(串流)來完成同樣的事情
+    * ```javascript
+        const http = require('http')
+        const fs = require('fs')
 
+        const server = http.createServer((req, res) => {
+          const stream = fs.createReadStream(__dirname + '/data.txt')
+          stream.pipe(res)
+        })
+        server.listen(3000)
+      ```
+    * 我們沒有等待整個檔案被完全讀取(fully read),而是當我們有已經準備好(ready)的大量數據(a chunk of data)要被傳送時,就可以立即開始利用串流(streaming)的方式傳輸到HTTP客戶端(client)
+- [readable.pipe(destination[, options])](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_readable_pipe_destination_options)方法的介紹
+  + 上面的範例使用`stream.pipe(res)`方法,而這個方法(method)會在檔案串流(file stream)上被呼叫(called)
+  + 這個方法是用來做什麼的? 它會獲得(takes)消息來源(source),並用管道(`pipe`)的方式來傳送到目的地(destination)
+  + 我們也可以在消息來源串流(source stream)上呼叫(call)`stream.pipe(res)`這個方法,因此在這種情況下,檔案通常會被用管道(`pipe`)的方式來傳送到HTTP的回應物件(`response`)中
+  + `stream.pipe(res)`這個方法回傳的值就是目的地串流(destination stream),而它是一個非常方便(convenient)的東西來讓我們可以串連(chain)多個(multiple)管道(`pipe`)呼叫(calls)
+    * ```javascript
+        src.pipe(dest1).pipe(dest2)
+      ```
+    * 以上做法的構想(construct)會跟以下這種方式是相同的
+    * ```javascript
+        src.pipe(dest1)
+        dest1.pipe(dest2)
+      ```
+- 利用串流驅動的Node APIs (Streams-powered Node.js APIs)
+  + 因為這些優點(advantages),許多Node的內建核心模組(core module)都有提供(provide)原生(native)的串流(`stream`)處理(handling)能力(capabilities),尤其(notably)是以下幾種方式
+    * [process.stdin](https://nodejs.org/dist/latest-v15.x/docs/api/process.html#process_process_stdin): 此屬性會回傳(returns)一個`streams`(串流)來連接(connected)到標準輸入(`stdin`)
+    * [process.stdout](https://nodejs.org/dist/latest-v15.x/docs/api/process.html#process_process_stdout): 此屬性會回傳(returns)一個`streams`(串流)來連接(connected)到標準輸出(`stdout`)
+    * [process.stderr](https://nodejs.org/dist/latest-v15.x/docs/api/process.html#process_process_stderr): 此屬性會回傳(returns)一個`streams`(串流)來連接(connected)到標準錯誤(`stderr`)
+    * [fs.createReadStream(path[, options])](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_createreadstream_path_options): 此方法會建立(creates)一個可讀取(readable)的檔案串流(stream to a file)
+    * [fs.createWriteStream(path[, options])](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_createwritestream_path_options): 此方法會建立(creates)一個可寫入(writable)的檔案串流(stream to a file)
+    * [net.connect()](https://nodejs.org/dist/latest-v15.x/docs/api/net.html#net_net_connect): 此方法會開始(initiates)一個以`streams`為基礎(stream-based)的連線(connection)
+    * [http.request(url[, options][, callback])](https://nodejs.org/dist/latest-v15.x/docs/api/http.html#http_http_request_url_options_callback): 此方法會回傳(returns)一個`http.ClientRequest`類別(class)的實例(instance),而這個實例會是一個可寫入(writable)的串流(`stream`)
+    * [zlib.createGzip([options])](https://nodejs.org/dist/latest-v15.x/docs/api/zlib.html#zlib_zlib_creategzip_options): 此方法會利用`gzip`這種壓縮演算法(compress algorithm)來將資料(data)壓縮(compress)進`streams`(串流)裡面(into)
+    * [zlib.createGunzip([options])](https://nodejs.org/dist/latest-v15.x/docs/api/zlib.html#zlib_zlib_creategunzip_options): 此方法會解壓縮(decompress)一個`gzip`串流(`stream`)
+    * [zlib.createDeflate([options])](https://nodejs.org/dist/latest-v15.x/docs/api/zlib.html#zlib_zlib_createdeflate_options): 此方法會利用`deflate`這種壓縮演算法(compress algorithm)來將資料(data)壓縮(compress)進`streams`(串流)裡面(into)
+    * [zlib.createInflate([options])](https://nodejs.org/dist/latest-v15.x/docs/api/zlib.html#zlib_zlib_createinflate_options): 此方法會解壓縮(decompress)一個`deflate`串流(`stream`)
+- 不同類型的串流(`stream`) (Different types of streams)
+  + 串流(`stream`)會有以下4種類別(classes)
+    * `Readable`: 可讀取串流(readable stream)是一個我們可以透過管道傳出(pipe from),而不能傳入(pipe into)的`stream`(串流); 也就是說,我們可以利用可讀取串流(readable stream)來接收資料(receive data),而不能傳送資料(send data)給它。當我們推送(push)資料(data)進入(into)可讀取串流(readable stream)時,這些資料是緩存(buffered)的,直到(until)使用者(consumer)開始讀取(starts to read)這些資料(data)
+    * `Writable`: 可寫入串流(writable stream)是一個我們可以透過管道傳入(pipe into),而不能傳出(pipe from)的`stream`(串流); 也就是說,我們可以利用可寫入串流(writable stream)來傳送資料(send data),而不能傳入資料(receive data)給它。
+    * `Duplex`: 雙向串流(duplex stream)是一個既能接受我們透過管道傳入(pipe into),也能接受我們透過管道傳出(pipe from)。基本上來說(basically),就是可讀取串流(readable stream) & 可寫入串流(writable stream)的結合(combination)
+    * `Transform`: 轉換串流(transform stream)類似於雙向串流(duplex stream),但是轉換串流(transform stream)的輸出(output)是它的輸入(its input)的轉換(transform)
+- 如何建立一個可讀取串流(readable stream)? (How to create a readable stream)
+  + 我們可以透過Node的`Stream`內建核心模組來獲得(get)一個可讀取串流(readable stream),接著我們再初始化(initialize)它並且實作(implement)它的[readable._read(size)](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_readable_read_size_1)方法(method)
+  + 首先,我們先建立(create)一個串流物件(stream object)
+    * ```javascript
+        const Stream = require('stream')
+        const readableStream = new Stream.Readable()
+      ```
+  + 接著,實作(implement)它的[readable._read(size)](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_readable_read_size_1)方法(method)
+    * ```javascript
+        readableStream._read = () => {}
+      ```
+  + 我們也可以利用`read`這個選項(option)來實作(implement)`readable._read(size)`方法(method)
+    * ```javascript
+        const readableStream = new Stream.Readable({
+          read() {}
+        })
+      ```
+  + 現在(Now),`stream`(串流)是被初始化過後(initialized)的,我們可以傳送資料(send data)給它
+    * ```javascript
+        readableStream.push('hi!')
+        readableStream.push('ho!')
+      ```
+- 如何建立一個可寫入串流(writable stream)? (How to create a writable stream)
+  + 為了建立(create)出一個可寫入串流(writable stream),我們先繼承(extend)基礎(base)[Writable](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_writable_streams)物件(object),接著我們會實作(implement)這個`Writable`物件的[writable._write(chunk, encoding, callback)](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_writable_write_chunk_encoding_callback_1)方法(method)
+  + 首先,我們先建立(create)一個串流物件(stream object)
+    * ```javascript
+        const Stream = require('stream')
+        const writableStream = new Stream.Writable()
+      ```
+  + 接著,實作(implement)它的[writable._write(chunk, encoding, callback)](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_writable_write_chunk_encoding_callback_1)方法(method)
+    * ```javascript
+        writableStream._write = (chunk, encoding, next) => {
+          console.log(chunk.toString())
+          next()
+        }
+      ```
+  + 現在(Now),我們就可以透過管道傳入(pipe into)一個可讀取串流(readable stream)進去
+    * ```javascript
+        process.stdin.pipe(writableStream)
+      ```
+- 如何從可讀取串流中(readable stream)獲得資料? (How to get data from a readable stream?)
+  + `Question`: 我們該如何從可讀取串流中(readable stream)獲得資料呢?
+    * `Answer`: 利用可寫入串流(writable stream)
+    * ```javascript
+        const Stream = require('stream')
 
+        const readableStream = new Stream.Readable({
+          read() {}
+        })
+        const writableStream = new Stream.Writable()
 
+        writableStream._write = (chunk, encoding, next) => {
+          console.log(chunk.toString())
+          next()
+        }
 
+        readableStream.pipe(writableStream)
 
+        readableStream.push('hi!')
+        readableStream.push('ho!')
+      ```
+  + 我們也可以直接地(directly)消耗(consume)一個可讀取串流(readable stream),可利用`readable`事件(event)
+    * ```javascript
+        readableStream.on('readable', () => {
+          console.log(readableStream.read())
+        })
+      ```
+- 如何傳送資料給可寫入串流(writable stream)? (How to send data to a writable stream)
+  + 可利用[writable.write(chunk[, encoding][, callback])](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_writable_write_chunk_encoding_callback)方法(method)
+    * ```javascript
+        writableStream.write('hey!\n')
+      ```
+- 當我們結束寫入操作時,該如何對可寫入串流(writable stream)發送一個信號呢? (Signaling a writable stream that you ended writing)
+  + 可利用[writable.end([chunk[, encoding]][, callback])](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_writable_end_chunk_encoding_callback)方法(method)
+    * ```javascript
+        const Stream = require('stream')
 
+        const readableStream = new Stream.Readable({
+          read() {}
+        })
+        const writableStream = new Stream.Writable()
 
+        writableStream._write = (chunk, encoding, next) => {
+          console.log(chunk.toString())
+          next()
+        }
+
+        readableStream.pipe(writableStream)
+
+        readableStream.push('hi!')
+        readableStream.push('ho!')
+
+        writableStream.end()
+      ```
 
 
 
