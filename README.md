@@ -64,6 +64,7 @@ Node.js Learn<br>
       - [Node.js Streams](#nodejs-streams)
       - [Node.js, the difference between development and production](#nodejs-the-difference-between-development-and-production)
       - [Error handling in Node.js](#error-handling-in-nodejs)
+      - [How to log an object in Node.js](#how-to-log-an-object-in-nodejs)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -3761,6 +3762,16 @@ Node.js Learn<br>
       }
     ```
 
+#### How to log an object in Node.js
+> Node內建核心模組[Console](https://nodejs.org/api/console.html#console_console)<br>
+
+- 當我們在瀏覽器(in the browser)的Javascript程式碼中輸入(type)`console.log()`語法時,就會在瀏覽器後台(browser console)建立(create)一個漂亮(nice)的條目(entry)
+  + ![console-log-browser](/pic/console-log-browser.png)
+- 當我們點擊(click)箭頭(arrow)時,日誌(log)就會被展開(expanded),這時我們就可以清楚地(clearly)看到物件(object)的屬性們(properties)
+  + ![console-log-browser-expanded](/pic/console-log-browser-expanded.png)
+- 在Node中,也會發生(happens)相同(same)的事情
+  + 當我們要記錄(log)某些內容到後台(console)時,並不能那麼奢侈的(luxury)。因為如果我們是手動(manually)執行(run)Node程式(program)的話,它將會輸出(output)日誌物件(object)到`shell`或是到日誌檔案(log file)中。這時,我們將會得到物件的字串表現形式(string representation of the object)
+  + 
 
 
 
