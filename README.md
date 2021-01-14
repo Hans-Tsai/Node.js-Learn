@@ -62,6 +62,7 @@ Node.js Learn<br>
       - [The Node.js http module](#the-nodejs-http-module)
       - [Node.js Buffers](#nodejs-buffers)
       - [Node.js Streams](#nodejs-streams)
+      - [Node.js, the difference between development and production](#nodejs-the-difference-between-development-and-production)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -3626,9 +3627,45 @@ Node.js Learn<br>
         writableStream.end()
       ```
 
+#### Node.js, the difference between development and production
+- 我們可以對生產環境(production environment)、開發環境(development environment)做不同的設定(configurations)
+- Node會假設(assumes)我們總是在開發環境中(development environment)執行。這時,我們可以透過設定Node的環境變數(environment variable)為"生產環境(production environment)",來向Node發出我們在生產環境執行(running)應用程式的信號(signal)
+  + ```bash
+      export NODE_ENV=production
+      ```
+    * 以上的指令是在`shell`中執行的,但是最好將這個指令加到我們的`shell`設定檔(例: `.bash_profile`)中,否則當我們重開機(system restart)時,在終端機上執行指令所產生的Node環境變數設定就"不會"被保留(not persist)
+- 我們也可以透過以下的另一種方式來設定Node環境變數(environment variable),就是在執行Node應用程式初始化(initialization)的指令(command)前面,前綴(prepending)Node環境變數
+  + ```console
+      NODE_ENV=production node app.js
+    ```
+- Node環境變數的設定是一種慣例(convention),也被廣泛(widely)地被使用(used in)在外部函式庫(external libraries)中
+- 將Node環境變數設定為**生產環境**,通常(generally)可確保(ensures)以下2件事情
+  + 日誌記錄(logging)保持(kept)在最少(minimum)、最必要(essential)的水平(level)
+  + 會發生(take place)更多的緩存級別(caching levels),以優化(optimize)效能(performance)
+- 舉例來說,[Express](https://expressjs.com/)所使用的模板函式庫(templating library)--->[pug](https://pugjs.org/api/getting-started.html),會在當Node環境變數**不是**被設定為生產環境(`production`)時,就會以除錯模式(in debug mode)來編譯(compiles)
+  + 在開發模式(development mode)中,`Express`的`views`會在每次(every)請求(`request`)時被編譯(compiled); 然而當在生產模式(production mode)中,則會將其緩存(cached)。以下會有更多的範例(examples)
+  + 我們可以利用條件陳述句(conditional statements)來切換在不同環境(in different environments)中執行(execute)程式碼
+    * ```javascript
+        if (process.env.NODE_ENV === "development") {
+          //...
+        }
+        if (process.env.NODE_ENV === "production") {
+          //...
+        }
+        if(['production', 'staging'].indexOf(process.env.NODE_ENV) >= 0) {
+          //...
+        })
+      ```
+  + 舉例來說,在`Express`框架應用程式(app)中,我們可以利用條件陳述句(conditional statements)來針對每個環境(per environment)設定(set)不同的錯誤處理器(error handler)
+    * ```javascript
+        if (process.env.NODE_ENV === "development") {
+          app.use(express.errorHandler({ dumpExceptions: true, showStack: true }))
+        })
 
-
-
+        if (process.env.NODE_ENV === "production") {
+          app.use(express.errorHandler())
+        })
+      ```
 
 
 
