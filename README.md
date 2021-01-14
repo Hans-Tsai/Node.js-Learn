@@ -63,6 +63,7 @@ Node.js Learn<br>
       - [Node.js Buffers](#nodejs-buffers)
       - [Node.js Streams](#nodejs-streams)
       - [Node.js, the difference between development and production](#nodejs-the-difference-between-development-and-production)
+      - [Error handling in Node.js](#error-handling-in-nodejs)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -3666,6 +3667,112 @@ Node.js Learn<br>
           app.use(express.errorHandler())
         })
       ```
+
+#### Error handling in Node.js
+> Node內建核心模組[Errors](https://nodejs.org/api/errors.html#errors_errors)<br>
+
+- 在Node中,是透過(through)例外(`exceptions`)來處理(handled)錯誤(errors)的
+- 建立一個例外 (Creating exceptions)
+  + 要建立一個例外,可以透過拋出(`throw`)關鍵字(keyword)
+    * ```javascript
+        throw value
+      ```
+  + 一旦Javascript執行(executes)到此行(this line)指令,正常(normal)的程式流程(program flow)就會被停止(halted),並且程式的控制權(control)會被保留(held back)給最近(nearest)的例外處理器(`exception handler`)
+    * 通常,在客戶端(client-side)的程式碼(code)中,以上範例中的`value`可以是任何(any)Javascript的值,包含一個字串(`string`)、數字(`number`)、或是物件(`object`)
+    * **在Node中,我們"不會"拋出(throw)字串(strings),我們只會拋出(throw)錯誤物件(`Error` objects)**
+- 錯誤物件 (Error objects)
+  + 在Node中,錯誤物件(`error` object)可以是一個錯誤物件(`Error` object)的實例(instance),或是繼承(extends)自Node的`Errors`內建核心模組內所提供(provided)的錯誤類別(`Error` class)的物件(object)
+    * ```javascript
+        throw new Error('Ran out of coffee')
+      ```
+    * 或是
+    * ```javascript
+        class NotEnoughCoffeeError extends Error {
+          //...
+        }
+        throw new NotEnoughCoffeeError()
+      ```
+- 處理例外 (Handling exceptions)
+  + 一個例外處理器(exception handler)就是`try/catch`陳述句(statement)
+  + 任何包在(included)`try`區塊(block)內的程式碼所引發(raised in)的例外(exception),都會在其相對應(corresponding)的`catch`區塊(block)中被處理(handled)
+    * ```javascript
+        try {
+          //lines of code
+        } catch (e) {}
+      ```
+      * 在以上的範例程式碼中,`e`就是例外值(`exception` value)。我們可以在`catch`區塊(block)中新增(add)多個(multiple)錯誤處理器(handlers),這些錯誤處理器就可以用來捕獲(`catch`)各種不同的錯誤(different kinds of errors)
+- 捕獲未捕獲的例外 (Catching uncaught exceptions)
+  + 當程式(program)正在執行中時,如果在程式中有未捕獲的例外(uncaught exception)被拋出(thrown)時,我們的程式將會崩潰(crash)
+  + 為了解決這個問題,我們可以監聽`process`物件上的[uncaughtException](https://nodejs.org/api/process.html#process_event_uncaughtexception)事件
+    * ```javascript
+        process.on('uncaughtException', err => {
+          console.error('There was an uncaught error', err)
+          process.exit(1) //mandatory (as per the Node.js docs)
+        })
+      ```
+    * 我們不需要為此事先匯入(import)Node的`process`內建核心模組(core module),因為`process`模組是Node會自動(automatically)注入(injected)的
+- `Promise`物件的例外 (Exceptions with promises)
+  + **我們可以利用`Promise`物件來串連(chain)不同的操作(different operations),並且在最後(at the end)處理錯誤(handle errors)**
+    * ```javascript
+        doSomething1()
+          .then(doSomething2)
+          .then(doSomething3)
+          .catch(err => console.error(err))
+      ```
+  + 那我們該怎麼知道錯誤(`error`)是在哪裡發生(occured)的呢? 其實我們並不需要真的(really)知道這件事,我們可以在每個(each)被呼叫(call)的函式(functions)中,都處理(handle)錯誤(error)(=> 也就是以上範例中的`doSomethingX`),並且在錯誤處理器中(inside the `error` handler)拋出(throw)一個錯誤(`error`),而這個被拋出的錯誤會被用來呼叫(call)外面(outside)的`catch`錯誤處理器(handler)
+    * ```javascript
+        const doSomething1 = () => {
+          //...
+          try {
+            //...
+          } catch (err) {
+            //... handle it locally
+            throw new Error(err.message)
+          }
+          //...
+        }
+      ```
+  + 為了能夠(be able to)在本地(locally)處理錯誤(handler `errors`)而不用(without)在我們呼叫(call)函式(function)時才處理(handling),我們可以跳出(break)串連(chain),並且透過在每個(each)`then()`函式後面建立(create)一個函式(function)來處理(process)例外(exception)
+    * ```javascript
+        doSomething1()
+          .then(() => {
+            return doSomething2().catch(err => {
+              //handle error
+              throw err //break the chain!
+            })
+          })
+          .then(() => {
+            return doSomething2().catch(err => {
+              //handle error
+              throw err //break the chain!
+            })
+          })
+          .catch(err => console.error(err))
+      ```
+- 利用`async/await`語法來處理例外 (Error handling with async/await)
+  + 我們可以利用`async/await`語法來處理例外(exceptions),但我們仍然需要捕抓(catch)錯誤(`errors`),我們可以利用以下的方式(way)來完成
+  + ```javascript
+      async function someFunction() {
+        try {
+          await someOtherFunction()
+        } catch (err) {
+          console.error(err.message)
+        }
+      }
+    ```
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
