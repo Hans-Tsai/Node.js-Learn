@@ -65,6 +65,7 @@ Node.js Learn<br>
       - [Node.js, the difference between development and production](#nodejs-the-difference-between-development-and-production)
       - [Error handling in Node.js](#error-handling-in-nodejs)
       - [How to log an object in Node.js](#how-to-log-an-object-in-nodejs)
+      - [Node.js with TypeScript](#nodejs-with-typescript)
     - [Node.js 核心模組](#nodejs-核心模組)
       - [HTTP](#http)
       - [Process](#process)
@@ -3818,6 +3819,55 @@ Node.js Learn<br>
           * 預設值: `2`
         * `colors`: 可以客製化地設定文字輸出的顏色
       * 但`util.inspect()`這個方法會遇到的問題是,超過(after)2層(level)以上的巢狀物件(nested objects)會被攤平(flattened),這也會使原本有就比較複雜(complex)結構的物件(objects)會變得更複雜
+
+#### Node.js with TypeScript
+- 什麼是`Typescript`? (What is TypeScript)
+  + `Typescript`是一個由Microsoft開發與維護的開源、熱門的程式語言,它受到全世界許多軟體開發者的喜愛和使用
+  + 基本上(Basically),**`Typescript`是Javascript這個程式語言的一個超集(`superset`)**,並新增了一些能力(capabilities)給這個程式語言。最著名(notable)的新增(addition)功能就是**靜態型別定義(static type definitions)**,而這是一般(plain)的Javascript所沒有的功能。受型別(types)所惠,我們可以宣告(declare)**我們預期什麼形式的參數**(what kind of arguments we are expecting)、**函式確切會回傳什麼東西**(what is returned exactly in our functions)、**我們建立的物件的確切樣子**(what's the exact shape of the object that we are creating)
+  + `Typescript`是一個非常強大(powerful)的工具(tool),並且它開啟(opens)了Javascript專案(project)可能性(possibilites)的新世界(new world)。它讓我們的程式碼能在提交(before code is even shipped)之前更安全(secure)、穩固(robust),當(during)我們在撰寫程式碼時,`Typescript`會捕抓問題(catches problems),並極好地(wonderfully)整合(integrates)到程式碼編輯器(code editors)中(例: `Visual Studio Code`)
+  + 我們可以在之後再來討論(talk about)`Typescript`的好處(benefits),現在先讓我們先看看一些範例(examples)程式碼吧
+  + 瞧瞧以下的程式碼片段(code snippet),接著我們就可以將它們拆解(unpack)再一起(together)了
+    * ```javascript
+        type User = {
+          name: string;
+          age: number;
+        };
+
+        function isAdult(user: User): boolean {
+          return user.age >= 18;
+        }
+
+        const justine: User = {
+          name: 'Justine',
+          age: 23,
+        };
+
+        const isJustineAnAdult: boolean = isAdult(justine);
+      ```
+      * 首先,`type`關鍵字的第一部份負責宣告代表使用者自己客製化的物件型別
+      * 之後,我們會利用這個新建立的型別來建立一個新的函式`isAdult()`,該函式能接受一個`User`型別的`user`,並回傳一個布林值
+      * 接著,我們建立了`justine`這個`user`,它會是我們的範例資料以用來呼叫之前定義的函式
+      * 最後,我們會建立一個新的帶有是否`justine`為成年人的這個資訊的變數,
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
