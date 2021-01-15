@@ -3771,9 +3771,53 @@ Node.js Learn<br>
   + ![console-log-browser-expanded](/pic/console-log-browser-expanded.png)
 - 在Node中,也會發生(happens)相同(same)的事情
   + 當我們要記錄(log)某些內容到後台(console)時,並不能那麼奢侈的(luxury)。因為如果我們是手動(manually)執行(run)Node程式(program)的話,它將會輸出(output)日誌物件(object)到`shell`或是到日誌檔案(log file)中。這時,我們將會得到物件的字串表現形式(string representation of the object)
-  + 
+  + 現在,直到(until)一定的(certain)巢狀程度級別(level of nesting)之前,一切都是很好的(fine)。但是,從第二層(two levels of)的巢狀物件結構(nesting)以後(after),Node就會放棄(gives up)並且打印(print)出`[Object]`作為佔位符(placeholder)
+    * ```javascript
+        const obj = {
+          name: 'joe',
+          age: 35,
+          person1: {
+            name: 'Tony',
+            age: 50,
+            person2: {
+              name: 'Albert',
+              age: 21,
+              person3: {
+                name: 'Peter',
+                age: 23
+              }
+            }
+          }
+        }
+        console.log(obj)
 
 
+        {
+          name: 'joe',
+          age: 35,
+          person1: {
+            name: 'Tony',
+            age: 50,
+            person2: {
+              name: 'Albert',
+              age: 21,
+              person3: [Object]
+            }
+          }
+        }
+      ```
+  + 那麼,我們該如何打印(print)出整個物件(whole object)呢?
+    * 最佳的做法(best way)會是在(while)維持(preserving)漂亮的打印(pretty print)輸出結果時,同時使用Javascript可支援的[JSON.stringify()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify)方法(method)
+      * ```javascript
+          console.log(JSON.stringify(obj, null, 2))
+          ```
+        * 這個`2`是用來作為指定縮排(indentation)的空格數(number of spaces)
+    * 另一個可供選擇(option)的做法是利用Node的[Utilities](https://nodejs.org/api/util.html#util_util)內建核心模組中的[util.inspect(object[, showHidden[, depth[, colors]]])](https://nodejs.org/api/util.html#util_util_inspect_object_showhidden_depth_colors)方法(method)
+      * 這個方法(method)可以指定以下的參數們
+        * `depth`(深度): 要展開到這個物件的第幾層
+          * 預設值: `2`
+        * `colors`: 可以客製化地設定文字輸出的顏色
+      * 但`util.inspect()`這個方法會遇到的問題是,超過(after)2層(level)以上的巢狀物件(nested objects)會被攤平(flattened),這也會使原本有就比較複雜(complex)結構的物件(objects)會變得更複雜
 
 
 
