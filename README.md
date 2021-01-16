@@ -3844,13 +3844,65 @@ Node.js Learn<br>
 
         const isJustineAnAdult: boolean = isAdult(justine);
       ```
-      * 首先,`type`關鍵字的第一部份負責宣告代表使用者自己客製化的物件型別
-      * 之後,我們會利用這個新建立的型別來建立一個新的函式`isAdult()`,該函式能接受一個`User`型別的`user`,並回傳一個布林值
-      * 接著,我們建立了`justine`這個`user`,它會是我們的範例資料以用來呼叫之前定義的函式
-      * 最後,我們會建立一個新的帶有是否`justine`為成年人的這個資訊的變數,
+      * 首先,`type`關鍵字的第一部份負責(responsible)宣告(declaring)代表(representing)使用者自己客製化(custom)的物件型別
+      * 之後,我們會利用(utilize)這個新(newly)建立的型別來建立一個新的函式(function)`isAdult()`,該函式能接受(accpets)一個`User`型別的`user`參數(argument),並回傳(returns)一個布林值(`boolean`)
+      * 接著,我們建立了`justine`這個`user`,它會是我們的範例資料以用來呼叫(calling)之前(previously)定義(defined)的函式(function)
+      * 最後,我們會建立(create)一個新的帶有是否`justine`為成年人(adult)的這個資訊(information)的變數(vaiable)
+      * 這個範例還有一些我們也應該需要額外(additional)知道的事情
+        * 首先,如果我們沒有遵守(comply with)宣告(declared)好的型別(types)時,`Typescript`會警告(alarm)我們就會警告我們有些東西出錯(wrong)了,以防止(prevent)誤用(misuse)
+        * 第二點是,不是每個東西都需要明確地(explicitly)定義型別(typed)---`Typescript`是非常聰明(smart)的,並且能為我們推斷(deduce)型別(types)。例如: 即使(even if)我們沒有明確地(explicitly)輸入(type),`isJustineAnAdult`也會是一個布林(`boolean`)型別,或者即使(even if)我們沒有宣告(declare)`justine`為`User`型別(type),它也會變成一個對於函式(function)來說有效(valid)的參數(argument)
+  + Okay! 所以我們已經有一些`Typescript`程式碼了。那麼,該怎麼使用呢?
+    * 首先,我們需要在我們的專案中先安裝npm上的[typescript](https://www.npmjs.com/package/typescript)
+      * $ `npm install typescript`
+    * 現在,我們可以在終端機(terminal)利用`tsc`指令來將`Typescript`程式碼編譯(compile)成Javascript程式碼。讓我們開始來動手做吧
+      * 假設我們有個檔案的名稱叫做`example.ts`,那麼在終端機的指令會像是
+        * $ `tsc example.ts`
+        * 這個指令會導致(result in)一個新(new)的檔案(file)叫做`example.js`,這樣我們就可以使用Node來執行了
+    * 現在,當我們知道如何編譯(how to compile) & 如何執行`Typescript`程式碼(run TypeScript code)了以後,那就讓我們來看看`Typescript`的防止錯誤功能(bug-preventing capabilities)
+      * 以下是我們如何修改(modify)我們原本的程式碼(code)
+        * ```javascript
+            type User = {
+              name: string;
+              age: number;
+            };
+
+            function isAdult(user: User): boolean {
+              return user.age >= 18;
+            }
+
+            const justine: User = {
+              name: 'Justine',
+              age: 'Secret!',
+            };
+
+            const isJustineAnAdult: string = isAdult(justine, "I shouldn't be here!");
+            ```
+      * 接下來,以下會是`Typescript`會回報我們的事情
+        * ```javascript
+            example.ts:12:3 - error TS2322: Type 'string' is not assignable to type 'number'.
+
+            12   age: "Secret!",
+                ~~~
+
+              example.ts:3:3
+                3   age: number;
+                    ~~~
+                The expected type comes from property 'age' which is declared here on type 'User'
+
+            example.ts:15:7 - error TS2322: Type 'boolean' is not assignable to type 'string'.
+
+            15 const isJustineAnAdult: string = isAdult(justine, "I shouldn't be here!");
+                    ~~~~~~~~~~~~~~~~
+
+            example.ts:15:51 - error TS2554: Expected 1 arguments, but got 2.
+
+            15 const isJustineAnAdult: string = isAdult(justine, "I shouldn't be here!");
+                                                                ~~~~~~~~~~~~~~~~~~~~~~
 
 
-
+            Found 3 errors.
+          ```
+      * 正如同我們所看到(As you can see)的,`Typescript`成功地(successfully)防止(prevent)我們交付(shipping)的程式碼(code)無法如預期地(unexpectedly)運作(work)。這真是太棒了!
 
 
 
