@@ -3903,39 +3903,17 @@ Node.js Learn<br>
             Found 3 errors.
           ```
       * 正如同我們所看到(As you can see)的,`Typescript`成功地(successfully)防止(prevent)我們交付(shipping)的程式碼(code)無法如預期地(unexpectedly)運作(work)。這真是太棒了!
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+- 關於`Typescript`的更多事情 (More about TypeScript)
+  + `Typescript`提供(offers)了大量(a whole lot of )其他(others)很棒的機制(mechanisms),例如: 介面(`interfaces`)、類別(`classes`)、實用程序型別(`utility types`)...等等。此外,在較大的專案(on bigger projects)中,我們可以在一個單獨的檔案(a separate file)中宣告(declare)我們自己的`Typescript`編譯器設定(compiler configuration),並細化(granularly)調整(adjust)其工作方式,像是嚴格程度(how strict) & 會將已編譯檔案儲存在哪裡(where it stores compiled files for example)
+    * 我們可以到[Typescript的官方文件](https://www.typescriptlang.org/docs/)以閱讀更多(read more about)這個令人驚嘆(awesome)的東西(stuff)
+  + `Typescript`有一些其它的好處(other benefits)是值得一提的(worth mentioning),像是`Typescript`可以被漸進式地(progressively)採用(adopted),它能讓程式碼變得更易讀(readable) & 更好理解的(understandable),並且它也允許(allows)開發者(developer)在較舊的Node版本中仍能使用現代化(modern)的語言功能(language features)
+- 在Node世界中的`Typescript` (TypeScript in the Node.js world)
+  + 在Node的世界中,`Typescript`已經樹立了良好的典範,並且已經被許多公司、開源軟體專案、工具、框架...等等所採用
+  + 以下是一些著名的開源軟體專案例子,有使用到`Typescript`的
+    * [NestJS](https://nestjs.com/): 它是一個健全(robust)且功能完善(fully-featured)的框架(framework),並且能夠輕鬆(easy)、愉快(pleasant)地建立可擴展的(scalable) & 結構完善(well-architected)的系統(systems)
+    * [TypeORM](https://typeorm.io/#/): 優秀(great)的`ORM`,它有受到其它語言(other languages)使用的知名工具(well-known tools)(像是: Java的[Hibernate](https://hibernate.org/)、PHP的[Doctrine](https://www.doctrine-project.org/)、.NET的[Entity Framework](https://docs.microsoft.com/zh-tw/ef/))的影響(influenced)
+    * [RxJS](https://rxjs.dev/): 廣泛地(widely)被運用(used)在互動式(reactive)程式設計(programming)的函式庫(library)
+    * 以及許許多多的優秀的開源軟體專案之中,甚至(even)可能我們的專案就會成為下一個
 
 
 ---
