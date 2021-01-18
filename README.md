@@ -74,6 +74,7 @@ Node.js Learn<br>
       - [CommonJS modules](#commonjs-modules)
       - [Timers](#timers)
       - [Events](#events)
+      - [Buffers](#buffers)
     - [參考資料來源](#參考資料來源)
       - [官方文件](#官方文件)
       - [網路文章](#網路文章)
@@ -5129,6 +5130,62 @@ Node.js Learn<br>
           //   b
           //   a
         ```
+
+#### [Buffers](https://nodejs.org/api/buffer.html#buffer_buffer)
+- `Buffer`(緩存)物件(object)被用來代表(represent)一個固定長度(fixed-length)的位元序列(sequence of bytes)。有許多Node的官方API都有支援`Buffer`(緩存)
+- `Buffer`(緩存)類別(Class)是Javascript的[Uint8Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)類別的子類別(subclass),並且`Buffer`類別有繼承(extends)了它的許多方法(methods),這些方法們都有涵蓋(cover)了額外(additional)的許多使用情境(use cases)
+  + 因為Node的官方API能接受(accept)普通(plain)的`Uint8Array`類別,所以到不論在哪裡(wherever)也都會支持(supported)``Buffer`(緩存)類別
+- `Buffer`(緩存)類別(Class)是在全域的(global)範圍(scope)之內,因此不太可能(unlikely)會需要利用`require('buffer').Buffer`的語法來匯入此模組
+- `Buffer`緩存物件(object)的範例程式碼
+  + ```javascript
+      // Creates a zero-filled Buffer of length 10.
+      const buf1 = Buffer.alloc(10);
+
+      // Creates a Buffer of length 10,
+      // filled with bytes which all have the value `1`.
+      const buf2 = Buffer.alloc(10, 1);
+
+      // Creates an uninitialized buffer of length 10.
+      // This is faster than calling Buffer.alloc() but the returned
+      // Buffer instance might contain old data that needs to be
+      // overwritten using fill(), write(), or other functions that fill the Buffer's
+      // contents.
+      const buf3 = Buffer.allocUnsafe(10);
+
+      // Creates a Buffer containing the bytes [1, 2, 3].
+      const buf4 = Buffer.from([1, 2, 3]);
+
+      // Creates a Buffer containing the bytes [1, 1, 1, 1] – the entries
+      // are all truncated using `(value & 255)` to fit into the range 0–255.
+      const buf5 = Buffer.from([257, 257.5, -255, '1']);
+
+      // Creates a Buffer containing the UTF-8-encoded bytes for the string 'tést':
+      // [0x74, 0xc3, 0xa9, 0x73, 0x74] (in hexadecimal notation)
+      // [116, 195, 169, 115, 116] (in decimal notation)
+      const buf6 = Buffer.from('tést');
+
+      // Creates a Buffer containing the Latin-1 bytes [0x74, 0xe9, 0x73, 0x74].
+      const buf7 = Buffer.from('tést', 'latin1');
+    ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
