@@ -3368,7 +3368,7 @@ Node.js Learn<br>
 - `Buffer`是什麼? (What is a buffer?)
   + `buffer`(緩存)是記憶體(memory)的一個區域(area)。Javascript的開發者(developers)可能會不太熟悉這個觀念,而不像是使用其他`C`, `C++`, `Go`程式語言(或是其他也在使用系統程式語言(system programming language)的人),每天需要與記憶體互動(interact)的開發者,來得熟悉
   + `buffer`(緩存)代表一個從`V8`這個Javascript引擎(engine)所分配(allocated)出來的固定大小(a fixed-size chunk)的記憶體(memory),並且不能再被調整大小(resized)
-  + 我們可以把`buffer`(緩存)想像(think of)成是一個類似正整數陣列(an array of integer),其中的每個(each)數字都代表(represent)資料的一個位元(a byte of data)
+  + 我們可以把`buffer`(緩存)想像(think of)成是一個類似正整數陣列(an array of integer),其中的每個(each)數字都代表(represent)資料的一個位元組(a byte of data)
   + `buffer`(緩存)是透過Node的[Buffer](https://nodejs.org/api/buffer.html#buffer_buffer)類別(class)來實作(implemented)的
 - 我們為什麼會需要`buffer`(緩存)? (Why do we need buffer?)
   + 相比於傳統上僅處理字串(string)而不是二進制數據(binaries)的生態圈(ecosystem),Node的`Buffer`類別(class)是被引進(introduced)來幫助開發者處理(dealt with)二進制的資料(binary data)
@@ -3389,7 +3389,7 @@ Node.js Learn<br>
         //or
         const buf = Buffer.allocUnsafe(1024)
       ```
-      * 儘管(While)以上的2種方法(=> 也就是[Buffer.alloc()](https://nodejs.org/api/buffer.html#buffer_static_method_buffer_alloc_size_fill_encoding)與[Buffer.allocUnsafe()](https://nodejs.org/api/buffer.html#buffer_static_method_buffer_allocunsafe_size))皆分配給`buffer`(緩存)一個指定(specified)大小(size)的位元(bytes),但是由`Buffer.alloc()`方法所建立的`buffer`會被初始化(initialized)為`0`,而由`Buffer.allocUnsafe()`方法所建立的`buffer`將"不會"被初始化(uninitialized)。這也意味著儘管由`Buffer.allocUnsafe()`方法所建立的`buffer`將會比由`Buffer.alloc()`方法所建立的`buffer`來得快很多(quite fast),但是由`Buffer.allocUnsafe()`方法所建立的`buffer`被分配(allocated)到的記憶體(memory)片段(segment)可能會包含(contain)舊資料(old data),而這些舊資料將有可能是敏感性(sensitive)資料
+      * 儘管(While)以上的2種方法(=> 也就是[Buffer.alloc()](https://nodejs.org/api/buffer.html#buffer_static_method_buffer_alloc_size_fill_encoding)與[Buffer.allocUnsafe()](https://nodejs.org/api/buffer.html#buffer_static_method_buffer_allocunsafe_size))皆分配給`buffer`(緩存)一個指定(specified)大小(size)的位元組(bytes),但是由`Buffer.alloc()`方法所建立的`buffer`會被初始化(initialized)為`0`,而由`Buffer.allocUnsafe()`方法所建立的`buffer`將"不會"被初始化(uninitialized)。這也意味著儘管由`Buffer.allocUnsafe()`方法所建立的`buffer`將會比由`Buffer.alloc()`方法所建立的`buffer`來得快很多(quite fast),但是由`Buffer.allocUnsafe()`方法所建立的`buffer`被分配(allocated)到的記憶體(memory)片段(segment)可能會包含(contain)舊資料(old data),而這些舊資料將有可能是敏感性(sensitive)資料
       * 當記憶體(memory)中存在舊資料(older data),就可以在`buffer`(緩存)記憶體被讀取(read) or 洩漏(leaked)時可以被存取(accessed)。正也因為這樣,`Buffer.allocUnsafe()`方法才會被命名為不安全(unsafe)的,並且在使用此方法時需要更加注意(extra care)
 - 使用`buffer`(緩存) (Using a buffer)
   + 存取`buffer`(緩存)的內容 (Access the content of a buffer)
@@ -5132,7 +5132,7 @@ Node.js Learn<br>
         ```
 
 #### [Buffers](https://nodejs.org/api/buffer.html#buffer_buffer)
-- `Buffer`(緩存)物件(object)被用來代表(represent)一個固定長度(fixed-length)的位元序列(sequence of bytes)。有許多Node的官方API都有支援`Buffer`(緩存)
+- `Buffer`(緩存)物件(object)被用來代表(represent)一個固定長度(fixed-length)的字節序列(sequence of bytes)。有許多Node的官方API都有支援`Buffer`(緩存)
 - `Buffer`(緩存)類別(Class)是Javascript的[Uint8Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)類別的子類別(subclass),並且`Buffer`類別有繼承(extends)了它的許多方法(methods),這些方法們都有涵蓋(cover)了額外(additional)的許多使用情境(use cases)
   + 因為Node的官方API能接受(accept)普通(plain)的`Uint8Array`類別,所以到不論在哪裡(wherever)也都會支持(supported)``Buffer`(緩存)類別
 - `Buffer`(緩存)類別(Class)是在全域的(global)範圍(scope)之內,因此不太可能(unlikely)會需要利用`require('buffer').Buffer`的語法來匯入此模組
@@ -5167,9 +5167,32 @@ Node.js Learn<br>
       // Creates a Buffer containing the Latin-1 bytes [0x74, 0xe9, 0x73, 0x74].
       const buf7 = Buffer.from('tést', 'latin1');
     ```
+> `Buffers`(緩存)物件們與字元編碼 (Buffers and character encodings)
+  + 若要將`Buffer`(緩存)物件(object)轉換(converting)為字串(string)或是反過來轉換的話,可能會需要指定(specified)一個編碼方式。若這時候沒有指定一個編碼方式(character encoding)的話,預設(default)會使用(used)`utf-8`這個編碼方式來進行
+    * ```javascript
+        const buf = Buffer.from('hello world', 'utf8');
 
+        console.log(buf.toString('hex'));
+        // Prints: 68656c6c6f20776f726c64
+        console.log(buf.toString('base64'));
+        // Prints: aGVsbG8gd29ybGQ=
 
-
+        console.log(Buffer.from('fhqwhgads', 'utf8'));
+        // Prints: <Buffer 66 68 71 77 68 67 61 64 73>
+        console.log(Buffer.from('fhqwhgads', 'utf16le'));
+        // Prints: <Buffer 66 00 68 00 71 00 77 00 68 00 67 00 61 00 64 00 73 00>
+      ```
+  + 以下是目前(currently)Node有支援(supported)的字元編碼(character encodings)方式
+    * `utf8`: 多字節(Multi-byte)編碼(encoded)的萬國碼(Unicode)字元們(characters)。有許多的網頁(web pages) & 其它的文件(document)格式(formats)都是使用[utf-8](https://en.wikipedia.org/wiki/UTF-8)這個編碼方式
+      * 這是`Buffer`物件所預設(default)的編碼方式(character encoding)
+      * 若將`Buffer`物件解碼成(decoding)字串時,並不會僅僅(exclusively)包含(contain)有效的(valid)`UTF-8`編碼格式的資料(data),有錯誤(errors)的萬國碼資料會被以`U+FFFD �`這個萬國碼(Unicode)取代字元(replacement character)來表示(represent)
+    * `utf16le`: 多字節(Multi-byte)編碼(encoded)的萬國碼(Unicode)字元們(characters)。不同(Unlike)於`utf8`的是,每一個在字串(string)中的字元(each character)都會以2或是4個位元組(bytes)來編碼(encoded)
+      * Node只會支援(supports)[UTF-16](https://en.wikipedia.org/wiki/UTF-16)的變體(variant)=> [little-endian](https://en.wikipedia.org/wiki/Endianness)
+    * `latin1`: `Latin-1`是代表(stands for)[ISO-8859-1](https://en.wikipedia.org/wiki/ISO/IEC_8859-1)。這個字元編碼方式(character encoding)僅會支援(supports)從萬國碼(Unicode)的`U+0000`~`U+00FF`字元(character)能編碼(encoded)。每個字元(Each character)都會用單一個位元組(single byte)來編碼(encoded)。那些不在(do not fit into)前述範圍(range)內的字元們(characters)會被截掉(truncated)後,並會關聯(mapped)到前述範圍內的字元(characters)
+  + 若利用上述(above)提及(referred)的任何一種方式,將`Buffers`(緩存)物件(object)轉換為字串(string),那就是**解碼(decoding)**; 而如果是將字串(string)轉換為`Buffers`(緩存)物件(object),那就是**編碼(encoding)**
+  + Node也有支援(supports)以下2種位元組轉字串(binary-to-text)的編碼方式(encodings)。**對於位元組轉字串的編碼方式來說,命名慣例(naming convention)是相反的,也就是說將`Buffers`(緩存)物件(object)轉換為字串(string),那就是編碼(encoding); 而如果是將字串(string)轉換為`Buffers`(緩存)物件(object),那就是解碼(decoding)**
+    * `base64`: 就是[Base64](https://en.wikipedia.org/wiki/Base64)這個編碼方式(encoding)。
+      * 每當透過(from)字串來建立(creating)一個`Buffers`(緩存)物件(object)時,這個編碼方式也能正確地(correctly)接受(accept)自[RFC4648的第5章節](https://tools.ietf.org/html/rfc4648#section-5)中指定(specified)的"`URL`與檔案名稱的安全字母( Filename Safe Alphabet)"。在`base64`這個編碼方式中的所有被包含(contained)在字串中(within)的空白字元(whitespace characters),像是空白(spaces)、`tabs`鍵、換行符(new lines)都會被忽略(ignored)
 
 
 
