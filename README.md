@@ -5132,7 +5132,7 @@ Node.js Learn<br>
         ```
 
 #### [Buffers](https://nodejs.org/api/buffer.html#buffer_buffer)
-- `Buffer`(緩存)物件(object)被用來代表(represent)一個固定長度(fixed-length)的位元序列(sequence of bytes)。有許多Node的官方API都有支援`Buffer`(緩存)
+- `Buffer`(緩存)物件(object)被用來代表(represent)一個固定長度(fixed-length)的字節序列(sequence of bytes)。有許多Node的官方API都有支援`Buffer`(緩存)
 - `Buffer`(緩存)類別(Class)是Javascript的[Uint8Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)類別的子類別(subclass),並且`Buffer`類別有繼承(extends)了它的許多方法(methods),這些方法們都有涵蓋(cover)了額外(additional)的許多使用情境(use cases)
   + 因為Node的官方API能接受(accept)普通(plain)的`Uint8Array`類別,所以到不論在哪裡(wherever)也都會支持(supported)``Buffer`(緩存)類別
 - `Buffer`(緩存)類別(Class)是在全域的(global)範圍(scope)之內,因此不太可能(unlikely)會需要利用`require('buffer').Buffer`的語法來匯入此模組
@@ -5167,7 +5167,25 @@ Node.js Learn<br>
       // Creates a Buffer containing the Latin-1 bytes [0x74, 0xe9, 0x73, 0x74].
       const buf7 = Buffer.from('tést', 'latin1');
     ```
+> `Buffers`(緩存)物件們與字元編碼 (Buffers and character encodings)
+  + 若要將`Buffer`(緩存)物件(object)轉換(converting)為字串(string)或是反過來轉換的話,可能會需要指定(specified)一個編碼方式。若這時候沒有指定一個編碼方式(character encoding)的話,預設(default)會使用(used)`utf-8`這個編碼方式來進行
+    * ```javascript
+        const buf = Buffer.from('hello world', 'utf8');
 
+        console.log(buf.toString('hex'));
+        // Prints: 68656c6c6f20776f726c64
+        console.log(buf.toString('base64'));
+        // Prints: aGVsbG8gd29ybGQ=
+
+        console.log(Buffer.from('fhqwhgads', 'utf8'));
+        // Prints: <Buffer 66 68 71 77 68 67 61 64 73>
+        console.log(Buffer.from('fhqwhgads', 'utf16le'));
+        // Prints: <Buffer 66 00 68 00 71 00 77 00 68 00 67 00 61 00 64 00 73 00>
+      ```
+  + 以下是目前(currently)Node有支援(supported)的字元編碼(character encodings)方式
+    * `utf8`: 多字節(Multi-byte)編碼(encoded)的萬國碼(Unicode)字元們(characters)。有許多的網頁(web pages) & 其它的文件(document)格式(formats)都是使用[utf-8](https://en.wikipedia.org/wiki/UTF-8)這個編碼方式
+      * 這是`Buffer`物件所預設(default)的編碼方式(character encoding)
+      * 若將`Buffer`物件解碼成(decoding)字串時,並不會僅僅(exclusively)包含(contain)有效的(valid)`UTF-8`編碼格式的資料(data),有錯誤(errors)的萬國碼資料會被以`U+FFFD �`這個萬國碼(Unicode)取代字元(replacement character)來表示(represent)
 
 
 
