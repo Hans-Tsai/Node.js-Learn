@@ -5193,8 +5193,30 @@ Node.js Learn<br>
   + Node也有支援(supports)以下2種位元組轉字串(binary-to-text)的編碼方式(encodings)。**對於位元組轉字串的編碼方式來說,命名慣例(naming convention)是相反的,也就是說將`Buffers`(緩存)物件(object)轉換為字串(string),那就是編碼(encoding); 而如果是將字串(string)轉換為`Buffers`(緩存)物件(object),那就是解碼(decoding)**
     * `base64`: 就是[Base64](https://en.wikipedia.org/wiki/Base64)這個編碼方式(encoding)。
       * 每當透過(from)字串來建立(creating)一個`Buffers`(緩存)物件(object)時,這個編碼方式也能正確地(correctly)接受(accept)自[RFC4648的第5章節](https://tools.ietf.org/html/rfc4648#section-5)中指定(specified)的"`URL`與檔案名稱的安全字母( Filename Safe Alphabet)"。在`base64`這個編碼方式中的所有被包含(contained)在字串中(within)的空白字元(whitespace characters),像是空白(spaces)、`tabs`鍵、換行符(new lines)都會被忽略(ignored)
+    * `hex`: 將每個位元組(each bytes)都編碼(encode)為2個16進位(hexadecimal)的字元(characters)
+      * 當解碼字串(decoding strings)僅(exclusively)包含(contain)有效的(valid)16進位(hexadecimal)的字元(characters)時,就可能(may)會發生(occur)資料截斷(data truncation)。請見以下範例(example)
+  + Node也可以支援(supported)以下的傳統(legacy)字元編碼方式(character encodings)
+    * `ascii`: 僅適用於7個位元組(=> 也就是7-bit)的[ASCII](https://en.wikipedia.org/wiki/ASCII)編碼格式的資料(data)
+      * 當將字串(string)編碼(encoding)為`Buffers`(緩存)物件(object)時,這就相當(equivalent)於是使用(using)`latin1`這個編碼方式
+      * 當將`Buffers`(緩存)物件(object)解碼(decoding)為字串(string)時,使用`ascii`這個編碼方式就會另外(additionally)將每個位元組(each byte)的最高位元(highest bit)移動(unset),然後再解碼(decoding)為`latin1`的編碼格式
+      * 通常(Generally),我們沒有理由(no reason)會需要使用`ascii`這種編碼方式,因為已經有`utf-8`編碼格式了(或者,如果對已知數據(the data is known)總是僅能使用`ASCII`編碼格式(ASCII-only)的話 or 在編碼(`encode`)/解碼(`decode`)時,僅能使用`ASCII`編碼格式的文字(ASCII-only text)的話,則`latin1`就會是一個更好的選擇(better choice))
+      * **Node之所以會提供(provided)`ASCII`這種編碼格式的原因就只是為了傳統(legacy)的相容性(compatibility)問題**
+    * `binary`: 為`latin1`的別名(alias)。可先參考[binary strings](https://developer.mozilla.org/en-US/docs/Web/API/DOMString/Binary)來了解更多關於這個主題(topic)的背景知識(brackground)
+      * 其實`binary`這個編碼方式的命名(name)很容易被誤導(misleading),是因為所有這裡所列出(listed)的編碼方式(encodings)都是要將字串(`string`)與二進位元(`binary`)的資料之間做相互轉換(convert between)。**而對於要將字串(`string`)與`Buffers`(緩存)物件(object)的資料之間做相互轉換(converting between),通常`utf-8`編碼方式會是正確的選擇(right choice)**
+    * `ucs2`: 為`utf16le`的別名(alias)。在以前(used to),`UCS-2`這種編碼方式是指參考(refer to)`UTF-16`編碼方式而產生的變形(variant),主要是為了支援(support)那些點位(code points)超過(larger than)`U+FFFF`的字元(characters)
+      * 在Node中,這些點位(code points)皆總是有被支援(always supported)了
+    * ```javascript
+        Buffer.from('1ag', 'hex');
+        // Prints <Buffer 1a>, data truncated when first non-hexadecimal value
+        // ('g') encountered.
 
+        Buffer.from('1a7g', 'hex');
+        // Prints <Buffer 1a>, data truncated when data ends in single digit ('7').
 
+        Buffer.from('1634', 'hex');
+        // Prints <Buffer 16 34>, all data represented.
+      ```
+  + 現代化網頁瀏覽器皆有遵循[WHATWG Encoding Standard](https://encoding.spec.whatwg.org/),也就是`latin1`、`ISO-8859-1`皆為`win-1252`這個編碼方式的別名(alias)。這也意味(means)著當執行像是`http.get()`方法的時候,如果回傳(returned)的字元編碼格式(charset)為`WHATWG`規格(specification)中列出(listed)的其中一種時,很有可能(possible)其實伺服器(server)實際上(actually)是回傳(returned)以`win-1252`這個編碼方式所編碼過後的資料(=> 也就是`win-1252`-encoded data),所以這時候如果使用`latin1`這個編碼方式來解碼(decode)字元(characters)的話,會造成錯誤(incorrectly)
 
 
 
