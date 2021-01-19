@@ -5217,7 +5217,20 @@ Node.js Learn<br>
         // Prints <Buffer 16 34>, all data represented.
       ```
   + 現代化網頁瀏覽器皆有遵循[WHATWG Encoding Standard](https://encoding.spec.whatwg.org/),也就是`latin1`、`ISO-8859-1`皆為`win-1252`這個編碼方式的別名(alias)。這也意味(means)著當執行像是`http.get()`方法的時候,如果回傳(returned)的字元編碼格式(charset)為`WHATWG`規格(specification)中列出(listed)的其中一種時,很有可能(possible)其實伺服器(server)實際上(actually)是回傳(returned)以`win-1252`這個編碼方式所編碼過後的資料(=> 也就是`win-1252`-encoded data),所以這時候如果使用`latin1`這個編碼方式來解碼(decode)字元(characters)的話,會造成錯誤(incorrectly)
+> `Buffers`(緩存)物件(object) & 迭代 (Buffers and iteration)
+  + `Buffers`(緩存)實例(instances)是能夠利用(using)`for...of`語法(syntax)來迭代(iterated over)的
+    * ```javascript
+        const buf = Buffer.from([1, 2, 3]);
 
+        for (const b of buf) {
+          console.log(b);
+        }
+        // Prints:
+        //   1
+        //   2
+        //   3
+      ```
+  + 此外(Additionally),[buf.values()](https://nodejs.org/dist/latest-v15.x/docs/api/buffer.html#buffer_buf_values)、[buf.keys()](https://nodejs.org/dist/latest-v15.x/docs/api/buffer.html#buffer_buf_keys)、[buf.entries()](https://nodejs.org/dist/latest-v15.x/docs/api/buffer.html#buffer_buf_entries)方法(methods)皆可以被用來(used to)建立(create)迭代(iterators)
 
 
 
