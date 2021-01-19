@@ -5026,7 +5026,7 @@ Node.js Learn<br>
       * ```javascript
           const EventEmitter = require('events');
         ```
-    * 當新的事件監聽器(new listeners)被新增時,所有的`EvenEmitter`類別(class)都會發出[newListener](https://nodejs.org/api/events.html#events_event_newlistener)這個事件(event); 並且當已經存在的(existed)事件監聽器(listeners)被移除時(removed),會發出[removeListener](https://nodejs.org/api/events.html#events_event_removelistener)這個事件
+    * 當新的事件監聽器(new listeners)被新增時,所有的`EvenEmitter`類別(class)都會發出[newListener](https://nodejs.org/api/events.html#events_event_newlistener)這個事件(event); 並且當已經存在的(existed)事件監聽器(listeners)被移除時(removed),會發出[removeListener](https://nodejs.org/api/events.html#events_event_removelistener)這個事件
     * `EventEmitter`類別(class)可以支援[captureRejections](https://nodejs.org/api/events.html#events_capture_rejections_of_promises)這個選項(option)
       * `captureRejections`: (boolean)
         * 這個選項能夠自動地(automatic)捕抓(capturing)被拒絕(rejection)的`Promise`物件
