@@ -321,7 +321,7 @@ Node.js Learn<br>
   + 如果這樣是我們想要的結果,那我們可以傳遞一個整數,以此作為像作業系統發出的退出碼(exit code)
     * 例: $ `process.exit(1)`
     * 補充: 退出碼(exit code)
-      * 預設值: 0 (代表成功) 
+      * 預設值: `0` (代表成功) 
       * 當`exit code` <= 0 時,表示指令執行成功
       * 當`exit code` > 0 時,表示指令執行失敗
     * 不同的退出碼具有不同的意義,我們可以利用這些退出碼來讓我們系統中的"程式與程式"之間能互相溝通
@@ -5217,15 +5217,75 @@ Node.js Learn<br>
         // Prints <Buffer 16 34>, all data represented.
       ```
   + 現代化網頁瀏覽器皆有遵循[WHATWG Encoding Standard](https://encoding.spec.whatwg.org/),也就是`latin1`、`ISO-8859-1`皆為`win-1252`這個編碼方式的別名(alias)。這也意味(means)著當執行像是`http.get()`方法的時候,如果回傳(returned)的字元編碼格式(charset)為`WHATWG`規格(specification)中列出(listed)的其中一種時,很有可能(possible)其實伺服器(server)實際上(actually)是回傳(returned)以`win-1252`這個編碼方式所編碼過後的資料(=> 也就是`win-1252`-encoded data),所以這時候如果使用`latin1`這個編碼方式來解碼(decode)字元(characters)的話,會造成錯誤(incorrectly)
+> `Buffers`(緩存)物件(object) & 迭代 (Buffers and iteration)
+  + `Buffers`(緩存)實例(instances)是能夠利用(using)`for...of`語法(syntax)來迭代(iterated over)的
+    * ```javascript
+        const buf = Buffer.from([1, 2, 3]);
 
+        for (const b of buf) {
+          console.log(b);
+        }
+        // Prints:
+        //   1
+        //   2
+        //   3
+      ```
+  + 此外(Additionally),[buf.values()](https://nodejs.org/dist/latest-v15.x/docs/api/buffer.html#buffer_buf_values)、[buf.keys()](https://nodejs.org/dist/latest-v15.x/docs/api/buffer.html#buffer_buf_keys)、[buf.entries()](https://nodejs.org/dist/latest-v15.x/docs/api/buffer.html#buffer_buf_entries)方法(methods)皆可以被用來(used to)建立(create)迭代(iterators)
+> Class
+  + `Buffers`(緩存)類別(class)是一個全域(global)的型別(type)以用來更直接(directly)地處理(dealing)二進位制位元(binary)的資料(data)。它能透過許多種方式(in a variety of ways)來建構(constructed)出來
+  + > Static method
+    * [Buffer.alloc(size[, fill[, encoding]])](https://nodejs.org/api/buffer.html#buffer_static_method_buffer_alloc_size_fill_encoding)
+      * args
+        * size: (integer)
+          * 渴望(desired)新(new)的`Buffers`(緩存)物件(object)長度(length)是多少
+        * fill: (string) | (Buffer) | [Unit8Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array) | integer
+          * 要預先填進(pre-fill)新(new)的`Buffers`(緩存)物件(object)的值(value)
+          * 預設值: `0`
+        * encoding: (string)
+          * 如果`fill`參數的值是字串(string)型別的話,那麼此`encoding`參數的值就會是這個字串參數的編碼格式(encoding)
+          * 預設值: `utf8`
+      * 會分配(allocates)一個符合`size`參數值指定大小的新(new)的`Buffers`(緩存)物件(object)。如果`fill`參數的值是`undefined`的話,則`Buffer`物件的值將會是`0`(zero-filled)
+        * ```javascript
+            const buf = Buffer.alloc(5);
 
+            console.log(buf);
+            // Prints: <Buffer 00 00 00 00 00>
+          ```
+      * 若`size`參數的值比[buffer.constants.MAX_LENGTH](https://nodejs.org/api/buffer.html#buffer_buffer_constants_max_length)屬性的值還要大(larger)或是`size`參數的值比`0`還要小(smaller)的話,就會拋出(thrown)[ERR_INVALID_ARG_VALUE](https://nodejs.org/api/errors.html#ERR_INVALID_ARG_VALUE)這個錯誤(`error`)
+        * 補充: `buffer.constants.MAX_LENGTH`屬性的值會視作業系統(operating system)的位元架構(architectures)而定,例如: `32-bit`的作業系統大約就是1GB左右; 而`64-bit`的作業系統大約就是2GB左右
+      * 若`fill`參數的值有給定(specified)的話,則這個新被分配(allocated)的`Buffers`(緩存)物件(object)就會透過呼叫(calling)[buf.fill(fill)](https://nodejs.org/api/buffer.html#buffer_buf_fill_value_offset_end_encoding)方法(method)來初始化(initialized)
+        * ```javascript
+            const buf = Buffer.alloc(5, 'a');
 
+            console.log(buf);
+            // Prints: <Buffer 61 61 61 61 61>
+          ```
+      * 若`fill`與`encoding`參數的值都有給定(specified)的話,則這個新被分配(allocated)的`Buffers`(緩存)物件(object)就會透過呼叫(calling)[buf.fill(fill, encoding)](https://nodejs.org/api/buffer.html#buffer_buf_fill_value_offset_end_encoding)方法(method)來初始化(initialized)
+        * ```javascript
+            const buf = Buffer.alloc(11, 'aGVsbG8gd29ybGQ=', 'base64');
 
+            console.log(buf);
+            // Prints: <Buffer 68 65 6c 6c 6f 20 77 6f 72 6c 64>
+          ```
+      * 雖然呼叫[Buffer.alloc()](https://nodejs.org/api/buffer.html#buffer_static_method_buffer_alloc_size_fill_encoding)方法可預見(measurably)地會比它的替代方法(alternative)(=> 也就是[Buffer.allocUnsafe()](https://nodejs.org/api/buffer.html#buffer_static_method_buffer_allocunsafe_size)方法)來得慢(slower),但是`Buffer.alloc()`方法能確保(ensures)其所新(newly)建立(created)出來的`Buffer`(緩存)實例(instance)的內容(contents)將永遠不會(never)包含(contain)之前分配過(previous allocations)的敏感性資料(sensitive data),而這也包括(including)了那些尚未被分配(not have been allocated)給`Buffers`實例(instance)的資料(data)
+    * [Buffer.allocUnsafe(size)](https://nodejs.org/api/buffer.html#buffer_static_method_buffer_allocunsafe_size)
+      * args
+        * size: (integer)
+          * 渴望(desired)新(new)的`Buffers`(緩存)物件(object)長度(length)是多少
+      * 會分配(allocates)一個符合`size`參數值指定大小的新(new)的`Buffers`(緩存)物件(object)。如果`fill`參數的值是`undefined`的話,則`Buffer`物件的值將會是`0`(zero-filled)
+      * 透過`Buffer.allocUnsafe()`方法所建立(created)的`Buffers`(緩存)實例(instance)的基本記憶體(underlying memory)將不會被初始化(initialized)。而這個新建立出來的`Buffer`實例的內容(contents)將會是未知(unknown)的,並且可能(may)會包含(contain)敏感性資料(sensitive data)
+        * 可使用`Buffer.alloc()`方法來建立一個初始化(initialize)的`Buffer`實例(instance),並預先填進值為`0`(zeros)
+        * ```javascript
+            const buf = Buffer.allocUnsafe(10);
 
+            console.log(buf);
+            // Prints (contents may vary): <Buffer a0 8b 28 3f 01 00 00 00 50 32>
 
+            buf.fill(0);
 
-
-
+            console.log(buf);
+            // Prints: <Buffer 00 00 00 00 00 00 00 00 00 00>
+          ```
 
 
 
