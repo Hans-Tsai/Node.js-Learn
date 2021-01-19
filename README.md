@@ -3465,7 +3465,7 @@ Node.js Learn<br>
 
 - 什麼是`streams`(串流)? (What are streams?)
   + `Streams`(串流)是其中一個為Node應用程式(applications)提供動力(power)的基本(fundamental)觀念(concept)之一
-  + `Streams`(串流)是一個用來處理(handle)讀寫(reading/writing)檔案(files)、網路通訊(network communications)、或是任何(any kind of)端對端(end-to-end)的資訊交流(information exchange)的一種有效率(efficient)的方式(way)
+  + `Streams`(串流)是一個用來處理(handle)讀寫(reading/writing)檔案(files)、網路通訊(network communications)、或是任何(any kind of)端對端(end-to-end)的資訊交流(information exchange)的一種有效率(efficient)的方式(way)
   + `Streams`(串流)並不是Node特有(unique)的概念(concept)。早在幾十年(decades)以前左右,`Streams`(串流)就已經被`Unix`作業系統(operating system)所引進(introduced)了,因此程式(program)就能透過管道運算子(pipe operator, => 也就是`|`)來與每一個通過(passing)的`streams`(串流)做互動
   + 舉例來說,若是傳統(traditional)的方法(way),當我們告訴程式(program)要讀取(read)一個檔案(file)時,檔案會被讀取到記憶體(memory)中,從開始(start)到結束(finish),然後我們就能處理(process)它
   + 透過`streams`(串流)來將檔案內容一部分一部分(piece by piece)地讀取(read),而不用在處理該檔案內容時,需要先把整個(all)檔案內容事先讀取到記憶體(memory)中
