@@ -5273,7 +5273,7 @@ Node.js Learn<br>
         * size: (integer)
           * 渴望(desired)新(new)的`Buffers`(緩存)物件(object)長度(length)是多少
       * 會分配(allocates)一個符合`size`參數值指定大小的新(new)的`Buffers`(緩存)物件(object)。如果`fill`參數的值是`undefined`的話,則`Buffer`物件的值將會是`0`(zero-filled)
-      * 透過`Buffer.allocUnsafe()`方法所建立(created)的`Buffers`(緩存)實例(instance)的基本記憶體(underlying memory)將不會被初始化(initialized)。而這個新建立出來的`Buffer`實例的內容(contents)將會是未知(unknown)的,並且可能(may)會包含(contain)敏感性資料(sensitive data)
+      * 透過`Buffer.allocUnsafe()`方法(method)所建立(created)的`Buffers`(緩存)實例(instance)的基本記憶體(underlying memory)將不會被初始化(initialized)。而這個新建立出來的`Buffer`實例的內容(contents)將會是未知(unknown)的,並且可能(may)會包含(contain)敏感性資料(sensitive data)
         * 可使用`Buffer.alloc()`方法來建立一個初始化(initialize)的`Buffer`實例(instance),並預先填進值為`0`(zeros)
         * ```javascript
             const buf = Buffer.allocUnsafe(10);
@@ -5286,7 +5286,15 @@ Node.js Learn<br>
             console.log(buf);
             // Prints: <Buffer 00 00 00 00 00 00 00 00 00 00>
           ```
-
+        * 如果`Buffer.allocUnsafe()`方法(method)中的`size`參數的值,若不是數字(number)的話就會拋出(thrown)`TypeError`錯誤(error)
+      * `Buffer`(緩存)模組(module)會在[Buffer.poolsize()](https://nodejs.org/dist/latest-v15.x/docs/api/buffer.html#buffer_class_property_buffer_poolsize))之中的一個內部(internal)`Buffer`實例(instance)裡面,預先分配(pre-allocates)好一個指定大小(`size`)的區塊。而`Buffer.poolsize()`類別(class)是用來(used as)提供[Buffer.allocUnsafe()](https://nodejs.org/dist/latest-v15.x/docs/api/buffer.html#buffer_static_method_buffer_allocunsafe_size)方法、[Buffer.from(array)](https://nodejs.org/dist/latest-v15.x/docs/api/buffer.html#buffer_static_method_buffer_from_array)方法、[Buffer.concat()](https://nodejs.org/dist/latest-v15.x/docs/api/buffer.html#buffer_static_method_buffer_concat_list_totallength)方法,以及只有(only)當`size`這個參數的值小於(less than) or 等於(equal to) `Buffer.poolSize >> 1`(=> 也就是[Buffer.poolSize()](https://nodejs.org/dist/latest-v15.x/docs/api/buffer.html#buffer_class_property_buffer_poolsize)除以(divided)2後的最大整數值(floor))的時候,才會用到的已經被棄置的`new Buffer(size)`建構子(constructor)來在共用池(pool)之中快速分配(fast allocation)記憶體位置給新(new)的`Buffer`(緩存)實例(instance)
+      * 利用此預分配(pre-allocated)好的內部共用池中的記憶體(internal memory pool)是在呼叫(calling)`Buffer.alloc(size, fill)`方法、`Buffer.allocUnsafe(size).fill(fill)`方法之間的一個關鍵的區別
+        * 特別的是(Specifically),`Buffer.alloc(size, fill)`方法(method)永遠不會(never)用到(use)內部(internal)`Buffer`(緩存)共用池(pool)中的記憶體; 而`Buffer.allocUnsafe(size).fill(fill)`方法則會在`size`參數的值小於 or 等於 `Buffer.poolSize`的一半(half)時,就會用到內部`Buffer`(緩存)共用池(pool)中的記憶體。雖然這個差異是非常細微(subtle)的,但其實很重要(important)的,尤其是當我們的應用程式(application)要求(requires)額外(additional)的效能(performance)時,這時候就正是`Buffer.allocUnsafe()`方法(method)所能提供(provides)的了
+    * [Buffer.concat(list[, totalLength])](https://nodejs.org/dist/latest-v15.x/docs/api/buffer.html#buffer_static_method_buffer_concat_list_totallength)
+      * args
+        * list:
+        * totalLength:
+        * Returns: (Buffer)
 
 
 
