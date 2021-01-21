@@ -5292,11 +5292,43 @@ Node.js Learn<br>
         * 特別的是(Specifically),`Buffer.alloc(size, fill)`方法(method)永遠不會(never)用到(use)內部(internal)`Buffer`(緩存)共用池(pool)中的記憶體; 而`Buffer.allocUnsafe(size).fill(fill)`方法則會在`size`參數的值小於 or 等於 `Buffer.poolSize`的一半(half)時,就會用到內部`Buffer`(緩存)共用池(pool)中的記憶體。雖然這個差異是非常細微(subtle)的,但其實很重要(important)的,尤其是當我們的應用程式(application)要求(requires)額外(additional)的效能(performance)時,這時候就正是`Buffer.allocUnsafe()`方法(method)所能提供(provides)的了
     * [Buffer.concat(list[, totalLength])](https://nodejs.org/dist/latest-v15.x/docs/api/buffer.html#buffer_static_method_buffer_concat_list_totallength)
       * args
-        * list:
-        * totalLength:
-        * Returns: (Buffer)
+        * list: ([Buffer](https://nodejs.org/dist/latest-v15.x/docs/api/buffer.html#buffer_class_buffer)) | ([Unit8Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array))
+        * totalLength: (integer)
+          * 串連在`list`參數值中的所有`Buffer`(緩存)實例(instance)後的總長度
+        * Returns: ([Buffer](https://nodejs.org/dist/latest-v15.x/docs/api/buffer.html#buffer_class_buffer))
+      * 此方法會回傳已串連`list`參數值中的所有`Buffer`(緩存)實例(instance)過後的的一個新的`Buffer`(緩存)物件
+        * 如果`list`參數值中,沒有任何東西(item); 或是`totalLength`參數值為`0`的話,這兩種情況都會回傳(returned)一個新(new)的零長度(zero-length)的`Buffer`物件
+        * 若沒有提供(provided)`totalLength`這個參數值的話,就會透過`list`中的`Buffer`(緩存)實例們(instances)來計算(calculated)它們的加總(adding)後的總長度(their lengths)
+        * 若有提供`totalLength`這個參數值的話,就會強迫(coerced)變成一個未指派(unsigned)的整數(integer)。如果將`list`內的所有Buffer`(緩存)`實例們(instances)合併(combined)後已超過(exceeds)`totalLength`參數值的話,那`Buffer.concat()`方法(method)所回傳的`Buffer`實例就會被截斷(truncated)到符合`totalLength`參數值所規範的長度限制
+      * ```javascript
+          // Create a single `Buffer` from a list of three `Buffer` instances.
 
+          const buf1 = Buffer.alloc(10);
+          const buf2 = Buffer.alloc(14);
+          const buf3 = Buffer.alloc(18);
+          const totalLength = buf1.length + buf2.length + buf3.length;
 
+          console.log(totalLength);
+          // Prints: 42
+
+          const bufA = Buffer.concat([buf1, buf2, buf3], totalLength);
+
+          console.log(bufA);
+          // Prints: <Buffer 00 00 00 00 ...>
+          console.log(bufA.length);
+          // Prints: 42
+          ```
+      * `Buffer.concat()`方法(method)也可以像[Buffer.allocUnsafe()](https://nodejs.org/dist/latest-v15.x/docs/api/buffer.html#buffer_static_method_buffer_allocunsafe_size)方法一樣能使用(use)內部(internal)`Buffer`(緩存)共用池(pool)
+    * [Buffer.from(array)](https://nodejs.org/dist/latest-v15.x/docs/api/buffer.html#buffer_static_method_buffer_from_array)
+      * args
+        * array: (integer[])
+      * 此方法會利用`array`參數值的位元組(bytes)(=> 必須在`0`~`255`的範圍內)來分配(allocates)一個新(new)的`Buffer`(緩存)實例
+        * ```javascript
+            // Creates a new Buffer containing the UTF-8 bytes of the string 'buffer'.
+            const buf = Buffer.from([0x62, 0x75, 0x66, 0x66, 0x65, 0x72]);
+          ```
+      * 若`array`參數的值不是一個Javascript的`Array`型別 or 另一個(another)適用(appropriate)於`Buffer.from()`方法的變形(variants)的型別(type)的話,就會拋出(thrown)一個`TypeError`錯誤(error)
+      * `Buffer.from(array)`方法(method)與[Buffer.from(string)](https://nodejs.org/dist/latest-v15.x/docs/api/buffer.html#buffer_static_method_buffer_from_string_encoding)方法(method)也可以像[Buffer.allocUnsafe()](https://nodejs.org/dist/latest-v15.x/docs/api/buffer.html#buffer_static_method_buffer_allocunsafe_size)方法一樣能使用(use)內部(internal)`Buffer`(緩存)共用池(pool)
 
 
 
