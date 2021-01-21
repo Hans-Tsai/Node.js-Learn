@@ -5232,7 +5232,8 @@ Node.js Learn<br>
       ```
   + 此外(Additionally),[buf.values()](https://nodejs.org/dist/latest-v15.x/docs/api/buffer.html#buffer_buf_values)、[buf.keys()](https://nodejs.org/dist/latest-v15.x/docs/api/buffer.html#buffer_buf_keys)、[buf.entries()](https://nodejs.org/dist/latest-v15.x/docs/api/buffer.html#buffer_buf_entries)方法(methods)皆可以被用來(used to)建立(create)迭代(iterators)
 > Class
-  + `Buffers`(緩存)類別(class)是一個全域(global)的型別(type)以用來更直接(directly)地處理(dealing)二進位制位元(binary)的資料(data)。它能透過許多種方式(in a variety of ways)來建構(constructed)出來
+  + [Buffer](https://nodejs.org/api/buffer.html#buffer_class_buffer)
+    * `Buffers`(緩存)類別(class)是一個全域(global)的型別(type)以用來更直接(directly)地處理(dealing)二進位制位元(binary)的資料(data)。它能透過許多種方式(in a variety of ways)來建構(constructed)出來
   + > Static method
     * [Buffer.alloc(size[, fill[, encoding]])](https://nodejs.org/api/buffer.html#buffer_static_method_buffer_alloc_size_fill_encoding)
       * args
@@ -5329,9 +5330,44 @@ Node.js Learn<br>
           ```
       * 若`array`參數的值不是一個Javascript的`Array`型別 or 另一個(another)適用(appropriate)於`Buffer.from()`方法的變形(variants)的型別(type)的話,就會拋出(thrown)一個`TypeError`錯誤(error)
       * `Buffer.from(array)`方法(method)與[Buffer.from(string)](https://nodejs.org/dist/latest-v15.x/docs/api/buffer.html#buffer_static_method_buffer_from_string_encoding)方法(method)也可以像[Buffer.allocUnsafe()](https://nodejs.org/dist/latest-v15.x/docs/api/buffer.html#buffer_static_method_buffer_allocunsafe_size)方法一樣能使用(use)內部(internal)`Buffer`(緩存)共用池(pool)
+    * [Buffer.from(buffer)](https://nodejs.org/api/buffer.html#buffer_static_method_buffer_from_buffer)
+      * args
+        * buffer: ([Buffer](https://nodejs.org/api/buffer.html#buffer_class_buffer)) | ([Unit8Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array))
+          * 指定要從已經存在(existing)的哪個`Buffer`物件 or `Unit8Array`類別來複製資料(copy data)
+      * 此方法(method)會將傳遞(passed)給這個方法的`buffer`參數複製(copies)一份資料(data)給新(new)的`Buffer`(緩存)實例(instance)
+        * ```javascript
+            const buf1 = Buffer.from('buffer');
+            const buf2 = Buffer.from(buf1);
 
+            buf1[0] = 0x61;
 
+            console.log(buf1.toString());
+            // Prints: auffer
+            console.log(buf2.toString());
+            // Prints: buffer
+          ```
+      * 若`Buffer.from(buffer)`方法(method)的`buffer`參數的值不是一個Javascript的`Buffer`物件 or 另一個(another)適用(appropriate)於`Buffer.from()`方法的變形(variants)的型別(type)的話,就會拋出(thrown)一個`TypeError`錯誤(error)
+    * [Buffer.from(string[, encoding])](https://nodejs.org/api/buffer.html#buffer_static_method_buffer_from_string_encoding)
+      * args
+        * string: (string)
+          * 要編碼為`Buffer`物件的字串(string)
+        * encoding: (string)
+          * 可指定要使用哪種編碼格式(encoding)來編碼字串(string)
+          * 預設值: `utf8`
+      * 此方法會建立一個新的`Buffer`(緩存)物件,並且這個`Buffer`物件的內容會包括(containing)字串(`string`)參數的值
+        * 而此方法(method)的`encoding`參數是用來確認(identifies)我們將要使用(used)哪種編碼格式(character encoding)來將字串(string)轉換(converting)為位元組(`bytes`)
+        * ```javascript
+            const buf1 = Buffer.from('this is a tést');
+            const buf2 = Buffer.from('7468697320697320612074c3a97374', 'hex');
 
+            console.log(buf1.toString());
+            // Prints: this is a tést
+            console.log(buf2.toString());
+            // Prints: this is a tést
+            console.log(buf1.toString('latin1'));
+            // Prints: this is a tÃ©st
+          ```
+      * 若`Buffer.from(string)`方法(method)的`string`參數的值不是屬於Javascript的`string`型別 or 另一個(another)適用(appropriate)於`Buffer.from()`方法的變形(variants)的型別(type)的話,就會拋出(thrown)一個`TypeError`錯誤(error)
 
 
 
