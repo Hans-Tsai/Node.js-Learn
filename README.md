@@ -5368,8 +5368,95 @@ Node.js Learn<br>
             // Prints: this is a tÃ©st
           ```
       * 若`Buffer.from(string)`方法(method)的`string`參數的值不是屬於Javascript的`string`型別 or 另一個(another)適用(appropriate)於`Buffer.from()`方法的變形(variants)的型別(type)的話,就會拋出(thrown)一個`TypeError`錯誤(error)
+  + > method
+    * [buf.toJSON()](https://nodejs.org/api/buffer.html#buffer_buf_tojson)
+      * Returns: ([object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object))
+      * 此方法(method)會回傳(returns)一個`JSON`物件來代表(representation)當要將`Buffer`(緩存)實例(instance)轉換為字串(stringifying)時,[JSON.stringify()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify)方法有不明確地(implicitly)呼叫`buf.JSON()`方法
+      * `Buffer.from()`方法(method)能接受(accepts)從`buf.JSON()`方法所回傳(returned)出來的`JSON`物件(objects)的格式(format)
+      * 尤其是(In particular),`buf.toJSON()`方法(method)執行起來就會像(works like)是`Buffer.from(buf)`方法一樣
+      * ```javascript
+          const buf = Buffer.from([0x1, 0x2, 0x3, 0x4, 0x5]);
+          const json = JSON.stringify(buf);
 
+          console.log(json);
+          // Prints: {"type":"Buffer","data":[1,2,3,4,5]}
 
+          const copy = JSON.parse(json, (key, value) => {
+            return value && value.type === 'Buffer' ?
+              Buffer.from(value) :
+              value;
+          });
+
+          console.log(copy);
+          // Prints: <Buffer 01 02 03 04 05>
+        ```
+    * [buf.toString([encoding[, start[, end]]])](https://nodejs.org/api/buffer.html#buffer_buf_tostring_encoding_start_end)
+      * args
+        * encoding: (string)
+          * 可指定要使用哪種編碼格式(encoding)來編碼字串(string)
+          * 預設值: `utf8`
+        * start: (integer)
+          * 可指定要從偏移(offset)多少位元組(byte)後才開始(start)解碼(decoding)
+          * 預設值: `0`
+        * end: (integer)
+          * 可指定要從偏移(offset)多少位元組(byte)後才停止(stop)解碼(decoding)(=> 也就是不要包含的(not inclusive))
+          * 預設值: [buf.length](https://nodejs.org/api/buffer.html#buffer_buf_length)
+      * 此方法(method)會根據(according)指定(specified)的編碼方式(character encoding)來解碼(decodes)`buf`物件(也就是=> `encoding`的參數值)
+        * 而`start`與`end`參數可以僅在需要解碼(decode only)`buf`物件的子集(subset)時才傳遞(passed)到`buf.toString()`方法(method)裡面,作為參數
+        * 若`encoding`參數的值是`utf8`,並且輸入(input)的位元組序列(a byte sequence)不是有效的(not valid)`UTF-8`格式的話,那麼(then)這些每一個(each)無效(invalid)的位元組(byte)就會被`U+FFFD`這個替代字元(replacement character)來取代(replaced)
+      * 字串實例(string instance)(=> 必須是以`UTF-16`代碼(code)為單位(unit))的最大長度(maximum length)必須是符合[buffer.constants.MAX_STRING_LENGTH](https://nodejs.org/api/buffer.html#buffer_buffer_constants_max_string_length)屬性值的限制
+      * ```javascript
+          const buf1 = Buffer.allocUnsafe(26);
+
+          for (let i = 0; i < 26; i++) {
+            // 97 is the decimal ASCII value for 'a'.
+            buf1[i] = i + 97;
+          }
+
+          console.log(buf1.toString('utf8'));
+          // Prints: abcdefghijklmnopqrstuvwxyz
+          console.log(buf1.toString('utf8', 0, 5));
+          // Prints: abcde
+
+          const buf2 = Buffer.from('tést');
+
+          console.log(buf2.toString('hex'));
+          // Prints: 74c3a97374
+          console.log(buf2.toString('utf8', 0, 3));
+          // Prints: té
+          console.log(buf2.toString(undefined, 0, 3));
+          // Prints: té
+        ```
+    * [buf.write(string[, offset[, length]][, encoding])](https://nodejs.org/api/buffer.html#buffer_buf_write_string_offset_length_encoding)
+      * args
+        * string: (string)
+          * 指定要寫入(write)到`Buffer`(緩存)物件(object)裡面的字串(`string`)
+        * offset: (integer)
+          * 要先跳過(skip)多少數量的位元組(number of bytes)後才開始(starting)將指定的字串(`string`)寫入(write)到`Buffer`(緩存)物件(object)中
+        * length: (integer)
+          * 可限制最大(maximum)能寫入(write)多少數量的位元組(number of bytes)(並且這個指定大小的數值"不能"超過(not exceed)`buf.length - offset`的值)
+          * 預設值: `buf.length - offset`
+        * encoding: (string)
+          * 可指定要用哪種字元編碼格式(character encoding)來將`string`編碼(encoding)為`Buffer`(緩存)物件(object)
+        * Returns: (integer)
+          * 此方法(method)會回傳有多少數量的位元組(number of bytes)已經被寫入(written)了
+      * 此方法(method)會將`string`(字串)寫入到`Buffer`(緩存)物件(object)中,並根據(according to)`encoding`(字元編碼格式)來編碼(encoding)
+        * 此方法(method)的`length`參數(parameter)值是用來代表要寫入(write)的`Buffer`(緩存)物件(object)會用掉多少數量的位元組(number of bytes)。若`buf`物件(object)沒有包含(contain)足夠(enough)的空間(space)能填入整個(entire)指定的`string`(字串)的話,那麼就只會有部分(part)的指定的`string`(字串)會被寫入(written)。然而(However),這樣就不會將那些部分(partially)的編碼過後的字元(encoded characters)了寫入到`Buffer`(緩存)物件(object)中了
+        * ```javascript
+            const buf = Buffer.alloc(256);
+
+            const len = buf.write('\u00bd + \u00bc = \u00be', 0);
+
+            console.log(`${len} bytes: ${buf.toString('utf8', 0, len)}`);
+            // Prints: 12 bytes: ½ + ¼ = ¾
+
+            const buffer = Buffer.alloc(10);
+
+            const length = buffer.write('abcd', 8);
+
+            console.log(`${length} bytes: ${buffer.toString('utf8', 8, 10)}`);
+            // Prints: 2 bytes : ab
+          ```
 
 
 ---
