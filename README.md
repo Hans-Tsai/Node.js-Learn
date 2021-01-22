@@ -75,6 +75,7 @@ Node.js Learn<br>
       - [Timers](#timers)
       - [Events](#events)
       - [Buffers](#buffers)
+      - [Stream](#stream)
     - [參考資料來源](#參考資料來源)
       - [官方文件](#官方文件)
       - [網路文章](#網路文章)
@@ -5457,6 +5458,32 @@ Node.js Learn<br>
             console.log(`${length} bytes: ${buffer.toString('utf8', 8, 10)}`);
             // Prints: 2 bytes : ab
           ```
+
+#### [Stream](https://nodejs.org/api/stream.html#stream_stream)
+- `stream`(串流)是在Node中用來處理(working with)數據串流(streaming data)的抽象(abstract)介面(interface)
+  + Node內建的`stream`(串流)模組(module)就是用來提供API來實作(implementing)`stream`
+- Node有提供許多的`stream`(串流)物件(objects)。舉例來說,以下2種都算是`stream`實例(instances)
+  + 往伺服器端發送的請求([a request to an HTTP server](https://nodejs.org/api/http.html#http_class_http_incomingmessage))
+  + 連接(connected)到標準輸出(`stdout`)的串流([process.stdout](https://nodejs.org/api/process.html#process_process_stdout))
+- `stream`(串流)是可讀取的(readable) & 可寫入的(writable)
+  + 所有的`stream`(串流)都是[EventEmitter](https://nodejs.org/api/events.html#events_class_eventemitter)的實例(instances)
+- 如果想要存取(access)`stream`(串流)模組(module)的話,能透過以下範例程式碼
+  + ```javascript
+      const stream = require('stream');
+    ```
+- `stream`(串流)模組(module)對於想要建立新的串流實例型別的話是非常有用的
+  + 通常不需要(not necessary)利用(use)`stream`(串流)模組(module)來消耗(consume)`stream`(串流)
+
+
+
+
+
+
+
+
+
+
+
 
 
 ---
