@@ -5473,8 +5473,10 @@ Node.js Learn<br>
     ```
 - `stream`(串流)模組(module)對於想要建立新的串流實例型別的話是非常有用的
   + 通常不需要(not necessary)利用(use)`stream`(串流)模組(module)來消耗(consume)`stream`(串流)
-
-
+> 此文件的編排 (Organization of this document)
+  + 此文件(document)包含(contains)了2個主要(primary)的部分(sections)以及第3部分為註解(notes)
+      * 第1個部分(section)是在說明(explains)要如何在一個應用程式(application)中(within)使用(use)已經存在(existing)的`streams`(串流)
+      * 第2部分(section)是在說明(explains)該如何建立(create)新類型(new types)的`streams`(串流)
 
 
 
