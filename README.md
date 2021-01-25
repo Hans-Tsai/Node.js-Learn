@@ -5477,7 +5477,21 @@ Node.js Learn<br>
   + 此文件(document)包含(contains)了2個主要(primary)的部分(sections)以及第3部分為註解(notes)
       * 第1個部分(section)是在說明(explains)要如何在一個應用程式(application)中(within)使用(use)已經存在(existing)的`streams`(串流)
       * 第2部分(section)是在說明(explains)該如何建立(create)新類型(new types)的`streams`(串流)
-
+> `Streams`(串流)的類型 (Types of streams)
+  + 在Node中,會有4種基礎的`streams`(串流)的類型(types)
+    * [Writable](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_class_stream_writable): 可以向其寫入(written)數據(data)的`streams`(串流)
+      * 例: [fs.createWriteStream()](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_createwritestream_path_options)
+    * [Readable](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_class_stream_readable): 可以從其之中讀取(read)數據(data)的`streams`(串流)
+      * 例: [fs.createReadStream()](https://nodejs.org/dist/latest-v15.x/docs/api/fs.html#fs_fs_createreadstream_path_options)
+    * [Duplex](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_class_stream_duplex): 同時可以寫入(Writable) & 讀取(Readable)的`streams`(串流)
+      * 例: [net.Socket](https://nodejs.org/dist/latest-v15.x/docs/api/net.html#net_class_net_socket)
+    * [Transaform](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_class_stream_transform): 就是一種能在寫入(written) or 讀取(read)時,可以修改(modify)或是轉換(transform)的`streams`(串流)
+      * 例: [zlib.createDeflate()](https://nodejs.org/dist/latest-v15.x/docs/api/zlib.html#zlib_zlib_createdeflate_options)
+  + 此外(Additionally),`stream`(串流)模組(module)包括(includes)了一些實用(utility)的功能(functions),像是以下這幾種
+    * [stream.pipeline()](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_stream_pipeline_source_transforms_destination_callback)
+    * [stream.finished()](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_stream_finished_stream_options_callback)
+    * [stream.Readable.from()](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_stream_readable_from_iterable_options)
+    * [stream.addAbortSignal()](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_stream_addabortsignal_signal_stream)
 
 
 
