@@ -5472,7 +5472,7 @@ Node.js Learn<br>
       const stream = require('stream');
     ```
 - `stream`(串流)模組(module)對於想要建立新的串流實例型別的話是非常有用的
-  + 通常不需要(not necessary)利用(use)`stream`(串流)模組(module)來消耗(consume)`stream`(串流)
+  + 通常不需要(not necessary)利用(use)`stream`(串流)模組(module)來消化(consume)`stream`(串流)
 > 此文件的編排 (Organization of this document)
   + 此文件(document)包含(contains)了2個主要(primary)的部分(sections)以及第3部分為註解(notes)
       * 第1個部分(section)是在說明(explains)要如何在一個應用程式(application)中(within)使用(use)已經存在(existing)的`streams`(串流)
@@ -5492,6 +5492,42 @@ Node.js Learn<br>
     * [stream.finished()](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_stream_finished_stream_options_callback)
     * [stream.Readable.from()](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_stream_readable_from_iterable_options)
     * [stream.addAbortSignal()](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_stream_addabortsignal_signal_stream)
+  + > `Stream`(串流)的`Promise`API (Streams Promises API)
+    * `stream`/`promise`API會提供(provides)一個能回傳(return)`Promise`物件(objects)而不是(rather than)使用回呼函式(callbacks)的一組(set)非同步(asynchronous)實用功能(utility functions)的`stream`(串流)
+    * 這組`Promsie`API能透過(via)以下2種方式來使用(accessible)
+      * ```javascript
+          require('stream/promises')
+          ```
+      * ```javascript
+          require('stream').promises.
+        ```
+  + > 物件模式 (Object mode)
+    * 所有透過Node的APIs操作(operate)下,所建立(created)的`streams`(串流)都僅(exclusively)是字串(strings)、`Buffer`(緩存)、或是`Unit8Array`物件(objects)
+    * 然而(however),要利用其它Javascript的值(values)來實現(implementations)`stream`(串流)是有可能(possible)的(=> 但是不包含`null`,因為`null`在`streams`(串流)中是有其它特殊用途(special purpose)的),而以上這種情況的`stream`(串流)就會被視為(considered to)以"物件模式(object mode)"來操作(operate)
+  + > 緩存 (Buffering)
+    * [Writable](https://nodejs.org/api/stream.html#stream_class_stream_writable)與[Readable](https://nodejs.org/api/stream.html#stream_class_stream_readable)`streams`(串流)都可以將資料儲存(store data)在內部(internal)`buffer`(緩存)中
+    * 可能(potentially)緩存(buffered)的資料量(data)是取決於(depends on)傳入(passed into)到`stream`(串流)建構子(constructor)中的高水位線(`highWaterMark`)的選項(option)
+      * 對於正常(normal)的`streams`(串流)而言,所謂的高水位線(`highWaterMark`)的選項(option)就是指可以指定(specifies)位元組的總數量([total number of bytes](https://nodejs.org/api/stream.html#stream_highwatermark_discrepancy_after_calling_readable_setencoding))
+      * 對於在物件模式(object mode)操作(operating)的`streams`(串流)而言,所謂的高水位線(`highWaterMark`)的選項(option)就是指可以指定(specifies)物件的總數量(`total number of objects`)
+    * 當透過呼叫(calls)[stream.push(chunk)](https://nodejs.org/api/stream.html#stream_readable_push_chunk_encoding)方法來實現(implementation)緩存時,資料(data)會被緩存(buffered in)到可讀取串流中(`Readable streams`)
+      * 這時,如果此`streams`(串流)的消費者(consumer)**沒有呼叫**(call)[stream.read()](https://nodejs.org/api/stream.html#stream_readable_read_size)方法的話,那麼該資料(data)就會代理(sit in)內部隊列(internal queue)直到(until)該資料被消化掉(consumed)為止
+    * 一旦(Once)內部可讀取緩存(internal read `buffer`)的總大小(total size)**到達**(reaches)了指定(specified)的高水位線(`highWaterMark`)門檻(threshold)時,這時該`stream`(串流)就會就會停止(stop)從基礎資源(underlying resource)中讀取(reading)資料(data),直到當前(currently)的緩存資料(the data currently buffered)能被消化(consumed)時才會繼續讀取
+      * 也就是說,該`stream`(串流)會停止呼叫內部的[readable._read()](https://nodejs.org/api/stream.html#stream_readable_read_size_1)方法(method),而這個方法就是被用來(used to)填滿(fill)可讀取串流(read buffer)
+    * 當[writable.write(chunk)](https://nodejs.org/api/stream.html#stream_writable_write_chunk_encoding_callback)方法(method)被重複地呼叫(called repeatedly)時,資料(data)就會被緩存(buffered in)到可寫入串流(`Writable streams`)中。當(while)內部可寫入緩存(internal write buffer)的總大小(total size)**低於**(below)設定(set)好的高水位線(`highWaterMark`)門檻(threshold)時,這時呼叫(calls)`writable.write()`方法(method)就會回傳(return)`true`。而一旦(Once)內部可寫入緩存(internal write buffer)的總大小(total size)**到達**(reaches) or **超過**(exceeds)高水位線(`highWaterMark`)門檻(threshold)時,則會回傳(returned)`false`
+    * `Stream API`的其中一個關鍵目標(key goal),尤其(particularly)是[stream.pipe()](https://nodejs.org/api/stream.html#stream_readable_pipe_destination_options)方法(method),就是限制(limit)資料(data)的緩存(buffering)在一個可接受(acceptable)的程度(levels)之內,以使資源(resources) & 不同速度的目標(destinations of differing speeds)能夠不會淹沒(overwhelm)掉可用(available)的記憶體空間(memory)
+    * **高水位線(`highWaterMark`)選項(option)是一個門檻(threshold),而不是一種限制(limit)。它代表在請求(asking)更多的資料之前,該緩存串流(`stream buffers`)所擁有的資料量(the amount of data)**
+      * 通常(in general),它並不會強制執行(enforce)嚴格(strict)的記憶體(memory)限制(limitation)。我們可以在特定(specific)的`stream`(串流)實作(implementations)中選擇(choose to)實施(enforce)更嚴格(stricter)的記憶體限制(limits),但高水位線(`highWaterMark`)這個選項仍然是選擇性(optional)的操作
+    * 因為[Duplex](https://nodejs.org/api/stream.html#stream_class_stream_duplex)、[Transform](https://nodejs.org/api/stream.html#stream_class_stream_transform)都是可以被讀取(`Readable`)也可以被寫入(`Writable`)的,每一個`stream`(串流)會維護(maintains)2個用來讀取(reading) & 寫入(writing)的分開(separate)的內部的緩存(internal `buffers`),從而允許(allowing)每一端(each side)獨立(independently)於另一端(the other)進行操作(operate),同時保持(maintaining)適當(appropriate)且有效率(efficient)的數據流(flow of data)
+      * 舉例來說,[net.Socket](https://nodejs.org/api/net.html#net_class_net_socket)實例(instances)是雙向串流([Duplex](https://nodejs.org/api/stream.html#stream_class_stream_duplex) `streams`),而它的可讀取這端(`Readable` side)允許(allows)消化(consumption)掉從插座(`socket`)接收(received)到的資料。另外,它的可寫入這端(`Writable` side)允許(allows)將資料寫入(writing data)到該插座(`socket`)中
+      * 這麼做是因為資料寫入到插座(data may be written to `socket`)的速率(rate)有可能會比收到的時間來得快(faster) or 慢(slower),因此每一端(each side)應該要獨立地(independently)操作(operate) & `buffer`(緩存)於另一端(the other)
+      * 內部緩存機制(The mechanics of the internal buffering)是一個內部實作(internal implementation)的細節(detail),而這個細節可能會在任何一個時間(at any time)被改變(changed)掉
+        * 然而(However),對於某些進階(certain advanced)的實作(implementations)而言,內部緩存(`internal buffers`)可以透過`writable.writableBuffer`、`readable.readableBuffer`屬性來得到(retrieved)。但是使用像這樣沒有被正式文件化(undocumented)的屬性(properties),是不被鼓勵(discouraged)這麼做的
+
+
+
+
+
+
 
 
 
