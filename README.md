@@ -5572,6 +5572,33 @@ Node.js Learn<br>
     * [Duplex](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_class_stream_duplex)、[Transform](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_class_stream_transform)都是可寫入串流([Writable streams](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_class_stream_writable)) & 可讀取串流([Readable streams](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_class_stream_readable))
     * 從`stream`(串流)中寫入資料(writing data) or 消化資料(consuming data)的應用程式(applications)不會被要求(not required)要直接(directly)地實作(implement)串流介面(`stream` interfaces),並且通常(generally)沒有理由(have no reason)會需要呼叫(call)`require('stream')`語法
     * 想要實作(implement)新(new)的`streams`類型(types)的開發者(developers)們可以參考(refer to)[API for stream implementers](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_api_for_stream_implementers)章節(section)
+  + > 可寫入串流 (Writable streams)
+    * 可寫入串流(writable streams)是一個給資料(data)寫入(written)的抽象(abstraction)目的地(destination)
+    * 以下是常見的可寫入串流(writable streams)的範例,包括了
+      * [HTTP requests, on the client]()
+      * [HTTP responses, on the server]()
+      * [fs write streams]()
+      * [zlib streams]()
+      * [crypto streams]()
+      * [TCP sockets]()
+      * [child process stdin]()
+      * [process.stdout, process.stderr]()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
