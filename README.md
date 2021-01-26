@@ -5522,8 +5522,56 @@ Node.js Learn<br>
       * 這麼做是因為資料寫入到插座(data may be written to `socket`)的速率(rate)有可能會比收到的時間來得快(faster) or 慢(slower),因此每一端(each side)應該要獨立地(independently)操作(operate) & `buffer`(緩存)於另一端(the other)
       * 內部緩存機制(The mechanics of the internal buffering)是一個內部實作(internal implementation)的細節(detail),而這個細節可能會在任何一個時間(at any time)被改變(changed)掉
         * 然而(However),對於某些進階(certain advanced)的實作(implementations)而言,內部緩存(`internal buffers`)可以透過`writable.writableBuffer`、`readable.readableBuffer`屬性來得到(retrieved)。但是使用像這樣沒有被正式文件化(undocumented)的屬性(properties),是不被鼓勵(discouraged)這麼做的
+> `stream`(串流)消費者的API (API for stream consumers)
+  + 幾乎所有的Node應用程式(applications),不管是多簡單,都會以某種方式(manner)來使用`streams`(串流)。接下來的就是一個在Node應用程式中使用`streams`(串流)來實作(implements)一個`HTTP`伺服器(server)的範例程式碼
+    * ```javascript
+        const http = require('http');
 
+        const server = http.createServer((req, res) => {
+          // `req` is an http.IncomingMessage, which is a readable stream.
+          // `res` is an http.ServerResponse, which is a writable stream.
 
+          let body = '';
+          // Get the data as utf8 strings.
+          // If an encoding is not set, Buffer objects will be received.
+          req.setEncoding('utf8');
+
+          // Readable streams emit 'data' events once a listener is added.
+          req.on('data', (chunk) => {
+            body += chunk;
+          });
+
+          // The 'end' event indicates that the entire body has been received.
+          req.on('end', () => {
+            try {
+              const data = JSON.parse(body);
+              // Write back something interesting to the user:
+              res.write(typeof data);
+              res.end();
+            } catch (er) {
+              // uh oh! bad json!
+              res.statusCode = 400;
+              return res.end(`error: ${er.message}`);
+            }
+          });
+        });
+
+        server.listen(1337);
+
+        // $ curl localhost:1337 -d "{}"
+        // object
+        // $ curl localhost:1337 -d "\"foo\""
+        // string
+        // $ curl localhost:1337 -d "not json"
+        // error: Unexpected token o in JSON at position 1
+      ```
+    * 可寫入串流([Writable streams](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_class_stream_writable))(=> 就像是上面範例程式碼中的`res`一樣)會公開(expose)一些方法(methods),例如:`res.write()`、`res.end()`這些方法是用來將資料寫入(write data)到`stream`(串流)中的
+    * 可讀取串流([Readable streams](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_class_stream_readable))會在當資料(data)可以從`stream`(串流)中被讀取(read off)時,使用[EventEmitter](https://nodejs.org/dist/latest-v15.x/docs/api/events.html#events_class_eventemitter)API來通知(notifying)應用程式的程式碼(application code)
+      * 而該可從`stream`(串流)中讀取的資料(available data)可以利用多種方式(multiple ways)來讀取(read from)
+    * [Writable streams](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_class_stream_writable)、[Readable streams](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_class_stream_readable)都可以透過多種方式(in various ways)來使用(use)[EventEmitter](https://nodejs.org/dist/latest-v15.x/docs/api/events.html#events_class_eventemitter)API來傳達(communicate)當前`stream`(串流)的狀態(state)
+    * [Duplex](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_class_stream_duplex)、[Transform](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_class_stream_transform)都是可寫入串流([Writable streams](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_class_stream_writable)) & 可讀取串流([Readable streams](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_class_stream_readable))
+    * 從`stream`(串流)中寫入資料(writing data) or 消化資料(consuming data)的應用程式(applications)不會被要求(not required)要直接(directly)地實作(implement)串流介面(`stream` interfaces),並且通常(generally)沒有理由(have no reason)會需要呼叫(call)`require('stream')`語法
+    * 想要實作(implement)新(new)的`streams`類型(types)的開發者(developers)們可以參考(refer to)[API for stream implementers](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_api_for_stream_implementers)章節(section)
 
 
 
