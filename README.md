@@ -5100,7 +5100,7 @@ Node.js Learn<br>
         ```
   + [emitter.emit(eventName[, ...args])](https://nodejs.org/api/events.html#events_emitter_emit_eventname_args)
     * args
-      * eventName: (String) | (symbol)
+      * eventName: (string) | (symbol)
       * ...args: (any)
       * Returns: (boolean)
         * 當該指定的事件名稱(event, 也就是`eventName`參數的值)有事件監聽器(listeners)時,回傳`true`; 反之,則回傳`false`
@@ -5575,16 +5575,61 @@ Node.js Learn<br>
   + > 可寫入串流 (Writable streams)
     * 可寫入串流(writable streams)是一個給資料(data)寫入(written)的抽象(abstraction)目的地(destination)
     * 以下是常見的可寫入串流(writable streams)的範例,包括了
-      * [HTTP requests, on the client]()
-      * [HTTP responses, on the server]()
-      * [fs write streams]()
-      * [zlib streams]()
-      * [crypto streams]()
-      * [TCP sockets]()
-      * [child process stdin]()
-      * [process.stdout, process.stderr]()
-
-
+      * [HTTP requests, on the client](https://nodejs.org/api/http.html#http_class_http_clientrequest)
+      * [HTTP responses, on the server](https://nodejs.org/api/http.html#http_class_http_serverresponse)
+      * [fs write streams](https://nodejs.org/api/fs.html#fs_class_fs_writestream)
+      * [zlib streams](https://nodejs.org/api/zlib.html)
+      * [crypto streams](https://nodejs.org/api/crypto.html)
+      * [TCP sockets](https://nodejs.org/api/net.html#net_class_net_socket)
+      * [child process stdin](https://nodejs.org/api/child_process.html#child_process_subprocess_stdin)
+      * [process.stdout](https://nodejs.org/api/process.html#process_process_stdout) & [process.stderr](https://nodejs.org/api/process.html#process_process_stderr)
+    * 以上範例中的其中一些實際(actually)上是[雙向串流(Duplex streams)](https://nodejs.org/api/stream.html#stream_class_stream_duplex)來實現可寫入介面[Writable interface](https://nodejs.org/api/stream.html#stream_class_stream_writable)的
+    * 所有的可寫入串流([Writable streams](https://nodejs.org/api/stream.html#stream_class_stream_writable))會實作(implement)由[stream.writable](https://nodejs.org/api/stream.html#stream_class_stream_writable)類別(class)所定義(defined)的介面(interface)
+    * 然而(While)特定(specific)的可寫入串流([Writable streams](https://nodejs.org/api/stream.html#stream_class_stream_writable))實例(instances)會在不同方面下(various ways)有所不同(differ in),但是所有可寫入串流(`Writable streams`)都會都會遵從(follow)相同(same)的基礎(fundamental)用法(usage)模式(pattern),就如同以下的範例說明(illustrate)
+      * ```javascript
+          const myStream = getWritableStreamSomehow();
+          myStream.write('some data');
+          myStream.write('some more data');
+          myStream.end('done writing data');
+        ```
+    * > Class
+      * [stream.Writable](https://nodejs.org/api/stream.html#stream_class_stream_writable)
+      * > Event
+        * [pipe](https://nodejs.org/api/stream.html#stream_event_pipe)
+          * args
+            * src: [stream.Readable](https://nodejs.org/api/stream.html#stream_class_stream_readable)
+              * 要傳遞(piping to)給此可寫入(writable)的源頭串流(source `stream`)
+          * `pipe`事件(event)會在可讀取串流(readable stream)呼叫(called)[stream.pipe()](https://nodejs.org/api/stream.html#stream_readable_pipe_destination_options)方法(method)時被發出(emitted),並可以將這個可寫入串流(writable stream)添加(adding)到其設定好(its set of)的目的地(destination)
+            * ```javascript
+                const writer = getWritableStreamSomehow();
+                const reader = getReadableStreamSomehow();
+                writer.on('pipe', (src) => {
+                  console.log('Something is piping into the writer.');
+                  assert.equal(src, reader);
+                });
+                reader.pipe(writer);
+              ```
+      * > method
+        * [writable.end([chunk[, encoding]][, callback])](https://nodejs.org/api/stream.html#stream_writable_end_chunk_encoding_callback)
+          * args
+            * chunk: (string | [Buffer](https://nodejs.org/api/buffer.html#buffer_class_buffer) | [Unit8Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)) | [any](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Data_types))
+              * 要寫入(write)的可選擇性(optional)資料(data)。對於那些"不是"在物件模式(object mode)下操作(operating)的`streams`(串流)來說,`chunk`參數值的型別必須為字串(string) or `Buffer`(緩存) or `Unit8Array`三者之一。而對於物件模式(object mode)的`streams`來說,`chunk`參數值的型別可以是任何Javascript中的任何型別(`any`) or `null`
+            * encoding: (string)
+              * 如果`chunk`參數的值是字串(string)型別的話,可以指定要使用的編碼格式(encoding)
+            * callback: (function)
+              * 當`stream`(串流)結束(finished)時,要執行的回呼函式(callback)
+            * Returns: ([this](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this))
+        * 當呼叫(calling)此`writable.end()`方法(method)時,就是以信號發出(signals)已經沒有更多(no more)的資料(data)要寫入(written)到可寫入串流([Writable](https://nodejs.org/api/stream.html#stream_class_stream_writable))中
+          * 而可選擇性(optional)輸入的`chunk` & `encoding` 這2個參數(arguments)可允許(allow)在關閉(closing)`stream`(串流)之前,立即(immediately)寫入(written)最後一個(one final)額外(additional)的資料塊(chunk of data)
+        * 若在呼叫(calling)[stream.end()](https://nodejs.org/api/stream.html#stream_writable_write_chunk_encoding_callback)方法(method)之後(after)才呼叫(calling)[stream.write()](https://nodejs.org/api/stream.html#stream_writable_end_chunk_encoding_callback)方法(method)的話,會引發錯誤(raise an error)
+        * ```javascript
+            // Write 'hello, ' and then end with 'world!'.
+            const fs = require('fs');
+            const file = fs.createWriteStream('example.txt');
+            file.write('hello, ');
+            file.end('world!');
+            // Writing more now is not allowed!
+          ```
 
 
 
