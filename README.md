@@ -5630,7 +5630,21 @@ Node.js Learn<br>
             file.end('world!');
             // Writing more now is not allowed!
           ```
-
+        * [writable.write(chunk[, encoding][, callback])](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_writable_write_chunk_encoding_callback)
+          * args
+            * chunk: (string | [Buffer](https://nodejs.org/api/buffer.html#buffer_class_buffer) | [Unit8Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)) | [any](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Data_types))
+              * 要寫入(write)的可選擇性(optional)資料(data)。對於那些"不是"在物件模式(object mode)下操作(operating)的`streams`(串流)來說,`chunk`參數值的型別必須為字串(string) or `Buffer`(緩存) or `Unit8Array`三者之一。而對於物件模式(object mode)的`streams`來說,`chunk`參數值的型別可以是任何Javascript中的任何型別(`any`) or `null`
+            * encoding: (string)
+              * 如果`chunk`參數的值是字串(string)型別的話,可以指定要使用的編碼格式(encoding)
+              * 預設值: `utf8`
+            * callback: (function)
+              * 可指定當刷新(flushed)此資料塊(chunk of data)的時候要呼叫的回呼函式(callback)
+            * Returns: (boolean)
+              * 
+      * > properties
+        * [writable.writable](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_writable_writable)
+          * Returns: (boolean)
+          * 如果此屬性(`writable.writable`)的值是`true`的話,那就能安全地呼叫[writable.write()](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_writable_write_chunk_encoding_callback)方法(method)了,也就是代表該`stream`(串流)沒有被消滅(destroyed)掉 or 發生錯誤(errored) or 結束(ended)
 
 
 
