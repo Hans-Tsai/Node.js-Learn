@@ -5640,7 +5640,11 @@ Node.js Learn<br>
             * callback: (function)
               * 可指定當刷新(flushed)此資料塊(chunk of data)的時候要呼叫的回呼函式(callback)
             * Returns: (boolean)
-              * 
+              * 若`stream`(串流)希望(wishes)在繼續(continuing)寫入(write)額外(additional)的資料(data)之前,先等待(wait for)`drain`事件(event)被發出(emitted)後,再來呼叫(calling)程式碼(code),則該方法會回傳`false`; 否則(otherwise),就是`true`
+          * 此方法(method)會寫入(writes)一些資料(data)到`stream`(串流)中,並在資料被完全處理(fully handled)後,才會呼叫我們所提供(supplied)的回呼函式(callback)
+            * 若有發生(occurs)錯誤(error)的話,則回呼函式(callback)可以選擇要不要以`errors`(錯誤)為第1個參數(argument)。為了可靠(reliably)地偵測(detect)到錯誤(errors),我們可以新增(add)一個事件監聽器(event listener)給`error`(錯誤)事件(event),而回呼函式(callback)會在`error`事件被發出(emitted)之前(before),以非同步(asynchronously)的方式被呼叫(called)
+          * 若內部緩存(internal `buffer`)小於(less than)我們所配置(configured)的高水位線(`highWaterMark`),並且當`stream`串流被建立(created)時已經允許(admitted)`chunk`了的話,則此方法會回傳`true`
+            * 若此方法回傳`false`,則應停止(stop)進一步(further)嘗試(attempts)要將資料(data)寫入(write)`stream`串流,直到`drain`事件(event)被發出(emitted)後
       * > properties
         * [writable.writable](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_writable_writable)
           * Returns: (boolean)
