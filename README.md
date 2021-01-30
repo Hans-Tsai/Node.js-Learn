@@ -5640,7 +5640,32 @@ Node.js Learn<br>
             * callback: (function)
               * 可指定當刷新(flushed)此資料塊(chunk of data)的時候要呼叫的回呼函式(callback)
             * Returns: (boolean)
-              * 
+              * 若`stream`(串流)希望(wishes)在繼續(continuing)寫入(write)額外(additional)的資料(data)之前,先等待(wait for)`drain`事件(event)被發出(emitted)後,再來呼叫(calling)程式碼(code),則該方法會回傳`false`; 否則(otherwise),就是`true`
+          * 此方法(method)會寫入(writes)一些資料(data)到`stream`(串流)中,並在資料被完全處理(fully handled)後,才會呼叫我們所提供(supplied)的回呼函式(callback)
+            * 若有發生(occurs)錯誤(error)的話,則回呼函式(callback)可以選擇要不要以`errors`(錯誤)為第1個參數(argument)。為了可靠(reliably)地偵測(detect)到錯誤(errors),我們可以新增(add)一個事件監聽器(event listener)給[error](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_event_error)(錯誤)事件(event),而回呼函式(callback)會在`error`事件被發出(emitted)之前(before),以非同步(asynchronously)的方式被呼叫(called)
+          * 若內部緩存(internal `buffer`)小於(less than)我們所配置(configured)的高水位線(`highWaterMark`),並且當`stream`串流被建立(created)時已經允許(admitted)`chunk`了的話,則此方法會回傳`true`
+            * 若此方法回傳`false`,則應停止(stop)進一步(further)嘗試(attempts)要將資料(data)寫入(write)`stream`串流,直到[drain](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_event_drain)事件(event)被發出(emitted)後
+          * 當`stream`串流沒有耗盡(not draining)時,呼叫`writable.write()`方法(method)會緩存`chunk`,並且此方法會回傳`false`。當目前(currently)所有(all)的緩存資料塊(buffered chunks)都耗盡(drained)時(=> 由作業系統(operating system)負責接受(accepted)傳遞(delivery)),[drain](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_event_drain)事件(event)就會被發出(emitted)
+            * 建議當此方法回傳(returns)`false`時,就不要再(no more)寫入任何的資料塊(chunks),直到[drain](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_event_drain)事件(event)被發出(emitted)後,才能繼續寫入資料塊
+            * 然而,呼叫`write()`方法在一個還沒有耗盡(not draining)的`stream`串流上是可允許(allowed)的,Node會緩存(buffer)所有寫入(writter)的資料塊(chunks),直到到(until)達最大記憶體使用量(maximum memory usage)限制發生(occurs)為止,在這時將會無條件(unconditionally)地終止(abort)。即使(even)在終止(abort)之前(before),高記憶體使用率(high memory usage)會造成貧乏(poor)的垃圾回收效能(garbage collector performance)、RSS(一般來說不會被釋放(released back)回作業系統中(system),即使(even)在那些記憶體(memory)已經不再(no longer)被需要(required)後)。若遠端(remote)對等方(peer)不讀取(not read)資料(data)的話,則`TCP`插座(sockets)可能永遠不會耗盡(drain),因此寫入(writing)一個不會被耗盡(not draining)的插座(socket),可能會導致(lead to)遠端(remotely)可被利用(exploitable)的弱點(vulnerability)
+          * 當`stream`串流沒有被耗盡時,就寫入資料對[Transform stream](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_class_stream_transform)來說是尤其有問題(particularly problematic)的,因為`Transform streams`在默認(default)情況下是會暫停(paused)的,直到(until)它們被透過管道傳遞(piped) or 一個`data` or `readable`事件處理器(event handler)被新增(added)後才會繼續開始
+          * 如果要寫入(written)的資料(data)能夠按照需求(on demand)生成(generated) or 獲取(fetched),則建議(recommended)將邏輯(logic)封裝(encapsulate)進可讀取串流([Readable](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_class_stream_readable))中,並利用[stream.pipe()](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_readable_pipe_destination_options)方法(method)來完成
+            * 然而(However),若呼叫`writable.write()`方法是優先使用(preferred)的話,這是有可能(possible)的要尊重背壓(respect backpressure)且避免(avoid)記憶體問題(memory issues),並使用[drain](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_event_drain)事件(event)
+        * ```javascript
+            function write(data, cb) {
+              if (!stream.write(data)) {
+                stream.once('drain', cb);
+              } else {
+                process.nextTick(cb);
+              }
+            }
+
+            // Wait for cb to be called before doing any other write.
+            write('hello', () => {
+              console.log('Write completed, do more writes now.');
+            });
+          ```
+          * 補充: 一個物件模式(object mode)下的可寫入串流(Writable stream),將總是(always)會忽略(ignore)掉`encoding`這個參數(argument)
       * > properties
         * [writable.writable](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_writable_writable)
           * Returns: (boolean)
