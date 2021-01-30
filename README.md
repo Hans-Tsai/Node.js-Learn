@@ -5645,7 +5645,7 @@ Node.js Learn<br>
         * [writable.writable](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_writable_writable)
           * Returns: (boolean)
           * 如果此屬性(`writable.writable`)的值是`true`的話,那就能安全地呼叫[writable.write()](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_writable_write_chunk_encoding_callback)方法(method)了,也就是代表該`stream`(串流)沒有被消滅(destroyed)掉 or 發生錯誤(errored) or 結束(ended)
-
+ 
 
 
 
