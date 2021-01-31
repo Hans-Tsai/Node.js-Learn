@@ -5726,8 +5726,13 @@ Node.js Learn<br>
           pass.resume();     // Must be called to make stream emit 'data'.
           ```
         * 當`readable.readableFlowing`這個屬性的值為`false`的話,資料(data)將可以(may)被累積(accumulating)在`stream`(串流)的內部緩存(internal buffer)之中(within)
-
-
+    * > 選擇一個API類型 (Choose one API style)
+      * 可讀取串流(Readable) API已經發展(evolved)成能跨(accross)多個(multiple)Node版本(versions)並提供(provides)多個(multiple)消耗(consuming)資料流(stream data)的方法(method)
+        * 通常來說(In general),開發者(developers)應該要選擇(choose)一個消耗(consuming)資料(data)的方法(method)並且應該永遠(never)不要在單一(single)個`stream`(串流中)使用(use)多個(multiple)方法(methods)來消耗(consume)資料(data)
+        * 具體來說(Specifically),使用`on('data')` & `on('readable')` & `pipe()`的組合,或是非同步(asynchronous)的迭代器(iterators)可能會導致不直覺(unintuitive)的行為(behavior)
+      * 建議大多數的使用者可以利用[readable.pipe()](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_readable_pipe_destination_options)方法(method),因為它能提供(provide)消耗(consuming)資料流(stream data)的最簡單(easiest)的實作(implemented)方式
+        * 開發者若要求(require)更細緻(fine-grained)地控制(control over)轉換(transform) & 生成資料(generation of data)的話,能使用[EventEmitter](https://nodejs.org/dist/latest-v15.x/docs/api/events.html#events_class_eventemitter)類別(class)以及`readable.on('readable')`/`readable.read()` or `readable.pause()/readable.resume()` APIs
+      * 
 
 
 
