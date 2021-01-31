@@ -5619,17 +5619,17 @@ Node.js Learn<br>
             * callback: (function)
               * 當`stream`(串流)結束(finished)時,要執行的回呼函式(callback)
             * Returns: ([this](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this))
-        * 當呼叫(calling)此`writable.end()`方法(method)時,就是以信號發出(signals)已經沒有更多(no more)的資料(data)要寫入(written)到可寫入串流([Writable](https://nodejs.org/api/stream.html#stream_class_stream_writable))中
-          * 而可選擇性(optional)輸入的`chunk` & `encoding` 這2個參數(arguments)可允許(allow)在關閉(closing)`stream`(串流)之前,立即(immediately)寫入(written)最後一個(one final)額外(additional)的資料塊(chunk of data)
-        * 若在呼叫(calling)[stream.end()](https://nodejs.org/api/stream.html#stream_writable_write_chunk_encoding_callback)方法(method)之後(after)才呼叫(calling)[stream.write()](https://nodejs.org/api/stream.html#stream_writable_end_chunk_encoding_callback)方法(method)的話,會引發錯誤(raise an error)
-        * ```javascript
-            // Write 'hello, ' and then end with 'world!'.
-            const fs = require('fs');
-            const file = fs.createWriteStream('example.txt');
-            file.write('hello, ');
-            file.end('world!');
-            // Writing more now is not allowed!
-          ```
+          * 當呼叫(calling)此`writable.end()`方法(method)時,就是以信號發出(signals)已經沒有更多(no more)的資料(data)要寫入(written)到可寫入串流([Writable](https://nodejs.org/api/stream.html#stream_class_stream_writable))中
+            * 而可選擇性(optional)輸入的`chunk` & `encoding` 這2個參數(arguments)可允許(allow)在關閉(closing)`stream`(串流)之前,立即(immediately)寫入(written)最後一個(one final)額外(additional)的資料塊(chunk of data)
+          * 若在呼叫(calling)[stream.end()](https://nodejs.org/api/stream.html#stream_writable_write_chunk_encoding_callback)方法(method)之後(after)才呼叫(calling)[stream.write()](https://nodejs.org/api/stream.html#stream_writable_end_chunk_encoding_callback)方法(method)的話,會引發錯誤(raise an error)
+          * ```javascript
+              // Write 'hello, ' and then end with 'world!'.
+              const fs = require('fs');
+              const file = fs.createWriteStream('example.txt');
+              file.write('hello, ');
+              file.end('world!');
+              // Writing more now is not allowed!
+            ```
         * [writable.write(chunk[, encoding][, callback])](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_writable_write_chunk_encoding_callback)
           * args
             * chunk: (string | [Buffer](https://nodejs.org/api/buffer.html#buffer_class_buffer) | [Unit8Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)) | [any](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Data_types))
@@ -5732,9 +5732,56 @@ Node.js Learn<br>
         * 具體來說(Specifically),使用`on('data')` & `on('readable')` & `pipe()`的組合,或是非同步(asynchronous)的迭代器(iterators)可能會導致不直覺(unintuitive)的行為(behavior)
       * 建議大多數的使用者可以利用[readable.pipe()](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_readable_pipe_destination_options)方法(method),因為它能提供(provide)消耗(consuming)資料流(stream data)的最簡單(easiest)的實作(implemented)方式
         * 開發者若要求(require)更細緻(fine-grained)地控制(control over)轉換(transform) & 生成資料(generation of data)的話,能使用[EventEmitter](https://nodejs.org/dist/latest-v15.x/docs/api/events.html#events_class_eventemitter)類別(class)以及`readable.on('readable')`/`readable.read()` or `readable.pause()/readable.resume()` APIs
-      * 
-
-
+    * > Class
+      * [stream.readable](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_class_stream_readable)
+      * > Event
+        * data
+          * args
+            * chunk ([Buffer](https://nodejs.org/dist/latest-v15.x/docs/api/buffer.html#buffer_class_buffer)) | (String) | (any)
+              * 資料塊(The chunk of data)。對於那些不是以物件模式(object mode)來操作(operating in)的`streams`(串流)來說,資料塊(chunk)將會是字串(string) or `Buffer`(緩存)這2種型別之一。而對於是以物件模式(object mode)來操作(operating in)的`streams`(串流)來說,資料塊(chunk)將能是除了`null`以外的Javascript中的任何值(any value)
+          * 每當(whenever)`stream`(串流)將資料塊(a chunk of data)的擁有權(ownership)轉移(relinquishing)給消費者(consumer)時,都會發出(emitted)`data`事件(event)
+          * 每當(whenever)透過呼叫(calling)[readable.pipe()](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_readable_pipe_destination_options)方法 or [readable.resume()](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_readable_resume)方法 or 附加(attaching)一個事件監聽器(listener)的回呼函式(callback)在`data`這個事件(event)上時,來讓`stream`(串流)被切換(switched)為流動模式(`flowing` mode)的時候,都有可能(may)會發生(occur)發出(emitted)`data`這個事件(event)
+          * 每當(whenever)呼叫(called)[readable.read()](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_readable_read_size)方法(method)時,並且資料塊(a chunk of data)是能夠(available)被回傳(returned)的情況下時,也可能會發出(emitted)`data`這個事件(event)
+          * 附加(Attaching)一個事件監聽器(listener)到那些還尚未(has not been)被明確(explicitly)地暫停(paused)的`stream`(串流)上時,將會把`stream`(串流)切換為流動模式(`flowing` mode)。這時,資料(data)將會在其能夠(available)使用時盡快(as soon as)地傳遞(passed)出去
+          * 若該`stream`(串流)的預設(default)編碼格式(encoding)已經有透過[readable.setEncoding()](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_readable_setencoding_encoding)方法(method)來指定(specified)過的話,事件監聽器(listener)回呼函式(callback)將會把資料塊(the chunk of data)以字串(string)型別的方式傳遞(passed)出去; 否則(otherwise),資料(data)將會以`Buffer`(緩存)型別的方式來傳遞(passed)出去
+          * ```javascript
+              const readable = getReadableStreamSomehow();
+              readable.on('data', (chunk) => {
+                console.log(`Received ${chunk.length} bytes of data.`);
+              });
+            ```
+        * pause
+          * 當呼叫(called)[stream.pause()](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_readable_pause)方法(method)時,並且[readable.redableFlowing](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_readable_readableflowing)的屬性值"不為"`false`的話,`pause`事件(event)就會被發出(emitted)
+        * > method
+          * [readable.pause()](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_readable_pause)
+            * Returns: ([this](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this))
+            * `readable.pause()`方法(method)會導致(cause)處於流動模式(`flowing` mode)的`stream`(串流)停止(stop)發出(emitting)[data](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_event_data)這個事件(events),並從流動模式(`flowing` mode)中切換出來(switching out of)。任何(any)變成(becomes)可用(available)的資料(data)都將會保持(remain)在內部緩存(internal buffer)中
+            * ```javascript
+                const readable = getReadableStreamSomehow();
+                readable.on('data', (chunk) => {
+                  console.log(`Received ${chunk.length} bytes of data.`);
+                  readable.pause();
+                  console.log('There will be no additional data for 1 second.');
+                  setTimeout(() => {
+                    console.log('Now data will start flowing again.');
+                    readable.resume();
+                  }, 1000);
+                });
+              ```
+              * 補充: 若有可讀取串流(readable stream)事件監聽器(event listener)的話,`readable.pause()`方法(method)將會**無效**(no effect)
+          * [readable.resume()](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_readable_resume)
+            * Returns: ([this](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this))
+            * `readable.resume()`方法(method)將會導致明確(explicitly)地顯示暫停(paused)的可讀取串流(readable stream)會**繼續**(resume)發出(emitting)[data](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_readable_resume)事件(events),並將`stream`(串流)切換(switching)到流動模式(`flowing` mode)中
+            * `readable.resume()`方法(method)可以被用來(used to)完全(fully)地消耗(consume)從`stream`(串流)傳遞過來的資料(data),而無需(without)實際(actually)地處理(processing)任何那樣的資料(any of that data)
+            * ```javascript
+                getReadableStreamSomehow()
+                  .resume()
+                  .on('end', () => {
+                    console.log('Reached the end, but did not read anything.');
+                  });
+              ```
+              * 補充: 若有可讀取串流(readable stream)事件監聽器(event listener)的話,`readable.resume()`方法(method)將會**無效**(no effect)
+            
 
 
 
