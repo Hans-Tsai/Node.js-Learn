@@ -5682,11 +5682,11 @@ Node.js Learn<br>
       * [child process stdout and stderr](https://nodejs.org/dist/latest-v15.x/docs/api/child_process.html#child_process_subprocess_stdout)
       * [process.stdin](https://nodejs.org/dist/latest-v15.x/docs/api/process.html#process_process_stdin)
     * 所有的[可讀取串流](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_class_stream_readable)(Readable streams)都是透過[stream.readable](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_class_stream_readable)類別(class)來實作(implement)介面(interface)的
-    * > 兩種讀取串流的模式 (Two reading modes)
+    * > 2種可讀取串流的模式 (Two reading modes)
       * 可讀取串流(readable streams)可以用以下2種有效率(effective)的模式(modes)之一來操作(operate)
         * 流動模式(`flowing`)
         * 暫停模式(`paused`)
-      * 以上這2種模式都是從物件模式(pbject mode)下的串流中分離出來(separate from)的。一個可讀取串流(readable stream)可以是物件模式(object mode)也可以不是,不管它是在流動模式(`flowing` mode) or 暫停模式(`paused` mode)
+      * 以上這2種模式都是從物件模式(object mode)下的串流中分離出來(separate from)的。一個可讀取串流(readable stream)可以是物件模式(object mode)也可以不是,不管它是在流動模式(`flowing` mode) or 暫停模式(`paused` mode)
       * 在流動模式(`flowing` mode)中,資料(data)是從底層系統(underlying system)讀取進來(read from)的,並使用事件(events)自動(automatically)且盡快(as quickly as possible)地透過[EventEmitter](https://nodejs.org/dist/latest-v15.x/docs/api/events.html#events_class_eventemitter)介面(interface)來將資料提供(provided)給應用程式(application)
       * 在暫停模式(`paused` mode)中,[stream.read()](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_readable_read_size)方法(method)必須被明確(explicitly)地呼叫(called)來讀取(reads)`stream`(串流)中的資料塊(chunks of data)
       * 所有的可讀取串流(readable streams)都是從暫停模式(`paused` mode)開始(begin)的,但是都能透過以下的3種方式來切換(switched to)為流動模式(`flowing` mode)
@@ -5697,13 +5697,35 @@ Node.js Learn<br>
         * 若"沒有"管道(pipe)傳送的目的地(destinations)的話,則呼叫(calling)[stream.pause()](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_readable_pause)方法(method)
         * 若有管道(pipe)傳送的目的地(destinations)的話,則要移除(removing)所有(all)的管道(pipe)傳送目的地(destination)
           * 多數的管道(pipe)傳送目的地(destinations)都可以透過呼叫[stream.umpipe()](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_readable_unpipe_destination)方法(method)來移除(removing)掉
-      * 有一個要記住的重要觀念就是,在直到(until)可讀取串流(readable streams)提供一種消耗(consuming) or 忽略(ignoring)資料(data)的機制(mechanism)之前,都不會生成(generate)資料(data)。如果消耗機制是被禁用(disable)的 or 取消(taken away)的話,可讀取串流(readable streams)將嘗試(attempt to)停止(stop)生成(generating)資料(data)
+      * 有一個要記住的重要觀念就是,在直到(until)可讀取串流(readable streams)提供一種消耗(consuming) or 忽略(ignoring)資料(data)的機制(mechanism)之前,都不會生成(generate)資料(data)。如果消耗機制是被禁用(disable)的 or 取消(taken away)的話,可讀取串流(readable streams)將嘗試(attempt to)停止(stop)生成(generating)資料(data)
       * 基於向後(backward)相容(compatibility)的原因(reasons),移除(removing)[data](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_event_data)事件處理器(event handler)將**不會自動(autmatically)地暫停(pause)掉stream(串流)**
         * 同樣地,如果有管道(piped)傳送的目的地(destinations)的話,則一旦(once)那些管道目的地耗盡(drain)並要求(ask)更多的資料(more data)時,這時再呼叫[stream.pause()](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_readable_pause)方法(method)將不能保證(guarantee)`stream`(串流)將會保持(remain)暫停(paused)的
       * 如果將[可讀取串流](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_class_stream_readable)(readable streams)被切換為流動模式(`flowing` mode),則將不會有消費者(consumers)能夠(available)處理(handle)這些資料(data),而這些資料也就會遺失(lost)掉。舉例來說(for instance),當在沒有(without)附加(attached)[data](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_event_data)事件(event) or 當事件處理器(event handler)已經從`stream`(串流)中移除(removed from)的情況下時,呼叫(called)[readable.resume()](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_readable_resume)方法(method)的話,這樣的情況就會發生(oocur)
       * 新增一個[可讀取串流](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_class_stream_readable)(Readable)的事件處理器(event handler)會自動(automatically)地讓`stream`(串流)停止(stop)流動(`flowing`),並且資料會繼續透過[readable.read()](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_readable_read_size)方法(method)來消耗(consumed)掉
         * 若[readable](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_event_readable)這個事件處理器(event handler)已經被移除(removed)掉,並且有[data](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_event_data)這個事件處理器(event handler)的話,那麼`stream`(串流)將會再(again)開始(start)流動(`flowing`)下去
+    * > 3種可讀取串流的狀態 (Three states)
+      * 可讀取串流(readable streams)的2種模式(tow modes)的操作(operation),其實是對於可讀取串流(readable streams)在實作(implementation)發生(happening)中的時候,其更複雜(more complicated)的內部(internal)狀態(state)管理(management)的一種簡易(simplified)抽象(abstraction)
+      * 具體來說(Specifically),在任何(any)一個假定(given)的時間點(point in time),每一個可讀取串流(`Readable`)都會是以下3種可能(possible)的狀態(states)之一
+        * `readable.readableFlowing === null`
+        * `readable.readableFlowing === false`
+        * `readable.readableFlowing === true`
+        * 可參考[readable.readableFlowing#](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_readable_readableflowing)章節的介紹
+      * 當`readable.readableFlowing`屬性的值是`null`的話,則將不會提供(provided)消耗(consuming)資料流(stream's data)的機制(mechanism)。因此(Therefore),`stream`(串流)將不會生成(generate)資料(data)。當在這個狀態(state)下時,附加(attaching)一個事件監聽器(listener)給[data](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_event_data)這個事件(event),再呼叫[readable.pipe()](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_readable_pipe_destination_options)方法(method),或是呼叫[readable.resume()](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_readable_resume)方法(method),則會將`readable.readableFlowing`這個屬性的值切換(switch)為`true`,導致(causing)可讀取串流(Reable)會在資料(data)生成(generated)時,主動(actively)地發出(emitting)事件(events)
+      * 呼叫(Calling)[readable.pause()](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_readable_pause)方法(method) or [readable.unpipe()](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_readable_unpipe_destination)方法(method) or 接受(receiving)背壓(backpressure)將會導致(cause)`readable.readableFlowing`這個屬性的值被設定(set)為`false`,這將會暫時(temporarily)地終止(halting)接下來(following)的事件們(events),但是"不會"終止(halting)生成(generating)資料(data)。當處於這種狀態(state)時,附加(attaching)一個事件監聽器(listener)給[data](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_event_data)這個事件(event)的話,將不會把`readable.readableFlowing`這個屬性的值切換(switch)為`true`
+      * ```javascript
+          const { PassThrough, Writable } = require('stream');
+          const pass = new PassThrough();
+          const writable = new Writable();
 
+          pass.pipe(writable);
+          pass.unpipe(writable);
+          // readableFlowing is now false.
+
+          pass.on('data', (chunk) => { console.log(chunk.toString()); });
+          pass.write('ok');  // Will not emit 'data'.
+          pass.resume();     // Must be called to make stream emit 'data'.
+          ```
+        * 當`readable.readableFlowing`這個屬性的值為`false`的話,資料(data)將可以(may)被累積(accumulating)在`stream`(串流)的內部緩存(internal buffer)之中(within)
 
 
 
