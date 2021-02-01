@@ -5769,6 +5769,56 @@ Node.js Learn<br>
                 });
               ```
               * 補充: 若有可讀取串流(readable stream)事件監聽器(event listener)的話,`readable.pause()`方法(method)將會**無效**(no effect)
+          * [readable.read([size])](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_readable_read_size)
+            * args
+              * size: ([Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#number_type))
+                * 這是一個可選擇性(optional)要不要給的參數(argument),是用來指定(specify)有多少數量的資料(data)要被讀取(read)
+              * Returns: (string) | ([Buffer](https://nodejs.org/dist/latest-v15.x/docs/api/buffer.html#buffer_class_buffer)) | ([null](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#null_type)) | ([any](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Data_types))
+            * 此`readable.read()`方法(method)會從內部緩存區(internal buffers)拉出(pull)一些資料(data)並且回傳(returns)這些資料。若沒有資料能夠(available)讀取的話,就會回傳(returned)`null`
+              * 預設情況(default)下,回傳(returned)的資料會是`Buffer`(緩存)物件(object),除非(unless)我們有透過[readable.setEncoding()](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_readable_setencoding_encoding)方法(method)來指定(specify)想要的編碼格式(encoding),或是`stream`(串流)是以物件模式(object mode)來運作(operating)的
+            * 此方法(method)中的可選性(optional)填入的參數(argument)`size`可以用來指定(specifies)要讀取(read)多少特定(specific)數量(number)的位元組(bytes)。若`size`參數不是有效(available)的話,那麼就會回傳`null`,除非(unless)`stream`(串流)已經結束(ended)了的話,在這種情況下(in which case),就會將所有在內部緩存(internal buffer)中剩下(remaining)的資料(data)都回傳(returned)出來
+              * 若此方法中的`size`參數沒有被指定(specified)的話,將回傳(returned)所有包含(contained)在內部緩存區(internal buffer)中的資料(data)
+              * `size`參數的值必須小於 or 等於 1 `Gib`
+            * `readable.read()`方法(method)應只能在以暫停模式(`paused` mode)運作(operating)並在可讀取串流(Readable)中呼叫(called)此方法。在流動模式(`flowing` mode)中,直到(until)內部緩存(internal buffer)被完全耗盡(fully drained)時,就會自動地呼叫`readable.read()`方法
+            * ```javascript
+                const readable = getReadableStreamSomehow();
+
+                // 'readable' may be triggered multiple times as data is buffered in
+                readable.on('readable', () => {
+                  let chunk;
+                  console.log('Stream is readable (new data received in buffer)');
+                  // Use a loop to make sure we read all currently available data
+                  while (null !== (chunk = readable.read())) {
+                    console.log(`Read ${chunk.length} bytes of data...`);
+                  }
+                });
+
+                // 'end' will be triggered once when there is no more data available
+                readable.on('end', () => {
+                  console.log('Reached end of stream.');
+                });
+              ```
+              * 每一次(Each)呼叫(call)`readable.read()`方法都會回傳(returns)一個資料塊(a chunk of data), 或是`null`。而這些資料塊(chunks)並不是串連(concatenated)的
+              * 在上面的範例程式碼中,`while`迴圈(loop)是必要(necessary)地用來消耗(consume)當前(currently)`buffer`(緩存)中的所有資料(data)
+              * 當讀取(reading)一個比較大(large)的檔案(file)時,`readable.read()`方法將會回傳`null`,到目前為止(so far)已經消耗(consumed)掉所有的緩存(buffered)內容(content)了,但是仍然有更多資料尚未被緩存(buffered)。在這種情況下(In this case),當仍然有更多資料還在`buffer`(緩存)時,就會發出(emitted)一個新(new)的[readable](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_event_readable)事件(event)。最後(Finally),當沒有更多(no more)的資料(data)要傳來時,就會發出(emitted)[end](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_event_end)事件(event)
+            * **因此(Therefore),若要從可讀取串流(`readable`)中讀取(read)一個檔案(file)的全部內容(whole contents)的話,跨多個[readable](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_event_readable)事件(event)來收集(collect)資料塊(chunks)是必要(necessary)的**
+            * ```javascript
+                const chunks = [];
+
+                readable.on('readable', () => {
+                  let chunk;
+                  while (null !== (chunk = readable.read())) {
+                    chunks.push(chunk);
+                  }
+                });
+
+                readable.on('end', () => {
+                  const content = chunks.join('');
+                });
+              ```
+            * 在物件模式(object mode)中的可讀取串流(`Readable`)將總是在呼叫(call)`readable.read(size)`方法時,回傳(return)單一(single)個項目(item),而不管(regardless of)此方法中的`size`參數(argument)值是被指定為多少
+            * 若`readable.read()`方法(method)回傳(returns)一個資料塊(a chunk of data),那麼就會發出(emitted)一個[data](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_event_data)事件(event)
+            * 若在[end](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_event_end)事件(event)已被發出(emitted)之後才呼叫[stream.read(size)](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_readable_read_size)方法(method)的話,將會回傳(return)`null`。這麼做並不會引發(raised)運行錯誤(`runtime error`)
           * [readable.resume()](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_readable_resume)
             * Returns: ([this](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this))
             * `readable.resume()`方法(method)將會導致明確(explicitly)地顯示暫停(paused)的可讀取串流(readable stream)會**繼續**(resume)發出(emitting)[data](https://nodejs.org/dist/latest-v15.x/docs/api/stream.html#stream_readable_resume)事件(events),並將`stream`(串流)切換(switching)到流動模式(`flowing` mode)中
