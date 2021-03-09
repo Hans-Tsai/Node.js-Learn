@@ -970,7 +970,7 @@ Node.js Learn<br>
           }
           ```
       * 作者(author)為一個人,可以用物件(object)的形式來表示,會有一個`name`的鍵(key)值(value),並且通常會有`url`與`email`的鍵值
-    * `contributors`: 除了作者(author)以外,該應用程式(application)/套件(package)可以另外有1~多個貢獻者(contributors),可以用陣列(array)的形式來表示
+    * `contributors`: 除了作者(author)以外,該應用程式(application)/套件(package)可以另外有1~多個貢獻者(contributors),可以用陣列(array)的形式來表示
       * ```javascript
           {
             "contributors": ["Joe <joe@whatever.com> (https://whatever.com)"]
