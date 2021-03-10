@@ -1938,7 +1938,7 @@ Node.js Learn<br>
   + **從ES6開始**,Javascript程式語言開始引進(introduced)了許多能夠不涉及(do not involve)使用回呼函式(callbacks)來處理非同步(asynchronous)程式碼的功能,例如以下2種功能
     * `Promise`物件 (ES6)
     * `Async/Await`語法 (ES8)
-
+    * ```javascript
       const checkIfItsDone = () => {
         isItDoneYet
           .then(ok => {
