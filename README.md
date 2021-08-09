@@ -1565,7 +1565,7 @@ Node.js Learn<br>
   + ES6(= ECMAScript 2015)引進(introduced)了工作隊列(job queue)的觀念,並且透過`Promise`物件來使用工作隊列(job queue)
     * 補充: [Promise](https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Reference/Global_Objects/Promise)物件也是從ES6開始引進的
     * **Promise物件**是一種盡快地執行**非同步函式(async function)** 的一種方式,而不是(rather than)放在呼叫堆疊(call stack)的最後面
-    * 那些在當前函式結束之前已經解決(resolve)的`Promise`物件,將在當前函式之後立即被執行
+    * 那些在當前函式結束之前已經解決(resolve)的`Promise`物件,**將在當前函式之後立即被執行**
     * 我發現可以用遊樂園的過山車設施來做個比喻會更好,訊息隊列(message queue)會將我們放在隊列(queue)的後面,在所有其他人的後面,而我們會因此需要等到輪到我們為止。然而,工作隊列(job queue)就是快速通關券讓我們能夠搭乘完一個遊樂設施之後**緊接著**再搭乘下一個遊樂設施
     * 範例程式碼
       * ```javascript
