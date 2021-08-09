@@ -1529,15 +1529,15 @@ Node.js Learn<br>
     * ```javascript
         const bar = () => console.log('bar')
 
-          const baz = () => console.log('baz')
+        const baz = () => console.log('baz')
 
-          const foo = () => {
-            console.log('foo')
-            setTimeout(bar, 0)
-            baz()
-          }
+        const foo = () => {
+          console.log('foo')
+          setTimeout(bar, 0)
+          baz()
+        }
 
-          foo()
+        foo()
       ```
     * 以上的範例程式碼中的`setTimeout(() => {}, 0)`會去呼叫一個函式(function),一旦這段程式碼中的每個其它函式執行一次,便會執行一次該函式
     * 這個範例打印(print)出來的結果也許會令我們非常驚訝
