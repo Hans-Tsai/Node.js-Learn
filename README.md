@@ -1557,7 +1557,7 @@ Node.js Learn<br>
   + 為什麼會這樣呢? 我們接著看下去
 - 訊息隊列(Message Queue)
   + 當`setTimeout()`函式被呼叫時,瀏覽器與Node會啟動一個計時器。當計時器到期時,也就是說在這個情況下,我們將延遲(delay)參數設定為`0`,此時"延遲(delay)"就會立即到期,也會將回呼函式(callback function)放入訊息隊列(Message Queue)中
-  + 在訊息隊列(Message Queue)中,使用者初始化的事件(user-initiated events)像是滑鼠點擊(click),鍵盤事件(keyboard events),獲取回應(fetch responses)都將這此排隊(queued)。然後我們才有機會對其做出反應(react),或像是`DOM事件`--->`window.onLoad`
+  + 在訊息隊列(Message Queue)中,使用者初始化的事件(user-initiated events)像是滑鼠點擊(click),鍵盤事件(keyboard events),獲取回應(fetch responses)都將在此排隊(queued)。然後我們才有機會對其做出反應(react),或像是`DOM事件`--->`window.onLoad`
   + 事件迴圈(event loop)將會優先處理呼叫堆疊(call stack),並首先處理(processes)在呼叫堆疊中找到的所有內容。一旦呼叫堆疊中沒有任何內容了,它就會開始到訊息隊列(message queue)中處理內容
     * 我們不必等待像是`setTimeout()`函式,抓取資料(fetch),或是其它函式來完成它們自己的工作,因為它們是由瀏覽器所提供的,而且它們都位於自己的線程中(threads)
     * 舉例來說,如果將`setTimeout(function[, delay])`函式的`delay`(延遲)->這個參數設定為`2`秒,我們不需要真的去等待2秒,它會在其它地方發生
